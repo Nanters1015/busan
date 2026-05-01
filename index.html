@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>釜山四天三夜行程規劃｜9月出發 × 包車版</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', sans-serif; background: #f8f7f4; color: #1a1a1a; line-height: 1.6; }
+
+.header { background: linear-gradient(135deg, #1a3c5e 0%, #2d6a9f 100%); color: white; padding: 32px 24px 24px; text-align: center; }
+.header h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+.header p { font-size: 14px; opacity: 0.85; }
+.header-badges { display: flex; gap: 8px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+.header-badge { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 14px; font-size: 12px; font-weight: 500; }
+
+.page-toolbar { display: flex; gap: 8px; justify-content: flex-end; padding: 10px 20px; background: #edeae5; border-bottom: 1px solid #dedad4; }
+.btn { border: none; border-radius: 20px; padding: 6px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-primary { background: #2d6a9f; color: white; }
+.btn-primary:hover { background: #1a3c5e; }
+.btn-secondary { background: white; color: #555; border: 1px solid #ccc; }
+.btn-secondary:hover { background: #f5f5f5; }
+#reset-btn { display: none; }
+
+/* Dashboard */
+.dashboard { padding: 20px; }
+
+#fixed-area {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: start;
+}
+
+#sortable-area {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.col-1 { grid-column: span 1; }
+.col-2 { grid-column: span 2; }
+.col-3 { grid-column: span 3; }
+
+/* Card */
+.card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+
+.card-header { padding: 12px 14px 10px; display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 1px solid #f0f0f0; gap: 8px; }
+.card-header-left { flex: 1; min-width: 0; }
+.card-title-text { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+.card-toolbar { display: flex; gap: 4px; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; flex-shrink: 0; padding-top: 2px; }
+.edit-mode .card:not([data-fixed]) .card-toolbar { opacity: 1; pointer-events: auto; }
+.drag-handle { cursor: grab; font-size: 16px; color: #bbb; padding: 2px 4px; user-select: none; }
+.drag-handle:active { cursor: grabbing; }
+.card-delete { background: none; border: none; color: #ccc; cursor: pointer; font-size: 13px; padding: 2px 5px; border-radius: 4px; line-height: 1; transition: color 0.2s; }
+.card-delete:hover { color: #e05050; background: #ffeaea; }
+
+.edit-mode .card:not([data-fixed]) { outline: 2px dashed #aac4e0; outline-offset: -2px; }
+.sortable-ghost { opacity: 0.35; background: #ddeeff !important; }
+.sortable-chosen { box-shadow: 0 8px 24px rgba(0,0,0,0.18) !important; }
+
+/* Day header */
+.day-header-row { display: flex; align-items: flex-start; gap: 10px; }
+.day-circle { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; color: white; }
+.day-title { font-size: 14px; font-weight: 700; color: #1a1a1a; line-height: 1.3; }
+.day-sub { font-size: 11px; color: #888; margin-top: 2px; }
+
+.hotel-bar { margin: 10px 14px 0; background: #f5f9ff; border-radius: 10px; padding: 9px 12px; display: flex; gap: 8px; align-items: flex-start; }
+.hotel-icon { font-size: 16px; flex-shrink: 0; }
+.hotel-name { font-size: 11.5px; font-weight: 600; color: #1a3c5e; }
+.hotel-detail { font-size: 10.5px; color: #666; margin-top: 2px; line-height: 1.5; }
+
+.car-bar { margin: 8px 14px 0; background: #e8f4fd; border-radius: 10px; padding: 8px 12px; display: flex; gap: 8px; align-items: flex-start; }
+.car-bar-text { font-size: 11px; color: #1565a8; line-height: 1.55; }
+
+.timeline { padding: 10px 14px; }
+.tl-item { display: flex; gap: 0; margin-bottom: 12px; }
+.tl-item:last-child { margin-bottom: 0; }
+.tl-time { width: 42px; flex-shrink: 0; font-size: 9.5px; font-weight: 600; color: #aaa; padding-top: 3px; }
+.tl-dot-wrap { width: 18px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
+.tl-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.tl-line { width: 2px; flex: 1; min-height: 8px; margin-top: 4px; background: #ececec; }
+.tl-body { flex: 1; }
+.tl-name { font-size: 12px; font-weight: 600; color: #1a1a1a; line-height: 1.4; }
+.tl-desc { font-size: 11px; color: #666; margin-top: 2px; line-height: 1.5; }
+.tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; }
+.tag { font-size: 9.5px; font-weight: 600; padding: 2px 7px; border-radius: 20px; }
+.tag-food { background: #fef0eb; color: #c0400a; }
+.tag-spot { background: #e8f4fd; color: #1565a8; }
+.tag-shop { background: #f0edff; color: #5540b0; }
+.tag-night { background: #edfaf2; color: #1a7a45; }
+.tag-spa { background: #e2f5ef; color: #0d6e52; }
+.tag-note { background: #fef7e8; color: #8a5200; }
+.tag-ig { background: #fce8f5; color: #8b245a; }
+.tag-car { background: #ddeeff; color: #0a4a8a; }
+.tag-thrill { background: #feecec; color: #a02020; }
+.price-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 20px; background: #fff3e0; color: #e65100; }
+.naver-link { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; color: #03c75a; text-decoration: none; padding: 2px 6px; border: 1px solid #03c75a; border-radius: 20px; transition: all 0.2s; }
+.naver-link:hover { background: #03c75a; color: white; }
+
+.tip-box { background: #fffbf0; border-left: 3px solid #f0ad00; border-radius: 0 10px 10px 0; padding: 7px 12px; margin: 8px 14px 0; font-size: 10.5px; color: #7a5800; line-height: 1.6; }
+
+/* Info cards */
+.checklist-section { padding: 10px 14px; }
+.check-item { display: flex; gap: 9px; padding: 5px 0; border-bottom: 1px solid #f5f5f5; align-items: flex-start; }
+.check-item:last-child { border-bottom: none; }
+.check-box { width: 15px; height: 15px; border: 2px solid #ddd; border-radius: 4px; flex-shrink: 0; margin-top: 2px; cursor: pointer; }
+.check-label { font-size: 12px; color: #333; flex: 1; }
+.check-note { font-size: 10.5px; color: #999; margin-top: 2px; }
+
+.budget-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.budget-table th { background: #f8f8f8; padding: 8px 12px; text-align: left; font-size: 10.5px; color: #888; font-weight: 600; border-bottom: 1px solid #ececec; }
+.budget-table td { padding: 8px 12px; border-bottom: 1px solid #f5f5f5; vertical-align: top; }
+.budget-table tr:last-child td { border-bottom: none; }
+.budget-table .price { font-weight: 600; text-align: right; white-space: nowrap; }
+.budget-total { background: #f0f6ff; }
+.budget-total td { font-weight: 700; font-size: 13px; color: #1a3c5e; }
+
+.alert { border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; }
+.alert-yellow { background: #fff8e8; border: 1px solid #f5d98a; }
+.alert-title { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+.alert-body { font-size: 11px; line-height: 1.65; }
+
+.weather-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 10px 14px; }
+.weather-card { background: #f8f7f4; border-radius: 10px; padding: 10px; text-align: center; }
+.weather-label { font-size: 10px; color: #999; margin-bottom: 3px; }
+.weather-val { font-size: 16px; font-weight: 700; color: #1a1a1a; }
+.weather-sub { font-size: 9.5px; color: #aaa; margin-top: 2px; }
+
+.ig-cards { padding: 8px 12px 12px; display: flex; flex-direction: column; gap: 8px; }
+.ig-card { border-radius: 10px; overflow: hidden; border: 1px solid #ececec; }
+.ig-card-photo { height: 60px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 7px 10px; }
+.ig-photo-icon { font-size: 18px; }
+.ig-photo-hint { font-size: 9px; color: rgba(255,255,255,0.7); }
+.ig-card-body { padding: 7px 10px 9px; }
+.ig-card-name { font-size: 12px; font-weight: 700; color: #1a1a1a; }
+.ig-card-detail { font-size: 10.5px; color: #888; margin-top: 2px; }
+.ig-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 5px; }
+.ig-day-badge { font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 20px; color: white; }
+
+ul { list-style: none; }
+ul li { margin: 3px 0; font-size: 11.5px; line-height: 1.6; color: #666; }
+ul li::before { content: "• "; color: #1565a8; font-weight: 600; margin-right: 4px; }
+
+footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
+
+/* Responsive */
+@media (max-width: 1200px) {
+  #fixed-area { grid-template-columns: repeat(2, 1fr); }
+  #sortable-area { grid-template-columns: repeat(2, 1fr); }
+  .col-3 { grid-column: span 2; }
+}
+@media (max-width: 768px) {
+  #fixed-area { grid-template-columns: repeat(2, 1fr); }
+  #sortable-area { grid-template-columns: 1fr 1fr; }
+  .col-2, .col-3 { grid-column: span 2; }
+}
+@media (max-width: 480px) {
+  #fixed-area { grid-template-columns: 1fr; }
+  #sortable-area { grid-template-columns: 1fr; }
+  .col-1, .col-2, .col-3 { grid-column: span 1; }
+  .header h1 { font-size: 21px; }
+  .weather-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🇰🇷 釜山四天三夜行程規劃</h1>
+  <p>9月出發 × 9–13人同遊 × 包車全程接送</p>
+  <div class="header-badges">
+    <span class="header-badge">📅 2025年9月中下旬</span>
+    <span class="header-badge">👥 9–13人</span>
+    <span class="header-badge">🚐 15人座包車</span>
+    <span class="header-badge">💰 NT$21,850–35,600 /人（包車版）</span>
+  </div>
+</div>
+
+<div class="page-toolbar">
+  <button class="btn btn-secondary" id="reset-btn" onclick="resetLayout()">↩ 重置版面</button>
+  <button class="btn btn-primary" id="edit-btn" onclick="toggleEdit()">✏️ 編輯版面</button>
+</div>
+
+<div class="dashboard">
+
+  <!-- Fixed: D1–D4 -->
+  <div id="fixed-area">
+
+    <!-- DAY 1 -->
+    <div class="card col-1" id="card-d1" data-fixed>
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="day-header-row">
+            <div class="day-circle" style="background:linear-gradient(135deg,#2d6a9f,#378ADD);">D1</div>
+            <div>
+              <div class="day-title">廣安里 — 抵達放鬆日 🌊</div>
+              <div class="day-sub">下午班機入境，包車接機直奔廣安里</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="hotel-bar">
+          <div class="hotel-icon">🏨</div>
+          <div>
+            <div class="hotel-name">Hotel Aqua Palace 或 G21 Hotel（廣安里）</div>
+            <div class="hotel-detail">廣安大橋第一排海景，汗蒸幕就在飯店內｜參考價 TWD 1,200–2,800 /晚</div>
+          </div>
+        </div>
+        <div class="car-bar">
+          <div>🚐</div>
+          <div class="car-bar-text"><strong>交通：包車從金海機場接機</strong><br>司機在出關口舉牌等候，行李全部上車，直達廣安里飯店</div>
+        </div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-time">下午</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#378ADD;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🚐 包車接機 → 廣安里 check-in</div>
+              <div class="tl-desc">30–40 分鐘抵達廣安里飯店，先放行李換輕便衣物</div>
+              <div class="tags"><span class="tag tag-car">中文司機接機</span><span class="tag tag-note">無需拖行李</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">傍晚</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#378ADD;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🌅 廣安里海灘散步 <a class="naver-link" href="nmap://place?lat=35.1525&lng=129.1190&name=광안리해수욕장" target="_blank">📍</a></div>
+              <div class="tl-desc">廣安大橋黃昏最美，沙灘邊走走放鬆</div>
+              <div class="tags"><span class="tag tag-spot">廣安大橋夕陽</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">晚餐</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🍖 seokhwayeon Korean BBQ <a class="naver-link" href="nmap://place?lat=35.1520998&lng=129.1170955&name=석화연" target="_blank">📍</a></div>
+              <div class="tl-desc">廣安里人氣韓式烤肉，第一頓飯豪邁開吃！</div>
+              <div class="tags"><span class="tag tag-ig">IG 收藏</span><span class="tag tag-food">韓式烤肉</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">晚上</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#1D9E75;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">♨️ Hotel Aqua Palace 汗蒸幕</div>
+              <div class="tl-desc">廣安大橋海景，24hr 開放。約 NT$650（Pass可免費）</div>
+              <div class="tags"><span class="tag tag-spa">汗蒸幕</span><span class="tag tag-spot">廣安大橋夜景</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">宵夜</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#7F77DD;"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🍺 廣安里海灘布帳馬車</div>
+              <div class="tl-desc">炸雞＋啤酒＋廣安大橋夜景，釜山最道地宵夜體驗</div>
+              <div class="tags"><span class="tag tag-night">炸雞啤酒海景</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 2 -->
+    <div class="card col-1" id="card-d2" data-fixed>
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="day-header-row">
+            <div class="day-circle" style="background:linear-gradient(135deg,#1a8a5a,#2db87a);">D2</div>
+            <div>
+              <div class="day-title">海雲台 — 雲海台觀景日 🏖</div>
+              <div class="day-sub">膠囊列車、X the Sky、海理團路下午茶</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="hotel-bar">
+          <div class="hotel-icon">🏨</div>
+          <div>
+            <div class="hotel-name">Browndot Hotel 或 Ramada Encore（海雲台）</div>
+            <div class="hotel-detail">距海水浴場步行 5 分鐘｜參考價 TWD 2,000–4,000 /晚</div>
+          </div>
+        </div>
+        <div class="car-bar">
+          <div>🚐</div>
+          <div class="car-bar-text"><strong>交通：包車全天接送</strong><br>廣安里→海雲台各景點→換旅館，行李放車上不用搬</div>
+        </div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-time">早餐</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">☕ working holiday（廣安里海景早午餐）<a class="naver-link" href="nmap://place?lat=35.1547583&lng=129.1197477&name=워킹홀리데이" target="_blank">📍</a></div>
+              <div class="tl-desc">面向廣安大橋大片落地窗，09:00 起</div>
+              <div class="tags"><span class="tag tag-food">早餐 09:00+</span><span class="tag tag-spot">廣安大橋海景</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">上午</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#378ADD;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🚞 天空膠囊列車 <span class="price-tag">NT$1,200-1,680/人</span> <a class="naver-link" href="nmap://place?lat=35.1607&lng=129.1847&name=해운대블루라인park" target="_blank">📍</a></div>
+              <div class="tl-desc">包車送到尾浦站，沿海岸線觀景。Pass可免費搭乘2次</div>
+              <div class="tags"><span class="tag tag-spot">空中膠囊列車</span><span class="tag tag-note">需提前預約</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">午餐</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🦀 海雲台傳統市場 <a class="naver-link" href="nmap://place?lat=35.1614537&lng=129.1622489&name=해운대전통시장" target="_blank">📍</a></div>
+              <div class="tl-desc">烤鰻魚、活章魚、海鮮湯飯，道地釜山味</div>
+              <div class="tags"><span class="tag tag-food">海鮮市場小吃</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">下午</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#378ADD;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🏙 BUSAN X the Sky <span class="price-tag">NT$590-650/人</span> <a class="naver-link" href="nmap://place?lat=35.1637&lng=129.1584&name=BUSAN+X+the+SKY" target="_blank">📍</a></div>
+              <div class="tl-desc">100F 俯瞰整個海雲台，透明橋 Shocking Bridge，99F 世界最高星巴克</div>
+              <div class="tags"><span class="tag tag-spot">100F 全景</span><span class="tag tag-note">Klook 先買票</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">下午茶</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#7F77DD;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">☕ <a class="naver-link" href="nmap://place?lat=35.1645337&lng=129.1580765&name=캐버린하우스" target="_blank">Keveren House</a> + <a class="naver-link" href="nmap://place?lat=35.1643054&lng=129.1576309&name=듀플릿" target="_blank">DUPLIT</a>（IG×2）</div>
+              <div class="tl-desc">海理團路，奶油派必買＋affogato 必試，兩間緊鄰連著逛</div>
+              <div class="tags"><span class="tag tag-ig">IG×2</span><span class="tag tag-food">奶油派 / affogato</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">晚餐</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🦀 尾浦家 醬蟹 <a class="naver-link" href="nmap://place?lat=35.160751&lng=129.1714544&name=미포지브" target="_blank">📍</a></div>
+              <div class="tl-desc">40 年老店，醬汁拌飯必點</div>
+              <div class="tags"><span class="tag tag-food">醬蟹</span><span class="tag tag-note">請司機協助訂位</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">夜晚</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#1D9E75;"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🌃 The Bay 101 海景夜生活 <a class="naver-link" href="nmap://place?lat=35.1567&lng=129.1521&name=The+Bay+101" target="_blank">📍</a></div>
+              <div class="tl-desc">冬柏島入口夜景聖地，戶外酒吧看海上燈光倒影</div>
+              <div class="tags"><span class="tag tag-night">海景酒吧</span><span class="tag tag-car">包車送回</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 3 -->
+    <div class="card col-1" id="card-d3" data-fixed>
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="day-header-row">
+            <div class="day-circle" style="background:linear-gradient(135deg,#7040c0,#9966e0);">D3</div>
+            <div>
+              <div class="day-title">機張＋西面 — 瘋玩購物日 🎢</div>
+              <div class="day-sub">Skyline Luge → 樂天世界 → 西面購物</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="hotel-bar">
+          <div class="hotel-icon">🏨</div>
+          <div>
+            <div class="hotel-name">Arban Hotel 或 釜山商務飯店（西面）</div>
+            <div class="hotel-detail">地鐵 1+2 號線交叉站，樂天百貨旁｜參考價 TWD 1,000–2,200 /晚</div>
+          </div>
+        </div>
+        <div class="car-bar">
+          <div>🚐</div>
+          <div class="car-bar-text"><strong>交通：包車全天（海雲台→機張→西面）</strong><br>⚠️ 機張屬郊區，訂車時確認是否加價</div>
+        </div>
+        <div class="tip-box">💡 建議先玩 Skyline Luge 再進樂天世界，步行 5 分鐘銜接！</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-time">早餐</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🥚 EGG DROP 西面樂天後門店 <a class="naver-link" href="nmap://place?lat=35.1557765&lng=129.0553859&name=에그드롭" target="_blank">📍</a></div>
+              <div class="tl-desc">爆漿滑蛋吐司 08:00 起，蒜香培根起司必點</div>
+              <div class="tags"><span class="tag tag-food">早餐 08:00+</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">上午</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#E24B4A;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🛷 Skyline Luge <span class="price-tag">NT$675-850/人 2次</span> <a class="naver-link" href="nmap://place?lat=35.1883&lng=129.2233&name=스카이라인루지부산" target="_blank">📍</a></div>
+              <div class="tl-desc">搭纜車上山、坐滑板車衝下來。Pass 免費 2 次，多玩再加購</div>
+              <div class="tags"><span class="tag tag-thrill">斜坡滑車</span><span class="tag tag-car">包車直達</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">上午→</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#378ADD;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🎢 釜山樂天世界冒險樂園</div>
+              <div class="tl-desc">步行 5 分鐘進場！6 大區域 24 項設施。Klook約NT$610，Pass可免費</div>
+              <div class="tags"><span class="tag tag-spot">主題樂園</span><span class="tag tag-thrill">倒掛雲霄飛車</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">午餐</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🍟 樂天世界園內餐廳</div>
+              <div class="tl-desc">BHC 炸雞、韓式拌飯、辣炒年糕</div>
+              <div class="tags"><span class="tag tag-food">園內用餐</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">下午</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#7F77DD;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🛍 包車送到西面 Shopping</div>
+              <div class="tl-desc">樂天百貨、Olive Young、西面地下街。Sulyamyeok Seomyeon（IG）順路</div>
+              <div class="tags"><span class="tag tag-ig">IG 收藏</span><span class="tag tag-shop">Olive Young</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">晚餐</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🥩 味贊王 西面 鹽烤肉 <a class="naver-link" href="nmap://place?lat=35.1554917&lng=129.0556616&name=맛찬들왕" target="_blank">📍</a></div>
+              <div class="tl-desc">厚達 3.5cm 豬五花，全程專人幫烤，17:00–23:00</div>
+              <div class="tags"><span class="tag tag-food">厚切烤肉</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">宵夜</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#1D9E75;"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🍹 <a class="naver-link" href="nmap://place?lat=35.162329&lng=129.1916555&name=루아&티그레" target="_blank">lua&tigre</a>（IG）＋ 西面酒吧街</div>
+              <div class="tl-desc">西面大型咖啡廳酒吧，調酒氛圍超好</div>
+              <div class="tags"><span class="tag tag-ig">IG 收藏</span><span class="tag tag-night">調酒 / 酒吧</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 4 -->
+    <div class="card col-1" id="card-d4" data-fixed>
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="day-header-row">
+            <div class="day-circle" style="background:linear-gradient(135deg,#c04030,#e05848);">D4</div>
+            <div>
+              <div class="day-title">南浦洞 — 掃貨返程日 🐟</div>
+              <div class="day-sub">扎嘎其市場→南浦洞→包車送機</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="car-bar">
+          <div>🚐</div>
+          <div class="car-bar-text"><strong>交通：包車全天送機</strong><br>飯店→南浦洞→扎嘎其→金海機場，行李全丟車上！<br>✈️ 提前 2 小時到機場 / 預留 40 分鐘車程 / 記得退稅！</div>
+        </div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-time">早餐</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🍲 浦項豬肉湯飯 <a class="naver-link" href="nmap://place?lat=35.1557935&lng=129.0585494&name=포항돼지국밥" target="_blank">📍</a></div>
+              <div class="tl-desc">70 年老店，24hr 營業，最後一餐吃最道地的釜山代表美食！</div>
+              <div class="tags"><span class="tag tag-food">釜山代表美食</span><span class="tag tag-note">24hr</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">上午</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#378ADD;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🐟 扎嘎其市場＋南浦洞 <a class="naver-link" href="nmap://place?lat=35.0967&lng=129.0300&name=자갈치시장" target="_blank">📍</a></div>
+              <div class="tl-desc">韓國最大海鮮市場，BIFF 廣場掃最後一輪伴手禮（海苔、零食、韓國咖啡）</div>
+              <div class="tags"><span class="tag tag-food">扎嘎其海鮮</span><span class="tag tag-shop">伴手禮掃貨</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">午餐</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🦑 <a class="naver-link" href="nmap://place?lat=35.098409&lng=129.025761&name=대양烤腸" target="_blank">大光烤腸</a> / 扎嘎其市場 2F 海鮮</div>
+              <div class="tl-desc">最後一頓飯，吃好吃滿！</div>
+              <div class="tags"><span class="tag tag-food">烤腸 / 海鮮</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">下午</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#7F77DD;"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🚐 包車直送金海機場返台</div>
+              <div class="tl-desc">飯店門口上車，直達機場，記得辦退稅！</div>
+              <div class="tags"><span class="tag tag-car">包車送機</span><span class="tag tag-note">記得退稅</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /fixed-area -->
+
+  <!-- Sortable info cards -->
+  <div id="sortable-area">
+
+    <!-- Weather -->
+    <div class="card col-1" id="card-weather">
+      <div class="card-header">
+        <div class="card-header-left"><span class="card-title-text">🌤 九月出發資訊</span></div>
+        <div class="card-toolbar">
+          <span class="drag-handle">⠿</span>
+          <button class="card-delete" onclick="deleteCard('card-weather')">✕</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="weather-grid">
+          <div class="weather-card">
+            <div class="weather-label">平均氣溫</div>
+            <div class="weather-val">24–28°C</div>
+            <div class="weather-sub">中下旬更舒適</div>
+          </div>
+          <div class="weather-card">
+            <div class="weather-label">機票比旺季</div>
+            <div class="weather-val" style="color:#1a7a45;">省20–30%</div>
+            <div class="weather-sub">淡季最划算</div>
+          </div>
+          <div class="weather-card">
+            <div class="weather-label">建議出發時機</div>
+            <div class="weather-val" style="font-size:13px;">9月中下旬</div>
+            <div class="weather-sub">避開颱風季</div>
+          </div>
+        </div>
+        <div style="padding: 0 14px 12px;">
+          <div class="alert alert-yellow">
+            <div class="alert-title" style="color:#8a5200;">⛈ 颱風注意事項</div>
+            <div class="alert-body" style="color:#7a4f00;">七到九月初為颱風季，釜山靠海影響較首爾大。建議選九月中下旬出發，並購買含颱風取消保障的旅遊保險。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checklist -->
+    <div class="card col-1" id="card-checklist">
+      <div class="card-header">
+        <div class="card-header-left"><span class="card-title-text">📋 出發前準備清單</span></div>
+        <div class="card-toolbar">
+          <span class="drag-handle">⠿</span>
+          <button class="card-delete" onclick="deleteCard('card-checklist')">✕</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="checklist-section">
+          <div class="check-item">
+            <div class="check-box" onclick="toggleCheck(this)"></div>
+            <div><div class="check-label">機票（廉航來回含行李 NT$6,000–8,000）</div><div class="check-note">建議出發前 40 天訂，九月淡季最划算</div></div>
+          </div>
+          <div class="check-item">
+            <div class="check-box" onclick="toggleCheck(this)"></div>
+            <div><div class="check-label">包車（15人座，提前 4 週以上）</div><div class="check-note">KKday / Klook / City Tour 旅行社 LINE：@387iqypf</div></div>
+          </div>
+          <div class="check-item">
+            <div class="check-box" onclick="toggleCheck(this)"></div>
+            <div><div class="check-label">釜山通行證 Visit Busan Pass <span class="price-tag">24HR NT$1,200 / 48HR NT$1,850</span></div><div class="check-note">含 X the Sky、Skyline Luge、汗蒸幕、膠囊列車、樂天世界</div></div>
+          </div>
+          <div class="check-item">
+            <div class="check-box" onclick="toggleCheck(this)"></div>
+            <div><div class="check-label">天空膠囊列車 線上預約</div><div class="check-note">提前 1–2 個月，人多可能需要分批</div></div>
+          </div>
+          <div class="check-item">
+            <div class="check-box" onclick="toggleCheck(this)"></div>
+            <div><div class="check-label">樂天世界門票（Klook/KKday，約 85 折）</div></div>
+          </div>
+          <div class="check-item">
+            <div class="check-box" onclick="toggleCheck(this)"></div>
+            <div><div class="check-label">X the Sky 門票（Klook 先買省排隊）</div></div>
+          </div>
+          <div class="check-item">
+            <div class="check-box" onclick="toggleCheck(this)"></div>
+            <div><div class="check-label">旅遊保險（含颱風取消保障，9月必備！）</div></div>
+          </div>
+          <div class="check-item">
+            <div class="check-box" onclick="toggleCheck(this)"></div>
+            <div><div class="check-label">WOWPASS 換匯卡</div><div class="check-note">機場取卡，存台幣自動換韓幣，匯率最優</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IG -->
+    <div class="card col-1" id="card-ig">
+      <div class="card-header">
+        <div class="card-header-left"><span class="card-title-text">📸 IG 收藏地點</span></div>
+        <div class="card-toolbar">
+          <span class="drag-handle">⠿</span>
+          <button class="card-delete" onclick="deleteCard('card-ig')">✕</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="ig-cards">
+          <div class="ig-card">
+            <div class="ig-card-photo" style="background:linear-gradient(135deg,#1a3c5e,#378ADD);">
+              <div class="ig-photo-icon">🍖</div><div class="ig-photo-hint">📷 可換成實際照片</div>
+            </div>
+            <div class="ig-card-body">
+              <div class="ig-card-name">seokhwayeon Korean BBQ</div>
+              <div class="ig-card-detail">廣安里｜第一頓豪邁烤肉</div>
+              <div class="ig-card-footer">
+                <span class="ig-day-badge" style="background:#378ADD;">Day 1</span>
+                <a class="naver-link" href="nmap://place?lat=35.1530&lng=129.1185&name=석화연" target="_blank">📍</a>
+              </div>
+            </div>
+          </div>
+          <div class="ig-card">
+            <div class="ig-card-photo" style="background:linear-gradient(135deg,#1a5a3a,#2db87a);">
+              <div class="ig-photo-icon">🥐</div><div class="ig-photo-hint">📷 可換成實際照片</div>
+            </div>
+            <div class="ig-card-body">
+              <div class="ig-card-name">Keveren House</div>
+              <div class="ig-card-detail">海理團路｜奶油派必買伴手禮</div>
+              <div class="ig-card-footer">
+                <span class="ig-day-badge" style="background:#2db87a;">Day 2</span>
+                <a class="naver-link" href="nmap://place?lat=35.1582&lng=129.1522&name=케버렌하우스" target="_blank">📍</a>
+              </div>
+            </div>
+          </div>
+          <div class="ig-card">
+            <div class="ig-card-photo" style="background:linear-gradient(135deg,#0d6040,#1a9e6a);">
+              <div class="ig-photo-icon">☕</div><div class="ig-photo-hint">📷 可換成實際照片</div>
+            </div>
+            <div class="ig-card-body">
+              <div class="ig-card-name">DUPLIT</div>
+              <div class="ig-card-detail">海理團路｜affogato 必試</div>
+              <div class="ig-card-footer">
+                <span class="ig-day-badge" style="background:#2db87a;">Day 2</span>
+                <a class="naver-link" href="nmap://place?lat=35.1580&lng=129.1518&name=듀플릿" target="_blank">📍</a>
+              </div>
+            </div>
+          </div>
+          <div class="ig-card">
+            <div class="ig-card-photo" style="background:linear-gradient(135deg,#5030a0,#9966e0);">
+              <div class="ig-photo-icon">🍹</div><div class="ig-photo-hint">📷 可換成實際照片</div>
+            </div>
+            <div class="ig-card-body">
+              <div class="ig-card-name">lua&tigre</div>
+              <div class="ig-card-detail">西面｜調酒氛圍酒吧</div>
+              <div class="ig-card-footer">
+                <span class="ig-day-badge" style="background:#9966e0;">Day 3</span>
+                <a class="naver-link" href="nmap://place?lat=35.1574&lng=129.0590&name=루아앤타이거" target="_blank">📍</a>
+              </div>
+            </div>
+          </div>
+          <div class="ig-card">
+            <div class="ig-card-photo" style="background:linear-gradient(135deg,#3d2070,#7040c0);">
+              <div class="ig-photo-icon">🍶</div><div class="ig-photo-hint">📷 可換成實際照片</div>
+            </div>
+            <div class="ig-card-body">
+              <div class="ig-card-name">Sulyamyeok Seomyeon</div>
+              <div class="ig-card-detail">西面｜購物途中順路探訪</div>
+              <div class="ig-card-footer">
+                <span class="ig-day-badge" style="background:#7040c0;">Day 3</span>
+                <a class="naver-link" href="nmap://place?lat=35.157941&lng=129.0626363&name=설야멱" target="_blank">📍</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Budget -->
+    <div class="card col-2" id="card-budget">
+      <div class="card-header">
+        <div class="card-header-left"><span class="card-title-text">💰 費用試算（9月出發，12人均攤）</span></div>
+        <div class="card-toolbar">
+          <span class="drag-handle">⠿</span>
+          <button class="card-delete" onclick="deleteCard('card-budget')">✕</button>
+        </div>
+      </div>
+      <div class="card-body" style="padding: 0 14px 14px;">
+        <table class="budget-table" style="margin-top:12px;">
+          <thead>
+            <tr><th>項目</th><th style="text-align:right;">費用 /人</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>✈️ 機票（廉航，九月淡季含行李）<br><small style="color:#aaa;">比暑假省約 NT$2,000–3,000</small></td><td class="price" style="color:#1a7a45;">NT$ 6,000–8,000</td></tr>
+            <tr><td>🚐 包車交通均攤（4天，15人座）<br><small style="color:#aaa;">全車 NT$27,000–30,000 / 12人均攤</small></td><td class="price">NT$ 2,250–2,500</td></tr>
+            <tr><td>🏨 住宿（3晚，九月淡季）</td><td class="price" style="color:#1a7a45;">NT$ 4,200–9,000</td></tr>
+            <tr><td>🎟 景點門票（Pass + 樂天世界）</td><td class="price">NT$ 2,900–3,100</td></tr>
+            <tr><td>🍽 餐費（4天）</td><td class="price">NT$ 4,500–7,000</td></tr>
+            <tr><td>🛍 購物伴手禮</td><td class="price">NT$ 2,000–6,000</td></tr>
+            <tr class="budget-total">
+              <td>每人總預算（省錢→舒適）</td>
+              <td class="price">NT$ 21,850–35,600</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin-top:10px; font-size:11px; color:#888; line-height:1.8;">
+          <strong>包車費依人數均攤：</strong><br>9人→NT$3,000–3,333 ／ 10人→NT$2,700–3,000 ／ 11人→NT$2,455–2,727 ／ 12人→NT$2,250–2,500 ／ 13人→NT$2,077–2,308
+        </div>
+      </div>
+    </div>
+
+    <!-- Transport -->
+    <div class="card col-3" id="card-transport">
+      <div class="card-header">
+        <div class="card-header-left"><span class="card-title-text">🚗 交通方案對比：包車 vs 計程車</span></div>
+        <div class="card-toolbar">
+          <span class="drag-handle">⠿</span>
+          <button class="card-delete" onclick="deleteCard('card-transport')">✕</button>
+        </div>
+      </div>
+      <div class="card-body" style="padding: 10px 14px 14px;">
+        <table class="budget-table">
+          <thead>
+            <tr><th style="text-align:left;">項目</th><th style="text-align:right;">包車方案</th><th style="text-align:right;">計程車方案</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>機場往返接送</td><td class="price">含於包車費</td><td class="price">約 NT$1,500–2,000</td></tr>
+            <tr><td>日間景點交通（3天）</td><td class="price">含於包車費</td><td class="price">約 NT$9,000–12,000</td></tr>
+            <tr><td>晚間/夜間往返</td><td class="price">含於包車費</td><td class="price">約 NT$2,500–3,500</td></tr>
+            <tr><td>行李搬運困擾</td><td class="price" style="color:#1a7a45;">✅ 無需搬運</td><td class="price" style="color:#c0400a;">❌ 每次搬進搬出</td></tr>
+            <tr><td>購物 / 逛街</td><td class="price" style="color:#1a7a45;">✅ 戰利品放車上</td><td class="price" style="color:#c0400a;">❌ 提著走很疲憊</td></tr>
+            <tr><td>司機熟悉路線</td><td class="price" style="color:#1a7a45;">✅ 中文司機協助</td><td class="price" style="color:#c0400a;">❌ 自己研究路線</td></tr>
+            <tr class="budget-total">
+              <td>每人交通費用（12人均攤）</td>
+              <td class="price" style="color:#1a7a45;">NT$ 1,875–2,500</td>
+              <td class="price" style="color:#c0400a;">NT$ 3,750–6,500</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin-top:10px; font-size:11px; color:#1a3c5e; line-height:1.8; background:#f0f6ff; padding:10px; border-radius:8px;">
+          💡 <strong>建議</strong>：9–13人同遊 → 包車划算且舒適，每人省 NT$2,000–4,000，且免去搬行李困擾！
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /sortable-area -->
+</div><!-- /dashboard -->
+
+<footer>釜山四天三夜行程規劃｜2025年9月出發版</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script>
+let sortable = null;
+let isEditMode = false;
+
+function toggleEdit() {
+  isEditMode = !isEditMode;
+  document.body.classList.toggle('edit-mode', isEditMode);
+  document.getElementById('edit-btn').textContent = isEditMode ? '✅ 完成編輯' : '✏️ 編輯版面';
+  document.getElementById('reset-btn').style.display = isEditMode ? 'inline-block' : 'none';
+
+  if (isEditMode) {
+    sortable = new Sortable(document.getElementById('sortable-area'), {
+      animation: 150,
+      handle: '.drag-handle',
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      onEnd: saveOrder
+    });
+  } else {
+    if (sortable) { sortable.destroy(); sortable = null; }
+  }
+}
+
+function saveOrder() {
+  const ids = [...document.getElementById('sortable-area').children].map(el => el.id);
+  localStorage.setItem('busanCardOrder', JSON.stringify(ids));
+}
+
+function deleteCard(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.remove();
+  const deleted = JSON.parse(localStorage.getItem('busanDeletedCards') || '[]');
+  if (!deleted.includes(id)) deleted.push(id);
+  localStorage.setItem('busanDeletedCards', JSON.stringify(deleted));
+  saveOrder();
+}
+
+function resetLayout() {
+  localStorage.removeItem('busanCardOrder');
+  localStorage.removeItem('busanDeletedCards');
+  location.reload();
+}
+
+function toggleCheck(box) {
+  box.style.background = box.style.background ? '' : '#2d6a9f';
+  box.style.borderColor = box.style.borderColor === 'rgb(45, 106, 159)' ? '#ddd' : '#2d6a9f';
+}
+
+function loadState() {
+  const deleted = JSON.parse(localStorage.getItem('busanDeletedCards') || '[]');
+  deleted.forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
+
+  const order = JSON.parse(localStorage.getItem('busanCardOrder') || 'null');
+  if (!order) return;
+  const container = document.getElementById('sortable-area');
+  order.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.parentNode === container) container.appendChild(el);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', loadState);
+</script>
+</body>
+</html>
