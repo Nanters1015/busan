@@ -210,10 +210,12 @@ DAY_COLORS = {
 ### 版型
 ```js
 toggleEdit()          // 切換 body.edit-mode；啟用/銷毀 SortableJS
-saveOrder()           // 儲存排序 + 欄寬到 localStorage
+saveOrder()           // 儲存排序 + 欄寬到 localStorage，同時 fire-and-forget 寫 GAS save_layout
 deleteCard(id)        // 移除卡片 + 記錄 localStorage
-resetLayout()         // 清所有 localStorage（含 timeline/cols）+ reload
-loadState()           // 還原刪除/排序/欄寬，並 renderTimeline 全部 4 天
+resetLayout()         // 清所有 localStorage → 從 GAS 讀回共享排版 → reload（async）
+loadState()           // 還原刪除/排序/欄寬，並 renderTimeline 全部 4 天（async；無 localStorage 時 fallback GAS）
+applyCardOrder(order) // 將 order 陣列套用到 sortable-area DOM
+applyCardCols(cols)   // 將 cols 物件套用到各卡片 className
 resizeCard(id)        // 循環切換 card 的 col-1/2/3，呼叫 saveCardCols()
 saveCardCols()        // 把 sortable-area 各 card 的欄寬存入 busanCardCols
 ```
@@ -300,3 +302,34 @@ deleteTransportItem(id)  // fetch delete_transport → reload
 |------|------|
 | SortableJS 1.15.2 | `cdn.jsdelivr.net/npm/sortablejs@1.15.2` |
 | Instagram embed.js | `https://www.instagram.com/embed.js`（async） |
+
+---
+
+## 機票資訊卡（card-flight）
+
+表格欄位（7欄）：日期 | 方向 | 航空/班次 | 出發→抵達 | 無托運 | 有托運(20kg) | del
+
+GAS `flights` schema：`id, direction, airline, flight_no, date, depart_time, arrive_time, price_no_bag, price_bag, note`
+
+向後相容：舊 `price` 欄在 `price_no_bag` 為空時 fallback 顯示在無托運欄。
+
+---
+
+## Thread 收藏地點卡（card-thread）
+
+Embed 方式：直接用 `<iframe src="https://www.threads.net/@user/post/ID/embed/" loading="lazy">` 嵌入。
+不依賴 `threads.net/embed/iframe.js`（已移除）。
+
+`getThreadEmbedSrc(url)` — 從 threadUrl 轉換出 iframe src，無法解析則回 null。
+
+---
+
+## 排版同步（GAS 共享）
+
+`busanCardOrder` / `busanCardCols` 除存 localStorage 外，同步至 GAS `trip_settings.layout`（JSON 字串）。
+
+- `saveOrder()` 每次呼叫同時 fire-and-forget `save_layout`
+- `loadState()` 無 localStorage 時 fetch `get_layout` 作 fallback（async）
+- `resetLayout()` 清 localStorage 後從 GAS 讀回共享排版再 reload
+
+GAS actions：`get_layout`、`save_layout&data=JSON`（寫入 trip_settings.layout）

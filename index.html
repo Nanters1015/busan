@@ -788,16 +788,17 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
         <table class="budget-table" style="margin-top:12px;">
           <thead>
             <tr>
+              <th>日期</th>
               <th>方向</th>
               <th>航空 / 班次</th>
-              <th>出發</th>
-              <th>抵達</th>
-              <th style="text-align:right;">票價 /人</th>
+              <th>出發 → 抵達</th>
+              <th style="text-align:right;">無托運</th>
+              <th style="text-align:right;">有托運</th>
               <th style="width:24px;"></th>
             </tr>
           </thead>
           <tbody id="flight-tbody">
-            <tr><td colspan="6" class="ig-loading">載入中…</td></tr>
+            <tr><td colspan="7" class="ig-loading">載入中…</td></tr>
           </tbody>
         </table>
       </div>
@@ -862,7 +863,6 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script async src="https://www.instagram.com/embed.js"></script>
-<script async src="https://www.threads.net/embed/iframe.js"></script>
 <script>
 let sortable = null;
 let isEditMode = false;
@@ -892,6 +892,9 @@ function saveOrder() {
   const ids = [...document.getElementById('sortable-area').children].map(el => el.id);
   localStorage.setItem('busanCardOrder', JSON.stringify(ids));
   saveCardCols();
+  const cols = JSON.parse(localStorage.getItem('busanCardCols') || '{}');
+  const data = JSON.stringify({ order: ids, cols });
+  fetch(`${GAS_URL}?action=save_layout&data=${encodeURIComponent(data)}`).catch(() => {});
 }
 
 function deleteCard(id) {
@@ -904,29 +907,56 @@ function deleteCard(id) {
   saveOrder();
 }
 
-function resetLayout() {
+async function resetLayout() {
   ['busanCardOrder','busanDeletedCards','busanCardCols',
    'busanTimeline_1','busanTimeline_2','busanTimeline_3','busanTimeline_4'
   ].forEach(k => localStorage.removeItem(k));
+  try {
+    const res = await fetch(`${GAS_URL}?action=get_layout`);
+    const json = await res.json();
+    if (json.status === 'ok' && json.data) {
+      const layout = JSON.parse(json.data);
+      if (layout.order) localStorage.setItem('busanCardOrder', JSON.stringify(layout.order));
+      if (layout.cols) localStorage.setItem('busanCardCols', JSON.stringify(layout.cols));
+    }
+  } catch {}
   location.reload();
 }
 
-function loadState() {
-  const deleted = JSON.parse(localStorage.getItem('busanDeletedCards') || '[]');
-  deleted.forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
-  const order = JSON.parse(localStorage.getItem('busanCardOrder') || 'null');
-  if (order) {
-    const container = document.getElementById('sortable-area');
-    order.forEach(id => {
-      const el = document.getElementById(id);
-      if (el && el.parentNode === container) container.appendChild(el);
-    });
-  }
-  const savedCols = JSON.parse(localStorage.getItem('busanCardCols') || '{}');
-  Object.entries(savedCols).forEach(([id, col]) => {
+function applyCardOrder(order) {
+  const container = document.getElementById('sortable-area');
+  order.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.parentNode === container) container.appendChild(el);
+  });
+}
+
+function applyCardCols(cols) {
+  Object.entries(cols).forEach(([id, col]) => {
     const el = document.getElementById(id);
     if (el) { el.classList.remove('col-1','col-2','col-3'); el.classList.add(col); }
   });
+}
+
+async function loadState() {
+  const deleted = JSON.parse(localStorage.getItem('busanDeletedCards') || '[]');
+  deleted.forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
+  const localOrder = JSON.parse(localStorage.getItem('busanCardOrder') || 'null');
+  if (localOrder) {
+    applyCardOrder(localOrder);
+    const savedCols = JSON.parse(localStorage.getItem('busanCardCols') || '{}');
+    applyCardCols(savedCols);
+  } else {
+    try {
+      const res = await fetch(`${GAS_URL}?action=get_layout`);
+      const json = await res.json();
+      if (json.status === 'ok' && json.data) {
+        const layout = JSON.parse(json.data);
+        if (layout.order) applyCardOrder(layout.order);
+        if (layout.cols) applyCardCols(layout.cols);
+      }
+    } catch {}
+  }
   [1,2,3,4].forEach(day => renderTimeline(day, getTimelineItems(day)));
 }
 
@@ -1105,6 +1135,10 @@ const MODAL_CONFIGS = {
         </select>
       </div>
       <div class="modal-field">
+        <label class="modal-label">日期（選填）</label>
+        <input class="modal-input" id="f-date" placeholder="例：9/4（四）" />
+      </div>
+      <div class="modal-field">
         <label class="modal-label">航空公司 *</label>
         <input class="modal-input" id="f-airline" placeholder="例：台灣虎航" />
       </div>
@@ -1121,12 +1155,16 @@ const MODAL_CONFIGS = {
         <input class="modal-input" id="f-arrive" placeholder="例：13:15 PUS" />
       </div>
       <div class="modal-field">
-        <label class="modal-label">參考票價</label>
-        <input class="modal-input" id="f-price" placeholder="例：NT$3,500/人" />
+        <label class="modal-label">無托運票價（選填）</label>
+        <input class="modal-input" id="f-price-no-bag" placeholder="例：NT$2,800/人" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">有托運 20kg 票價（選填）</label>
+        <input class="modal-input" id="f-price-bag" placeholder="例：NT$3,500/人" />
       </div>
       <div class="modal-field">
         <label class="modal-label">備注（選填）</label>
-        <input class="modal-input" id="f-note" placeholder="例：含行李 20kg" />
+        <input class="modal-input" id="f-note" placeholder="例：托運行李限 20kg" />
       </div>`
   },
   'hotel-info': {
@@ -1687,32 +1725,36 @@ function recalcBudgetPerPerson() {
 async function loadFlights() {
   const el = document.getElementById('flight-tbody');
   if (!el) return;
-  el.innerHTML = '<tr><td colspan="6" class="ig-loading">載入中…</td></tr>';
+  el.innerHTML = '<tr><td colspan="7" class="ig-loading">載入中…</td></tr>';
   try {
     const res = await fetch(`${GAS_URL}?action=get_flights`);
     const json = await res.json();
     if (json.status === 'ok') renderFlights(json.data);
     else throw new Error();
   } catch {
-    el.innerHTML = '<tr><td colspan="6" class="ig-loading">載入失敗，請重新整理</td></tr>';
+    el.innerHTML = '<tr><td colspan="7" class="ig-loading">載入失敗，請重新整理</td></tr>';
   }
 }
 
 function renderFlights(items) {
   const tbody = document.getElementById('flight-tbody');
   if (!items || !items.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="ig-loading">尚無航班，點「＋ 新增航班」開始新增</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="ig-loading">尚無航班，點「＋ 新增航班」開始新增</td></tr>';
     return;
   }
   tbody.innerHTML = items.map(item => {
     const dirClass = item.direction === '去程' ? 'tag-outbound' : 'tag-return';
+    const noBag = item.price_no_bag || item.price || '—';
+    const hasBag = item.price_bag || '—';
+    const route = [item.depart_time, item.arrive_time].filter(Boolean).join(' → ');
     return `
       <tr data-id="${item.id}">
+        <td style="white-space:nowrap;">${escHtml(item.date || '')}</td>
         <td><span class="tag ${dirClass}">${escHtml(item.direction)}</span></td>
         <td>${escHtml(item.airline)}<br><small style="color:#aaa;">${escHtml(item.flight_no)}</small></td>
-        <td style="white-space:nowrap;">${escHtml(item.depart_time)}</td>
-        <td style="white-space:nowrap;">${escHtml(item.arrive_time)}</td>
-        <td class="price">${escHtml(item.price)}</td>
+        <td style="white-space:nowrap;">${escHtml(route)}</td>
+        <td class="price">${escHtml(noBag)}</td>
+        <td class="price">${escHtml(hasBag)}</td>
         <td><button class="item-del-btn" onclick="deleteFlightItem(${item.id})" title="刪除">✕</button></td>
       </tr>`;
   }).join('');
@@ -1727,11 +1769,13 @@ async function submitAddFlight() {
     const params = new URLSearchParams({
       action: 'add_flight',
       direction: document.getElementById('f-direction').value,
+      date: document.getElementById('f-date').value.trim(),
       airline,
       flight_no: document.getElementById('f-flight-no').value.trim(),
       depart_time: document.getElementById('f-depart').value.trim(),
       arrive_time: document.getElementById('f-arrive').value.trim(),
-      price: document.getElementById('f-price').value.trim(),
+      price_no_bag: document.getElementById('f-price-no-bag').value.trim(),
+      price_bag: document.getElementById('f-price-bag').value.trim(),
       note: document.getElementById('f-note').value.trim()
     });
     await fetch(`${GAS_URL}?${params}`);
@@ -1838,9 +1882,9 @@ async function deleteHotelInfoItem(id) {
 }
 
 // ===== Phase 5: Thread Spots =====
-function extractThreadCode(url) {
-  const m = url && url.match(/threads\.net\/@[^/]+\/post\/([^/?]+)/);
-  return m ? m[1] : null;
+function getThreadEmbedSrc(url) {
+  const m = url && url.match(/threads\.net\/((@[^/]+)\/post\/([^/?]+))/);
+  return m ? `https://www.threads.net/${m[1]}/embed/` : null;
 }
 
 async function loadThreadSpots() {
@@ -1870,11 +1914,13 @@ function renderThreadCards(spots) {
     const naverBtn = s.naverUrl
       ? `<a class="naver-link" href="${escHtml(s.naverUrl)}" target="_blank">📍</a>`
       : '<span></span>';
-    const threadEmbed = s.threadUrl ? `
+    const embedSrc = getThreadEmbedSrc(s.threadUrl);
+    const threadEmbed = embedSrc ? `
       <div class="ig-embed-wrap">
-        <blockquote class="text-post-media"
-          data-text-post-permalink="${escHtml(s.threadUrl)}"
-          style="margin:0;"></blockquote>
+        <iframe src="${embedSrc}"
+          style="border:none;width:100%;min-height:260px;"
+          loading="lazy" allowfullscreen>
+        </iframe>
       </div>` : '';
     return `
       <div class="ig-card" data-id="${s.id}">
@@ -1893,12 +1939,6 @@ function renderThreadCards(spots) {
         ${threadEmbed}
       </div>`;
   }).join('');
-  const old = document.querySelector('script[src*="threads.net/embed"]');
-  if (old) old.remove();
-  const ts = document.createElement('script');
-  ts.async = true;
-  ts.src = 'https://www.threads.net/embed/iframe.js';
-  document.body.appendChild(ts);
 }
 
 async function submitAddThreadSpot() {
@@ -2083,8 +2123,8 @@ function submitAddTimeline(day) {
 }
 
 // ===== Init =====
-document.addEventListener('DOMContentLoaded', () => {
-  loadState();
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadState();
   loadIgSpots();
   loadChecklist();
   loadBudget();
