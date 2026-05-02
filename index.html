@@ -130,15 +130,32 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC
 .weather-sub { font-size: 9.5px; color: #aaa; margin-top: 2px; }
 
 .ig-cards { padding: 8px 12px 12px; display: flex; flex-direction: column; gap: 8px; }
-.ig-card { border-radius: 10px; overflow: hidden; border: 1px solid #ececec; }
-.ig-card-photo { height: 60px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 7px 10px; }
+.ig-card { border-radius: 10px; overflow: hidden; border: 1px solid #ececec; position: relative; }
+.ig-card-photo { height: 60px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 7px 10px; position: relative; }
 .ig-photo-icon { font-size: 18px; }
-.ig-photo-hint { font-size: 9px; color: rgba(255,255,255,0.7); }
+.ig-card-del { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.3); border: none; color: white; width: 18px; height: 18px; border-radius: 50%; font-size: 9px; cursor: pointer; display: none; align-items: center; justify-content: center; line-height: 1; }
+.ig-card:hover .ig-card-del { display: flex; }
+.ig-card-del:hover { background: rgba(200,0,0,0.7); }
 .ig-card-body { padding: 7px 10px 9px; }
 .ig-card-name { font-size: 12px; font-weight: 700; color: #1a1a1a; }
 .ig-card-detail { font-size: 10.5px; color: #888; margin-top: 2px; }
 .ig-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 5px; }
 .ig-day-badge { font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 20px; color: white; }
+.ig-add-btn { display: inline-block; margin-top: 5px; background: none; border: 1px dashed #ccc; border-radius: 20px; padding: 2px 10px; font-size: 11px; color: #888; cursor: pointer; transition: all 0.2s; }
+.ig-add-btn:hover { border-color: #2d6a9f; color: #2d6a9f; }
+.ig-loading { text-align: center; padding: 20px; color: #aaa; font-size: 12px; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: white; border-radius: 16px; padding: 20px; width: 90%; max-width: 380px; }
+.modal-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+.modal-field { margin-bottom: 10px; }
+.modal-label { font-size: 11px; color: #888; margin-bottom: 4px; display: block; }
+.modal-input, .modal-select { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 7px 10px; font-size: 13px; outline: none; box-sizing: border-box; background: white; }
+.modal-input:focus, .modal-select:focus { border-color: #2d6a9f; }
+.modal-actions { display: flex; gap: 8px; margin-top: 14px; }
+.modal-cancel { flex: 1; background: #f5f5f5; border: none; border-radius: 20px; padding: 8px; font-size: 13px; cursor: pointer; }
+.modal-submit { flex: 2; background: #2d6a9f; color: white; border: none; border-radius: 20px; padding: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.modal-submit:disabled { background: #aaa; cursor: not-allowed; }
 
 ul { list-style: none; }
 ul li { margin: 3px 0; font-size: 11.5px; line-height: 1.6; color: #666; }
@@ -601,79 +618,18 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
     <!-- IG -->
     <div class="card col-1" id="card-ig">
       <div class="card-header">
-        <div class="card-header-left"><span class="card-title-text">📸 IG 收藏地點</span></div>
+        <div class="card-header-left">
+          <span class="card-title-text">📸 IG 收藏地點</span>
+          <button class="ig-add-btn" onclick="showAddModal()">＋ 新增地點</button>
+        </div>
         <div class="card-toolbar">
           <span class="drag-handle">⠿</span>
           <button class="card-delete" onclick="deleteCard('card-ig')">✕</button>
         </div>
       </div>
       <div class="card-body">
-        <div class="ig-cards">
-          <div class="ig-card">
-            <div class="ig-card-photo" style="background:linear-gradient(135deg,#1a3c5e,#378ADD);">
-              <div class="ig-photo-icon">🍖</div><div class="ig-photo-hint">📷 可換成實際照片</div>
-            </div>
-            <div class="ig-card-body">
-              <div class="ig-card-name">seokhwayeon Korean BBQ</div>
-              <div class="ig-card-detail">廣安里｜第一頓豪邁烤肉</div>
-              <div class="ig-card-footer">
-                <span class="ig-day-badge" style="background:#378ADD;">Day 1</span>
-                <a class="naver-link" href="nmap://place?lat=35.1530&lng=129.1185&name=석화연" target="_blank">📍</a>
-              </div>
-            </div>
-          </div>
-          <div class="ig-card">
-            <div class="ig-card-photo" style="background:linear-gradient(135deg,#1a5a3a,#2db87a);">
-              <div class="ig-photo-icon">🥐</div><div class="ig-photo-hint">📷 可換成實際照片</div>
-            </div>
-            <div class="ig-card-body">
-              <div class="ig-card-name">Keveren House</div>
-              <div class="ig-card-detail">海理團路｜奶油派必買伴手禮</div>
-              <div class="ig-card-footer">
-                <span class="ig-day-badge" style="background:#2db87a;">Day 2</span>
-                <a class="naver-link" href="nmap://place?lat=35.1582&lng=129.1522&name=케버렌하우스" target="_blank">📍</a>
-              </div>
-            </div>
-          </div>
-          <div class="ig-card">
-            <div class="ig-card-photo" style="background:linear-gradient(135deg,#0d6040,#1a9e6a);">
-              <div class="ig-photo-icon">☕</div><div class="ig-photo-hint">📷 可換成實際照片</div>
-            </div>
-            <div class="ig-card-body">
-              <div class="ig-card-name">DUPLIT</div>
-              <div class="ig-card-detail">海理團路｜affogato 必試</div>
-              <div class="ig-card-footer">
-                <span class="ig-day-badge" style="background:#2db87a;">Day 2</span>
-                <a class="naver-link" href="nmap://place?lat=35.1580&lng=129.1518&name=듀플릿" target="_blank">📍</a>
-              </div>
-            </div>
-          </div>
-          <div class="ig-card">
-            <div class="ig-card-photo" style="background:linear-gradient(135deg,#5030a0,#9966e0);">
-              <div class="ig-photo-icon">🍹</div><div class="ig-photo-hint">📷 可換成實際照片</div>
-            </div>
-            <div class="ig-card-body">
-              <div class="ig-card-name">lua&tigre</div>
-              <div class="ig-card-detail">西面｜調酒氛圍酒吧</div>
-              <div class="ig-card-footer">
-                <span class="ig-day-badge" style="background:#9966e0;">Day 3</span>
-                <a class="naver-link" href="nmap://place?lat=35.1574&lng=129.0590&name=루아앤타이거" target="_blank">📍</a>
-              </div>
-            </div>
-          </div>
-          <div class="ig-card">
-            <div class="ig-card-photo" style="background:linear-gradient(135deg,#3d2070,#7040c0);">
-              <div class="ig-photo-icon">🍶</div><div class="ig-photo-hint">📷 可換成實際照片</div>
-            </div>
-            <div class="ig-card-body">
-              <div class="ig-card-name">Sulyamyeok Seomyeon</div>
-              <div class="ig-card-detail">西面｜購物途中順路探訪</div>
-              <div class="ig-card-footer">
-                <span class="ig-day-badge" style="background:#7040c0;">Day 3</span>
-                <a class="naver-link" href="nmap://place?lat=35.157941&lng=129.0626363&name=설야멱" target="_blank">📍</a>
-              </div>
-            </div>
-          </div>
+        <div class="ig-cards" id="ig-cards-container">
+          <div class="ig-loading">載入中…</div>
         </div>
       </div>
     </div>
@@ -750,6 +706,41 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
 
 <footer>釜山四天三夜行程規劃｜2025年9月出發版</footer>
 
+<div class="modal-overlay" id="ig-modal">
+  <div class="modal">
+    <div class="modal-title">📍 新增 IG 地點</div>
+    <div class="modal-field">
+      <label class="modal-label">地點名稱 *</label>
+      <input class="modal-input" id="f-name" placeholder="例：Keveren House" />
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">描述（地區｜特色）*</label>
+      <input class="modal-input" id="f-detail" placeholder="例：海理團路｜奶油派必買" />
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">天數 *</label>
+      <select class="modal-select" id="f-day">
+        <option value="1">Day 1</option>
+        <option value="2">Day 2</option>
+        <option value="3">Day 3</option>
+        <option value="4">Day 4</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">表情符號</label>
+      <input class="modal-input" id="f-icon" placeholder="📍" maxlength="2" />
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Naver 地圖連結（選填）</label>
+      <input class="modal-input" id="f-naver" placeholder="nmap://place?lat=…" />
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="hideModal()">取消</button>
+      <button class="modal-submit" id="submit-btn" onclick="submitAddSpot()">新增</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script>
 let sortable = null;
@@ -813,7 +804,112 @@ function loadState() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', loadState);
+document.addEventListener('DOMContentLoaded', () => { loadState(); loadIgSpots(); });
+
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyCHxzRostMcu7OFiAJYqb0Q188qF_wYDMoODfE9os5NZ9INQTD_w4z-UXmS-78Q8B4Gg/exec';
+
+const DAY_COLORS = {
+  1: { c1: '#1a3c5e', c2: '#378ADD', badge: '#378ADD' },
+  2: { c1: '#1a5a3a', c2: '#2db87a', badge: '#2db87a' },
+  3: { c1: '#5030a0', c2: '#9966e0', badge: '#9966e0' },
+  4: { c1: '#8b2000', c2: '#e05252', badge: '#e05252' }
+};
+
+function renderIgCards(spots) {
+  const container = document.getElementById('ig-cards-container');
+  if (!spots || !spots.length) {
+    container.innerHTML = '<div class="ig-loading">尚無地點，點「＋ 新增地點」開始新增</div>';
+    return;
+  }
+  container.innerHTML = spots.map(s => {
+    const day = Number(s.day) || 1;
+    const col = DAY_COLORS[day] || DAY_COLORS[1];
+    const c1 = s.color1 || col.c1;
+    const c2 = s.color2 || col.c2;
+    const naverBtn = s.naverUrl
+      ? `<a class="naver-link" href="${s.naverUrl}" target="_blank">📍</a>`
+      : '<span></span>';
+    return `
+      <div class="ig-card" data-id="${s.id}">
+        <div class="ig-card-photo" style="background:linear-gradient(135deg,${c1},${c2});">
+          <div class="ig-photo-icon">${s.icon || '📍'}</div>
+          <button class="ig-card-del" onclick="deleteIgSpot(${s.id})" title="刪除">✕</button>
+        </div>
+        <div class="ig-card-body">
+          <div class="ig-card-name">${s.name}</div>
+          <div class="ig-card-detail">${s.detail}</div>
+          <div class="ig-card-footer">
+            <span class="ig-day-badge" style="background:${col.badge};">Day ${day}</span>
+            ${naverBtn}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function loadIgSpots() {
+  try {
+    const res = await fetch(`${GAS_URL}?action=get`);
+    const json = await res.json();
+    if (json.status === 'ok') renderIgCards(json.data);
+    else throw new Error();
+  } catch {
+    const c = document.getElementById('ig-cards-container');
+    if (c) c.innerHTML = '<div class="ig-loading">載入失敗，請重新整理</div>';
+  }
+}
+
+function showAddModal() {
+  document.getElementById('ig-modal').classList.add('open');
+  document.getElementById('f-name').focus();
+}
+
+function hideModal() {
+  document.getElementById('ig-modal').classList.remove('open');
+  ['f-name', 'f-detail', 'f-icon', 'f-naver'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-day').value = '1';
+}
+
+async function submitAddSpot() {
+  const name = document.getElementById('f-name').value.trim();
+  const detail = document.getElementById('f-detail').value.trim();
+  const day = document.getElementById('f-day').value;
+  const icon = document.getElementById('f-icon').value.trim() || '📍';
+  const naverUrl = document.getElementById('f-naver').value.trim();
+  if (!name || !detail) { alert('請填寫地點名稱和描述'); return; }
+
+  const col = DAY_COLORS[Number(day)] || DAY_COLORS[1];
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = '新增中…';
+  btn.disabled = true;
+
+  try {
+    const params = new URLSearchParams({
+      action: 'add', name, detail, day, icon,
+      color1: col.c1, color2: col.c2, naverUrl
+    });
+    await fetch(`${GAS_URL}?${params}`);
+    hideModal();
+    await loadIgSpots();
+  } catch {
+    alert('新增失敗，請稍後再試');
+  } finally {
+    btn.textContent = '新增';
+    btn.disabled = false;
+  }
+}
+
+async function deleteIgSpot(id) {
+  if (!confirm('確定刪除這個地點？')) return;
+  try {
+    await fetch(`${GAS_URL}?action=delete&id=${id}`);
+    await loadIgSpots();
+  } catch {
+    alert('刪除失敗，請稍後再試');
+  }
+}
 </script>
 </body>
 </html>
