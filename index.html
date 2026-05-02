@@ -187,6 +187,27 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC
 .modal-tag-label { display: flex; align-items: center; gap: 3px; font-size: 11px; color: #555; cursor: pointer; padding: 3px 8px; border-radius: 20px; background: #f5f5f5; }
 .modal-tag-label input { cursor: pointer; margin: 0; width: auto; }
 .modal-tag-label:has(input:checked) { background: #e8f4fd; color: #1565a8; }
+textarea.modal-input { font-family: inherit; resize: vertical; }
+
+/* Phase 1: bar edit buttons */
+.bar-edit-btn { display: none; margin-top: 5px; }
+.edit-mode [data-fixed] .bar-edit-btn { display: inline-block; }
+
+/* Phase 3: flight direction tags */
+.tag-outbound { background: #e8f4fd; color: #1565a8; }
+.tag-return { background: #fff3e0; color: #e65100; }
+
+/* Phase 4: hotel info card */
+.hotel-info-body { padding: 0 14px 14px; }
+.hotel-info-group { padding-top: 4px; }
+.hotel-info-group-header { font-size: 10px; font-weight: 700; color: white; padding: 2px 8px; border-radius: 20px; display: inline-block; margin: 8px 0 4px; }
+.hotel-info-item { display: flex; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f5f5f5; align-items: flex-start; position: relative; }
+.hotel-info-item:last-child { border-bottom: none; }
+.hotel-info-name { font-size: 12px; font-weight: 600; color: #1a1a1a; }
+.hotel-info-meta { font-size: 10.5px; color: #888; margin-top: 2px; line-height: 1.5; }
+
+/* Phase 5: thread badge */
+.thread-source-badge { font-size: 9px; padding: 1px 6px; border-radius: 10px; background: #1a1a1a; color: #fff; display: inline-block; margin-top: 3px; }
 
 ul { list-style: none; }
 ul li { margin: 3px 0; font-size: 11.5px; line-height: 1.6; color: #666; }
@@ -252,16 +273,20 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
         </div>
       </div>
       <div class="card-body">
-        <div class="hotel-bar">
+        <div class="hotel-bar" id="hotel-bar-d1">
           <div class="hotel-icon">🏨</div>
           <div>
             <div class="hotel-name">Hotel Aqua Palace 或 G21 Hotel（廣安里）</div>
             <div class="hotel-detail">廣安大橋第一排海景，汗蒸幕就在飯店內｜參考價 TWD 1,200–2,800 /晚</div>
+            <button class="ig-add-btn bar-edit-btn" onclick="openModal('hotel-bar', 1)">✏️ 編輯住宿</button>
           </div>
         </div>
-        <div class="car-bar">
+        <div class="car-bar" id="car-bar-d1">
           <div>🚐</div>
-          <div class="car-bar-text"><strong>交通：包車從金海機場接機</strong><br>司機在出關口舉牌等候，行李全部上車，直達廣安里飯店</div>
+          <div>
+            <div class="car-bar-text"><strong>交通：包車從金海機場接機</strong><br>司機在出關口舉牌等候，行李全部上車，直達廣安里飯店</div>
+            <button class="ig-add-btn bar-edit-btn" onclick="openModal('car-bar', 1)">✏️ 編輯交通</button>
+          </div>
         </div>
         <div class="timeline" id="timeline-d1">
           <div class="tl-item">
@@ -328,16 +353,20 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
         </div>
       </div>
       <div class="card-body">
-        <div class="hotel-bar">
+        <div class="hotel-bar" id="hotel-bar-d2">
           <div class="hotel-icon">🏨</div>
           <div>
             <div class="hotel-name">Browndot Hotel 或 Ramada Encore（海雲台）</div>
             <div class="hotel-detail">距海水浴場步行 5 分鐘｜參考價 TWD 2,000–4,000 /晚</div>
+            <button class="ig-add-btn bar-edit-btn" onclick="openModal('hotel-bar', 2)">✏️ 編輯住宿</button>
           </div>
         </div>
-        <div class="car-bar">
+        <div class="car-bar" id="car-bar-d2">
           <div>🚐</div>
-          <div class="car-bar-text"><strong>交通：包車全天接送</strong><br>廣安里→海雲台各景點→換旅館，行李放車上不用搬</div>
+          <div>
+            <div class="car-bar-text"><strong>交通：包車全天接送</strong><br>廣安里→海雲台各景點→換旅館，行李放車上不用搬</div>
+            <button class="ig-add-btn bar-edit-btn" onclick="openModal('car-bar', 2)">✏️ 編輯交通</button>
+          </div>
         </div>
         <div class="timeline" id="timeline-d2">
           <div class="tl-item">
@@ -422,16 +451,20 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
         </div>
       </div>
       <div class="card-body">
-        <div class="hotel-bar">
+        <div class="hotel-bar" id="hotel-bar-d3">
           <div class="hotel-icon">🏨</div>
           <div>
             <div class="hotel-name">Arban Hotel 或 釜山商務飯店（西面）</div>
             <div class="hotel-detail">地鐵 1+2 號線交叉站，樂天百貨旁｜參考價 TWD 1,000–2,200 /晚</div>
+            <button class="ig-add-btn bar-edit-btn" onclick="openModal('hotel-bar', 3)">✏️ 編輯住宿</button>
           </div>
         </div>
-        <div class="car-bar">
+        <div class="car-bar" id="car-bar-d3">
           <div>🚐</div>
-          <div class="car-bar-text"><strong>交通：包車全天（海雲台→機張→西面）</strong><br>⚠️ 機張屬郊區，訂車時確認是否加價</div>
+          <div>
+            <div class="car-bar-text"><strong>交通：包車全天（海雲台→機張→西面）</strong><br>⚠️ 機張屬郊區，訂車時確認是否加價</div>
+            <button class="ig-add-btn bar-edit-btn" onclick="openModal('car-bar', 3)">✏️ 編輯交通</button>
+          </div>
         </div>
         <div class="tip-box">💡 建議先玩 Skyline Luge 再進樂天世界，步行 5 分鐘銜接！</div>
         <div class="timeline" id="timeline-d3">
@@ -517,9 +550,12 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
         </div>
       </div>
       <div class="card-body">
-        <div class="car-bar">
+        <div class="car-bar" id="car-bar-d4">
           <div>🚐</div>
-          <div class="car-bar-text"><strong>交通：包車全天送機</strong><br>飯店→南浦洞→扎嘎其→金海機場，行李全丟車上！<br>✈️ 提前 2 小時到機場 / 預留 40 分鐘車程 / 記得退稅！</div>
+          <div>
+            <div class="car-bar-text"><strong>交通：包車全天送機</strong><br>飯店→南浦洞→扎嘎其→金海機場，行李全丟車上！<br>✈️ 提前 2 小時到機場 / 預留 40 分鐘車程 / 記得退稅！</div>
+            <button class="ig-add-btn bar-edit-btn" onclick="openModal('car-bar', 4)">✏️ 編輯交通</button>
+          </div>
         </div>
         <div class="timeline" id="timeline-d4">
           <div class="tl-item">
@@ -648,7 +684,16 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
     <div class="card col-2" id="card-budget">
       <div class="card-header">
         <div class="card-header-left">
-          <span class="card-title-text">💰 費用試算（9月出發，12人均攤）</span>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span class="card-title-text">💰 費用試算</span>
+            <select id="budget-headcount" class="modal-select" style="width:auto;padding:3px 8px;font-size:11px;" onchange="setHeadcount(this.value)" title="出發人數">
+              <option value="9">9人</option>
+              <option value="10">10人</option>
+              <option value="11">11人</option>
+              <option value="12" selected>12人</option>
+              <option value="13">13人</option>
+            </select>
+          </div>
           <button class="ig-add-btn" onclick="openModal('budget')">＋ 新增費用</button>
         </div>
         <div class="card-toolbar">
@@ -675,11 +720,13 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
               <td class="price" id="budget-total-text">—</td>
               <td></td>
             </tr>
+            <tr id="budget-per-person-row" class="budget-total" style="display:none;background:#e8f4fd;">
+              <td style="color:#1565a8;">每人分攤（依人數）</td>
+              <td class="price" id="budget-per-person-text" style="color:#1565a8;">—</td>
+              <td></td>
+            </tr>
           </tfoot>
         </table>
-        <div style="margin-top:10px; font-size:11px; color:#888; line-height:1.8;">
-          <strong>包車費依人數均攤：</strong><br>9人→NT$3,000–3,333 ／ 10人→NT$2,700–3,000 ／ 11人→NT$2,455–2,727 ／ 12人→NT$2,250–2,500 ／ 13人→NT$2,077–2,308
-        </div>
       </div>
     </div>
 
@@ -724,6 +771,78 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
       </div>
     </div>
 
+    <!-- Flight -->
+    <div class="card col-2" id="card-flight">
+      <div class="card-header">
+        <div class="card-header-left">
+          <span class="card-title-text">✈️ 機票資訊</span>
+          <button class="ig-add-btn" onclick="openModal('flight')">＋ 新增航班</button>
+        </div>
+        <div class="card-toolbar">
+          <button class="card-resize" onclick="resizeCard('card-flight')" title="調整欄寬">⊞</button>
+          <span class="drag-handle">⠿</span>
+          <button class="card-delete" onclick="deleteCard('card-flight')">✕</button>
+        </div>
+      </div>
+      <div class="card-body" style="padding:0 14px 14px;">
+        <table class="budget-table" style="margin-top:12px;">
+          <thead>
+            <tr>
+              <th>方向</th>
+              <th>航空 / 班次</th>
+              <th>出發</th>
+              <th>抵達</th>
+              <th style="text-align:right;">票價 /人</th>
+              <th style="width:24px;"></th>
+            </tr>
+          </thead>
+          <tbody id="flight-tbody">
+            <tr><td colspan="6" class="ig-loading">載入中…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Hotel Info -->
+    <div class="card col-2" id="card-hotel-info">
+      <div class="card-header">
+        <div class="card-header-left">
+          <span class="card-title-text">🏨 住宿資訊</span>
+          <button class="ig-add-btn" onclick="openModal('hotel-info')">＋ 新增住宿</button>
+        </div>
+        <div class="card-toolbar">
+          <button class="card-resize" onclick="resizeCard('card-hotel-info')" title="調整欄寬">⊞</button>
+          <span class="drag-handle">⠿</span>
+          <button class="card-delete" onclick="deleteCard('card-hotel-info')">✕</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="hotel-info-body" id="hotel-info-body">
+          <div class="ig-loading">載入中…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thread -->
+    <div class="card col-1" id="card-thread">
+      <div class="card-header">
+        <div class="card-header-left">
+          <span class="card-title-text">🧵 Thread 收藏地點</span>
+          <button class="ig-add-btn" onclick="openModal('thread')">＋ 新增地點</button>
+        </div>
+        <div class="card-toolbar">
+          <button class="card-resize" onclick="resizeCard('card-thread')" title="調整欄寬">⊞</button>
+          <span class="drag-handle">⠿</span>
+          <button class="card-delete" onclick="deleteCard('card-thread')">✕</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="ig-cards" id="thread-cards-container">
+          <div class="ig-loading">載入中…</div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /sortable-area -->
 </div><!-- /dashboard -->
 
@@ -743,6 +862,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script async src="https://www.instagram.com/embed.js"></script>
+<script async src="https://www.threads.net/embed/iframe.js"></script>
 <script>
 let sortable = null;
 let isEditMode = false;
@@ -809,6 +929,21 @@ function loadState() {
   });
   [1,2,3,4].forEach(day => renderTimeline(day, getTimelineItems(day)));
 }
+
+// ===== Hotel / Car Bar Seed =====
+const HOTEL_CAR_SEED = {
+  hotel: {
+    1: { hotel_name: 'Hotel Aqua Palace 或 G21 Hotel（廣安里）', hotel_detail: '廣安大橋第一排海景，汗蒸幕就在飯店內｜參考價 TWD 1,200–2,800 /晚' },
+    2: { hotel_name: 'Browndot Hotel 或 Ramada Encore（海雲台）', hotel_detail: '距海水浴場步行 5 分鐘｜參考價 TWD 2,000–4,000 /晚' },
+    3: { hotel_name: 'Arban Hotel 或 釜山商務飯店（西面）', hotel_detail: '地鐵 1+2 號線交叉站，樂天百貨旁｜參考價 TWD 1,000–2,200 /晚' }
+  },
+  car: {
+    1: { car_title: '交通：包車從金海機場接機', car_desc: '司機在出關口舉牌等候，行李全部上車，直達廣安里飯店' },
+    2: { car_title: '交通：包車全天接送', car_desc: '廣安里→海雲台各景點→換旅館，行李放車上不用搬' },
+    3: { car_title: '交通：包車全天（海雲台→機張→西面）', car_desc: '⚠️ 機張屬郊區，訂車時確認是否加價' },
+    4: { car_title: '交通：包車全天送機', car_desc: '飯店→南浦洞→扎嘎其→金海機場，行李全丟車上！\n✈️ 提前 2 小時到機場 / 預留 40 分鐘車程 / 記得退稅！' }
+  }
+};
 
 // ===== Modal =====
 const MODAL_CONFIGS = {
@@ -926,6 +1061,147 @@ const MODAL_CONFIGS = {
           <label class="modal-tag-label"><input type="checkbox" value="tag-note" data-label="注意事項"> 📌 注意</label>
         </div>
       </div>`
+  },
+  'hotel-bar': {
+    title: day => `🏨 D${day} 編輯住宿資訊`,
+    submitText: '儲存',
+    fields: day => {
+      const d = window._hotelCarData?.[`hotel-${day}`] || HOTEL_CAR_SEED.hotel[day] || {};
+      return `
+      <div class="modal-field">
+        <label class="modal-label">住宿名稱 *</label>
+        <input class="modal-input" id="f-hotel-name" value="${escHtml(d.hotel_name || '')}" placeholder="例：Hotel Aqua Palace" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">說明（地區｜特色｜價格）</label>
+        <input class="modal-input" id="f-hotel-detail" value="${escHtml(d.hotel_detail || '')}" placeholder="例：廣安大橋海景｜NT$1,200–2,800/晚" />
+      </div>`;
+    }
+  },
+  'car-bar': {
+    title: day => `🚐 D${day} 編輯交通資訊`,
+    submitText: '儲存',
+    fields: day => {
+      const d = window._hotelCarData?.[`car-${day}`] || HOTEL_CAR_SEED.car[day] || {};
+      return `
+      <div class="modal-field">
+        <label class="modal-label">交通標題 *</label>
+        <input class="modal-input" id="f-car-title" value="${escHtml(d.car_title || '')}" placeholder="例：交通：包車從金海機場接機" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">交通說明</label>
+        <textarea class="modal-input" id="f-car-desc" style="height:60px;" placeholder="例：司機在出關口舉牌等候">${escHtml(d.car_desc || '')}</textarea>
+      </div>`;
+    }
+  },
+  flight: {
+    title: '✈️ 新增航班資訊',
+    fields: `
+      <div class="modal-field">
+        <label class="modal-label">方向 *</label>
+        <select class="modal-select" id="f-direction">
+          <option value="去程">去程（台灣→釜山）</option>
+          <option value="回程">回程（釜山→台灣）</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">航空公司 *</label>
+        <input class="modal-input" id="f-airline" placeholder="例：台灣虎航" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">班次</label>
+        <input class="modal-input" id="f-flight-no" placeholder="例：IT213" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">出發時間</label>
+        <input class="modal-input" id="f-depart" placeholder="例：09:30 TPE" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">抵達時間</label>
+        <input class="modal-input" id="f-arrive" placeholder="例：13:15 PUS" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">參考票價</label>
+        <input class="modal-input" id="f-price" placeholder="例：NT$3,500/人" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">備注（選填）</label>
+        <input class="modal-input" id="f-note" placeholder="例：含行李 20kg" />
+      </div>`
+  },
+  'hotel-info': {
+    title: '🏨 新增住宿資訊',
+    fields: `
+      <div class="modal-field">
+        <label class="modal-label">天數 *</label>
+        <select class="modal-select" id="f-day">
+          <option value="1">Day 1</option>
+          <option value="2">Day 2</option>
+          <option value="3">Day 3</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">飯店名稱 *</label>
+        <input class="modal-input" id="f-hotel-name" placeholder="例：Hotel Aqua Palace" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">地址（選填）</label>
+        <input class="modal-input" id="f-address" placeholder="例：釜山廣域市水營區廣安海邊路" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Check-in 時間（選填）</label>
+        <input class="modal-input" id="f-checkin" placeholder="例：15:00" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Check-out 時間（選填）</label>
+        <input class="modal-input" id="f-checkout" placeholder="例：11:00" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">/晚參考價（NT$）（選填）</label>
+        <input class="modal-input" id="f-price-per-night" placeholder="例：1500" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Naver 地圖連結（選填）</label>
+        <input class="modal-input" id="f-naver" placeholder="nmap://place?lat=…" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">備注（選填）</label>
+        <input class="modal-input" id="f-note" placeholder="例：含早餐" />
+      </div>`
+  },
+  thread: {
+    title: '🧵 新增 Thread 地點',
+    fields: `
+      <div class="modal-field">
+        <label class="modal-label">地點名稱 *</label>
+        <input class="modal-input" id="f-name" placeholder="例：Keveren House" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">描述（地區｜特色）*</label>
+        <input class="modal-input" id="f-detail" placeholder="例：海理團路｜奶油派必買" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">天數</label>
+        <select class="modal-select" id="f-day">
+          <option value="0">不指定</option>
+          <option value="1">Day 1</option>
+          <option value="2">Day 2</option>
+          <option value="3">Day 3</option>
+          <option value="4">Day 4</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">表情符號</label>
+        <input class="modal-input" id="f-icon" placeholder="🧵" maxlength="2" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Naver 地圖連結（選填）</label>
+        <input class="modal-input" id="f-naver" placeholder="nmap://place?lat=…" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Thread 貼文連結（選填）</label>
+        <input class="modal-input" id="f-threadurl" placeholder="https://www.threads.net/@username/post/…" />
+      </div>`
   }
 };
 
@@ -938,10 +1214,11 @@ function openModal(mode, extra) {
   const fields = typeof cfg.fields === 'function' ? cfg.fields(extra) : cfg.fields;
   document.getElementById('modal-title').textContent = title;
   document.getElementById('modal-fields').innerHTML = fields;
-  document.getElementById('modal-submit-btn').textContent = '新增';
-  document.getElementById('modal-submit-btn').disabled = false;
+  const btn = document.getElementById('modal-submit-btn');
+  btn.textContent = cfg.submitText || '新增';
+  btn.disabled = false;
   document.getElementById('modal').classList.add('open');
-  const first = document.querySelector('#modal-fields input, #modal-fields select');
+  const first = document.querySelector('#modal-fields input, #modal-fields select, #modal-fields textarea');
   if (first) first.focus();
 }
 
@@ -956,7 +1233,12 @@ function submitModal() {
     checklist: submitAddChecklist,
     budget: submitAddBudget,
     transport: submitAddTransport,
-    timeline: () => submitAddTimeline(currentModalExtra)
+    timeline: () => submitAddTimeline(currentModalExtra),
+    'hotel-bar': submitHotelBar,
+    'car-bar': submitCarBar,
+    flight: submitAddFlight,
+    'hotel-info': submitAddHotelInfo,
+    thread: submitAddThreadSpot
   };
   map[currentModalMode]?.();
 }
@@ -1186,6 +1468,7 @@ function renderBudget(items) {
   if (!items || !items.length) {
     tbody.innerHTML = '<tr><td colspan="3" class="ig-loading">尚無費用項目</td></tr>';
     document.getElementById('budget-total-text').textContent = '—';
+    document.getElementById('budget-per-person-row').style.display = 'none';
     return;
   }
   let totalMin = 0, totalMax = 0;
@@ -1201,6 +1484,9 @@ function renderBudget(items) {
       </tr>`;
   }).join('');
   document.getElementById('budget-total-text').textContent = `NT$ ${totalMin.toLocaleString()}–${totalMax.toLocaleString()}`;
+  window._budgetTotal = { min: totalMin, max: totalMax };
+  document.getElementById('budget-per-person-row').style.display = '';
+  recalcBudgetPerPerson();
 }
 
 async function submitAddBudget() {
@@ -1286,6 +1572,361 @@ async function deleteTransportItem(id) {
   } catch {
     alert('刪除失敗，請稍後再試');
   }
+}
+
+// ===== Phase 1: Hotel / Car Bars =====
+window._hotelCarData = {};
+
+async function loadHotelCarBars() {
+  try {
+    const [hRes, cRes] = await Promise.all([
+      fetch(`${GAS_URL}?action=get_hotel_bar`),
+      fetch(`${GAS_URL}?action=get_car_bar`)
+    ]);
+    const hJson = await hRes.json();
+    const cJson = await cRes.json();
+    if (hJson.status === 'ok') hJson.data.forEach(d => {
+      window._hotelCarData[`hotel-${d.day}`] = d;
+      renderHotelBar(Number(d.day), d);
+    });
+    if (cJson.status === 'ok') cJson.data.forEach(d => {
+      window._hotelCarData[`car-${d.day}`] = d;
+      renderCarBar(Number(d.day), d);
+    });
+  } catch { /* keep static defaults */ }
+}
+
+function renderHotelBar(day, data) {
+  const bar = document.getElementById(`hotel-bar-d${day}`);
+  if (!bar || !data) return;
+  const nameEl = bar.querySelector('.hotel-name');
+  const detailEl = bar.querySelector('.hotel-detail');
+  if (nameEl && data.hotel_name) nameEl.textContent = data.hotel_name;
+  if (detailEl && data.hotel_detail) detailEl.textContent = data.hotel_detail;
+}
+
+function renderCarBar(day, data) {
+  const bar = document.getElementById(`car-bar-d${day}`);
+  if (!bar || !data) return;
+  const textEl = bar.querySelector('.car-bar-text');
+  if (!textEl) return;
+  const title = escHtml(data.car_title || '');
+  const desc = data.car_desc ? '<br>' + escHtml(data.car_desc).replace(/\n/g, '<br>') : '';
+  textEl.innerHTML = `<strong>${title}</strong>${desc}`;
+}
+
+async function submitHotelBar() {
+  const day = currentModalExtra;
+  const hotel_name = document.getElementById('f-hotel-name').value.trim();
+  const hotel_detail = document.getElementById('f-hotel-detail').value.trim();
+  if (!hotel_name) { alert('請填寫住宿名稱'); return; }
+  const btn = document.getElementById('modal-submit-btn');
+  btn.textContent = '儲存中…'; btn.disabled = true;
+  try {
+    const params = new URLSearchParams({ action: 'set_hotel_bar', day, hotel_name, hotel_detail });
+    await fetch(`${GAS_URL}?${params}`);
+    window._hotelCarData[`hotel-${day}`] = { day, hotel_name, hotel_detail };
+    renderHotelBar(day, { hotel_name, hotel_detail });
+    closeModal();
+  } catch {
+    alert('儲存失敗，請稍後再試');
+    btn.textContent = '儲存'; btn.disabled = false;
+  }
+}
+
+async function submitCarBar() {
+  const day = currentModalExtra;
+  const car_title = document.getElementById('f-car-title').value.trim();
+  const car_desc = document.getElementById('f-car-desc').value.trim();
+  if (!car_title) { alert('請填寫交通標題'); return; }
+  const btn = document.getElementById('modal-submit-btn');
+  btn.textContent = '儲存中…'; btn.disabled = true;
+  try {
+    const params = new URLSearchParams({ action: 'set_car_bar', day, car_title, car_desc });
+    await fetch(`${GAS_URL}?${params}`);
+    window._hotelCarData[`car-${day}`] = { day, car_title, car_desc };
+    renderCarBar(day, { car_title, car_desc });
+    closeModal();
+  } catch {
+    alert('儲存失敗，請稍後再試');
+    btn.textContent = '儲存'; btn.disabled = false;
+  }
+}
+
+// ===== Phase 2: Budget Headcount =====
+window._budgetTotal = { min: 0, max: 0 };
+
+async function loadHeadcount() {
+  try {
+    const res = await fetch(`${GAS_URL}?action=get_headcount`);
+    const json = await res.json();
+    if (json.status === 'ok') {
+      const val = Number(json.data);
+      if (val >= 9 && val <= 13) {
+        const sel = document.getElementById('budget-headcount');
+        if (sel) sel.value = val;
+      }
+    }
+  } catch { /* keep default */ }
+}
+
+async function setHeadcount(val) {
+  fetch(`${GAS_URL}?action=set_headcount&value=${val}`); // fire and forget
+  recalcBudgetPerPerson();
+}
+
+function recalcBudgetPerPerson() {
+  const headcount = Number(document.getElementById('budget-headcount')?.value) || 12;
+  const { min, max } = window._budgetTotal || { min: 0, max: 0 };
+  if (!min && !max) return;
+  const text = document.getElementById('budget-per-person-text');
+  if (text) text.textContent = `NT$ ${Math.round(min / headcount).toLocaleString()}–${Math.round(max / headcount).toLocaleString()}`;
+}
+
+// ===== Phase 3: Flights =====
+async function loadFlights() {
+  const el = document.getElementById('flight-tbody');
+  if (!el) return;
+  el.innerHTML = '<tr><td colspan="6" class="ig-loading">載入中…</td></tr>';
+  try {
+    const res = await fetch(`${GAS_URL}?action=get_flights`);
+    const json = await res.json();
+    if (json.status === 'ok') renderFlights(json.data);
+    else throw new Error();
+  } catch {
+    el.innerHTML = '<tr><td colspan="6" class="ig-loading">載入失敗，請重新整理</td></tr>';
+  }
+}
+
+function renderFlights(items) {
+  const tbody = document.getElementById('flight-tbody');
+  if (!items || !items.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="ig-loading">尚無航班，點「＋ 新增航班」開始新增</td></tr>';
+    return;
+  }
+  tbody.innerHTML = items.map(item => {
+    const dirClass = item.direction === '去程' ? 'tag-outbound' : 'tag-return';
+    return `
+      <tr data-id="${item.id}">
+        <td><span class="tag ${dirClass}">${escHtml(item.direction)}</span></td>
+        <td>${escHtml(item.airline)}<br><small style="color:#aaa;">${escHtml(item.flight_no)}</small></td>
+        <td style="white-space:nowrap;">${escHtml(item.depart_time)}</td>
+        <td style="white-space:nowrap;">${escHtml(item.arrive_time)}</td>
+        <td class="price">${escHtml(item.price)}</td>
+        <td><button class="item-del-btn" onclick="deleteFlightItem(${item.id})" title="刪除">✕</button></td>
+      </tr>`;
+  }).join('');
+}
+
+async function submitAddFlight() {
+  const airline = document.getElementById('f-airline').value.trim();
+  if (!airline) { alert('請填寫航空公司'); return; }
+  const btn = document.getElementById('modal-submit-btn');
+  btn.textContent = '新增中…'; btn.disabled = true;
+  try {
+    const params = new URLSearchParams({
+      action: 'add_flight',
+      direction: document.getElementById('f-direction').value,
+      airline,
+      flight_no: document.getElementById('f-flight-no').value.trim(),
+      depart_time: document.getElementById('f-depart').value.trim(),
+      arrive_time: document.getElementById('f-arrive').value.trim(),
+      price: document.getElementById('f-price').value.trim(),
+      note: document.getElementById('f-note').value.trim()
+    });
+    await fetch(`${GAS_URL}?${params}`);
+    closeModal();
+    await loadFlights();
+  } catch {
+    alert('新增失敗，請稍後再試');
+    btn.textContent = '新增'; btn.disabled = false;
+  }
+}
+
+async function deleteFlightItem(id) {
+  if (!confirm('確定刪除這筆航班？')) return;
+  try {
+    await fetch(`${GAS_URL}?action=delete_flight&id=${id}`);
+    await loadFlights();
+  } catch { alert('刪除失敗，請稍後再試'); }
+}
+
+// ===== Phase 4: Hotels Info =====
+async function loadHotelsInfo() {
+  const el = document.getElementById('hotel-info-body');
+  if (!el) return;
+  el.innerHTML = '<div class="ig-loading">載入中…</div>';
+  try {
+    const res = await fetch(`${GAS_URL}?action=get_hotels_info`);
+    const json = await res.json();
+    if (json.status === 'ok') renderHotelsInfo(json.data);
+    else throw new Error();
+  } catch {
+    el.innerHTML = '<div class="ig-loading">載入失敗，請重新整理</div>';
+  }
+}
+
+function renderHotelsInfo(items) {
+  const el = document.getElementById('hotel-info-body');
+  if (!items || !items.length) {
+    el.innerHTML = '<div class="ig-loading">尚無住宿資訊，點「＋ 新增住宿」開始新增</div>';
+    return;
+  }
+  const byDay = {};
+  items.forEach(item => { const d = Number(item.day) || 1; (byDay[d] = byDay[d] || []).push(item); });
+  el.innerHTML = [1, 2, 3].filter(d => byDay[d]).map(d => {
+    const col = DAY_COLORS[d];
+    const rows = byDay[d].map(item => {
+      const meta = [
+        item.address      ? `📍 ${escHtml(item.address)}` : '',
+        item.checkin      ? `⏰ Check-in: ${escHtml(item.checkin)}` : '',
+        item.checkout     ? `🚪 Check-out: ${escHtml(item.checkout)}` : '',
+        item.price_per_night ? `💰 NT$ ${escHtml(String(item.price_per_night))} /晚` : '',
+        item.note         ? escHtml(item.note) : ''
+      ].filter(Boolean).join(' · ');
+      const naverBtn = item.naverUrl
+        ? ` <a class="naver-link" href="${escHtml(item.naverUrl)}" target="_blank">📍</a>` : '';
+      return `
+        <div class="hotel-info-item" data-id="${item.id}">
+          <div style="flex:1;">
+            <div class="hotel-info-name">${escHtml(item.hotel_name)}${naverBtn}</div>
+            ${meta ? `<div class="hotel-info-meta">${meta}</div>` : ''}
+          </div>
+          <button class="item-del-btn" onclick="deleteHotelInfoItem(${item.id})" title="刪除">✕</button>
+        </div>`;
+    }).join('');
+    return `
+      <div class="hotel-info-group">
+        <span class="hotel-info-group-header" style="background:${col.badge};">Day ${d}</span>
+        ${rows}
+      </div>`;
+  }).join('');
+}
+
+async function submitAddHotelInfo() {
+  const hotel_name = document.getElementById('f-hotel-name').value.trim();
+  if (!hotel_name) { alert('請填寫飯店名稱'); return; }
+  const btn = document.getElementById('modal-submit-btn');
+  btn.textContent = '新增中…'; btn.disabled = true;
+  try {
+    const params = new URLSearchParams({
+      action: 'add_hotel_info',
+      day: document.getElementById('f-day').value,
+      hotel_name,
+      address: document.getElementById('f-address').value.trim(),
+      checkin: document.getElementById('f-checkin').value.trim(),
+      checkout: document.getElementById('f-checkout').value.trim(),
+      price_per_night: document.getElementById('f-price-per-night').value.trim(),
+      naverUrl: document.getElementById('f-naver').value.trim(),
+      note: document.getElementById('f-note').value.trim()
+    });
+    await fetch(`${GAS_URL}?${params}`);
+    closeModal();
+    await loadHotelsInfo();
+  } catch {
+    alert('新增失敗，請稍後再試');
+    btn.textContent = '新增'; btn.disabled = false;
+  }
+}
+
+async function deleteHotelInfoItem(id) {
+  if (!confirm('確定刪除這筆住宿？')) return;
+  try {
+    await fetch(`${GAS_URL}?action=delete_hotel_info&id=${id}`);
+    await loadHotelsInfo();
+  } catch { alert('刪除失敗，請稍後再試'); }
+}
+
+// ===== Phase 5: Thread Spots =====
+function extractThreadCode(url) {
+  const m = url && url.match(/threads\.net\/@[^/]+\/post\/([^/?]+)/);
+  return m ? m[1] : null;
+}
+
+async function loadThreadSpots() {
+  const c = document.getElementById('thread-cards-container');
+  if (!c) return;
+  try {
+    const res = await fetch(`${GAS_URL}?action=get_threads`);
+    const json = await res.json();
+    if (json.status === 'ok') renderThreadCards(json.data);
+    else throw new Error();
+  } catch {
+    c.innerHTML = '<div class="ig-loading">載入失敗，請重新整理</div>';
+  }
+}
+
+function renderThreadCards(spots) {
+  const container = document.getElementById('thread-cards-container');
+  if (!spots?.length) {
+    container.innerHTML = '<div class="ig-loading">尚無地點，點「＋ 新增地點」開始新增</div>';
+    return;
+  }
+  container.innerHTML = spots.map(s => {
+    const day = Number(s.day) || 0;
+    const col = DAY_COLORS[day] || { c1: '#555', c2: '#888', badge: '#888' };
+    const c1 = s.color1 || col.c1;
+    const c2 = s.color2 || col.c2;
+    const naverBtn = s.naverUrl
+      ? `<a class="naver-link" href="${escHtml(s.naverUrl)}" target="_blank">📍</a>`
+      : '<span></span>';
+    const threadEmbed = s.threadUrl ? `
+      <div class="ig-embed-wrap">
+        <blockquote class="text-post-media"
+          data-text-post-permalink="${escHtml(s.threadUrl)}"
+          style="margin:0;"></blockquote>
+      </div>` : '';
+    return `
+      <div class="ig-card" data-id="${s.id}">
+        <div class="ig-card-photo" style="background:linear-gradient(135deg,${c1},${c2});">
+          <div class="ig-photo-icon">${escHtml(s.icon || '🧵')}</div>
+          <button class="ig-card-del" onclick="deleteThreadSpot(${s.id})" title="刪除">✕</button>
+        </div>
+        <div class="ig-card-body">
+          <div class="ig-card-name">${escHtml(s.name)}</div>
+          <div class="ig-card-detail">${escHtml(s.detail)}</div>
+          <div class="ig-card-footer">
+            ${day ? `<span class="ig-day-badge" style="background:${col.badge};">Day ${day}</span>` : '<span></span>'}
+            ${naverBtn}
+          </div>
+        </div>
+        ${threadEmbed}
+      </div>`;
+  }).join('');
+}
+
+async function submitAddThreadSpot() {
+  const name = document.getElementById('f-name').value.trim();
+  const detail = document.getElementById('f-detail').value.trim();
+  if (!name || !detail) { alert('請填寫地點名稱和描述'); return; }
+  const day = document.getElementById('f-day').value;
+  const col = DAY_COLORS[Number(day)] || { c1: '#555', c2: '#888' };
+  const btn = document.getElementById('modal-submit-btn');
+  btn.textContent = '新增中…'; btn.disabled = true;
+  try {
+    const params = new URLSearchParams({
+      action: 'add_thread',
+      name, detail, day,
+      icon: document.getElementById('f-icon').value.trim() || '🧵',
+      color1: col.c1, color2: col.c2,
+      naverUrl: document.getElementById('f-naver').value.trim(),
+      threadUrl: document.getElementById('f-threadurl').value.trim()
+    });
+    await fetch(`${GAS_URL}?${params}`);
+    closeModal();
+    await loadThreadSpots();
+  } catch {
+    alert('新增失敗，請稍後再試');
+    btn.textContent = '新增'; btn.disabled = false;
+  }
+}
+
+async function deleteThreadSpot(id) {
+  if (!confirm('確定刪除這個地點？')) return;
+  try {
+    await fetch(`${GAS_URL}?action=delete_thread&id=${id}`);
+    await loadThreadSpots();
+  } catch { alert('刪除失敗，請稍後再試'); }
 }
 
 // ===== Card Resize =====
@@ -1442,6 +2083,11 @@ document.addEventListener('DOMContentLoaded', () => {
   loadChecklist();
   loadBudget();
   loadTransport();
+  loadHotelCarBars();
+  loadHeadcount();
+  loadFlights();
+  loadHotelsInfo();
+  loadThreadSpots();
 });
 </script>
 </body>

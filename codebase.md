@@ -11,7 +11,7 @@
 <div.page-toolbar>     ← 右側「✏️ 編輯版面」/「↩ 重置版面」按鈕
 <div.dashboard>
   <div#fixed-area>     ← 4欄 Grid，D1–D4 固定，不可拖曳（data-fixed）
-  <div#sortable-area>  ← 3欄 Grid，資訊卡，可拖曳排序
+  <div#sortable-area>  ← 3欄 Grid，資訊卡，可拖曳排序、可調整欄寬
 <footer>
 <div#modal>            ← 通用 modal（單一，動態切換模式）
 <script src="sortablejs CDN">
@@ -40,8 +40,11 @@
     <div class="card-header-left">
       <span class="card-title-text">標題</span>
       <button class="ig-add-btn" onclick="openModal('mode')">＋ 新增</button>  <!-- 動態卡片才有 -->
+      <!-- D1–D4 固定卡片有 tl-add-btn，edit mode 才顯示 -->
+      <button class="ig-add-btn tl-add-btn" onclick="openModal('timeline', N)">＋ 新增行程</button>
     </div>
-    <div class="card-toolbar">  <!-- 編輯模式才顯示 -->
+    <div class="card-toolbar">  <!-- 編輯模式才顯示（sortable 卡片） -->
+      <button class="card-resize" onclick="resizeCard('card-xxx')" title="調整欄寬">⊞</button>
       <span class="drag-handle">⠿</span>
       <button class="card-delete" onclick="deleteCard('card-xxx')">✕</button>
     </div>
@@ -50,7 +53,9 @@
 </div>
 ```
 
-`data-fixed` → 不進 SortableJS、不顯示 toolbar。
+`data-fixed` → 不進 SortableJS、不顯示 toolbar。  
+`card-resize` → 點擊循環切換 col-1/2/3，欄寬存 `busanCardCols` localStorage。  
+`tl-add-btn` → 僅 D1–D4，edit mode 顯示，呼叫 `openModal('timeline', day)`。
 
 ---
 
@@ -58,22 +63,24 @@
 
 ### Fixed area（D1–D4，不可拖曳）
 
-| ID | 標題 | 主色 |
-|----|------|------|
-| `card-d1` | 廣安里 — 抵達放鬆日 | 藍 `#378ADD` |
-| `card-d2` | 海雲台 — 雲海台觀景日 | 綠 `#2db87a` |
-| `card-d3` | 機張＋西面 — 瘋玩購物日 | 紫 `#9966e0` |
-| `card-d4` | 南浦洞 — 掃貨返程日 | 紅 `#e05848` |
+| ID | 標題 | 主色 | Timeline ID |
+|----|------|------|-------------|
+| `card-d1` | 廣安里 — 抵達放鬆日 | 藍 `#378ADD` | `#timeline-d1` |
+| `card-d2` | 海雲台 — 雲海台觀景日 | 綠 `#2db87a` | `#timeline-d2` |
+| `card-d3` | 機張＋西面 — 瘋玩購物日 | 紫 `#9966e0` | `#timeline-d3` |
+| `card-d4` | 南浦洞 — 掃貨返程日 | 紅 `#e05848` | `#timeline-d4` |
 
-Day 卡內部：`card-header(.day-header-row)` → `.hotel-bar` → `.car-bar` → [`.tip-box`] → `.timeline`
+Day 卡內部：`card-header(.day-header-row + tl-add-btn)` → `.hotel-bar` → `.car-bar` → [`.tip-box`] → `.timeline#timeline-dN`
 
-### Sortable area（可拖曳）
+Timeline 由 `renderTimeline(day, items)` 動態渲染，資料優先讀 `busanTimeline_{day}` localStorage，否則用 `DEFAULT_TIMELINE` 種子資料。
+
+### Sortable area（可拖曳、可調整欄寬）
 
 | ID | 標題 | col | 資料來源 | 動態容器 |
 |----|------|-----|----------|----------|
 | `card-weather` | 🌤 九月出發資訊 | col-1 | 靜態 | — |
 | `card-checklist` | 📋 出發前準備清單 | col-1 | GAS `get_checklist` | `#checklist-body` |
-| `card-ig` | 📸 IG 收藏地點 | col-1 | GAS `get` | `#ig-cards-container` |
+| `card-ig` | 📸 IG 收藏地點 | col-1 | GAS `get` + timeline mapping | `#ig-cards-container` |
 | `card-budget` | 💰 費用試算 | col-2 | GAS `get_budget` | `#budget-tbody`, `#budget-total-text` |
 | `card-transport` | 🚗 交通方案對比 | col-3 | GAS `get_transport` | `#transport-tbody` |
 
@@ -83,7 +90,25 @@ Day 卡內部：`card-header(.day-header-row)` → `.hotel-bar` → `.car-bar` �
 
 ### Timeline（`.tl-item`）
 ```
-.tl-time(42px) | .tl-dot-wrap(.tl-dot + .tl-line) | .tl-body(.tl-name + .tl-desc + .tags)
+.tl-time(42px) | .tl-dot-wrap(.tl-dot + .tl-line) | .tl-body(.tl-name + .tl-desc + .tags + .tl-del-btn)
+```
+
+- `.tl-del-btn` → hover 顯示刪除按鈕（position absolute），呼叫 `deleteTlItem(id, day)`
+- 最後一個 tl-item 無 `.tl-line`
+
+### Timeline 資料模型
+```js
+{
+  id: 'd1-1',          // 字串，種子用 dN-N，user-added 用 dN-timestamp
+  time: '下午',
+  name: '🚐 ...',      // 純文字（渲染時 escHtml）
+  nameHtml: '...',     // 可選，含 HTML（種子複雜項目用，直接 innerHTML）
+  desc: '...',
+  dotColor: '#378ADD',
+  tags: [['tag-food','標籤文字'], ...],
+  priceTag: 'NT$...',  // 可選
+  naverUrl: 'nmap://...' // 可選
+}
 ```
 
 ### Tag pills
@@ -97,11 +122,13 @@ Day 卡內部：`card-header(.day-header-row)` → `.hotel-bar` → `.car-bar` �
 - `.tip-box` → 黃色左邊框提示框
 - `.weather-grid` / `.weather-card` → 天氣格
 - `.ig-card` → IG 地點卡（漸層色彩圖 + hover 顯示 `.ig-card-del`）
+- `.ig-source-badge` → 藍色小標籤「📅 來自行程」（timeline mapping 來源，無刪除按鈕）
 - `.ig-embed-wrap` → IG 貼文 embed 容器（支援 `/p/` 和 `/reel/`）
 - `.budget-table` → 費用/交通表，`.budget-total` 合計列在 `<tfoot>`
 - `.checklist-section` / `.check-item` → 可勾選清單
 - `.item-del-btn` → hover 顯示刪除按鈕（checklist/budget/transport 共用）
-- `.ig-add-btn` → 卡片 header「＋ 新增」按鈕（共用樣式）
+- `.ig-add-btn` / `.tl-add-btn` → 卡片 header「＋ 新增」按鈕（共用樣式）
+- `.card-resize` → sortable card toolbar 欄寬切換按鈕（edit mode 才顯示）
 
 ---
 
@@ -120,12 +147,15 @@ Day 卡內部：`card-header(.day-header-row)` → `.hotel-bar` → `.car-bar` �
 </div>
 ```
 
-| mode | 欄位 IDs |
-|------|----------|
-| `'ig'` | `f-name`, `f-detail`, `f-day`, `f-icon`, `f-naver`, `f-igurl` |
-| `'checklist'` | `f-label`, `f-note` |
-| `'budget'` | `f-label`, `f-desc`, `f-price-min`, `f-price-max` |
-| `'transport'` | `f-item`, `f-charter`, `f-taxi` |
+| mode | 欄位 IDs | title/fields 型態 |
+|------|----------|------------------|
+| `'ig'` | `f-name`, `f-detail`, `f-day`, `f-icon`, `f-naver`, `f-igurl` | 字串 |
+| `'checklist'` | `f-label`, `f-note` | 字串 |
+| `'budget'` | `f-label`, `f-desc`, `f-price-min`, `f-price-max` | 字串 |
+| `'transport'` | `f-item`, `f-charter`, `f-taxi` | 字串 |
+| `'timeline'` | `f-tl-time`, `f-tl-name`, `f-tl-desc`, `f-tl-naver`, tag checkboxes | **函式**（接收 day） |
+
+`openModal(mode, extra)` — `extra` 為 day number（timeline mode 用）；`currentModalExtra` 儲存後傳給 `submitModal`。
 
 ---
 
@@ -179,27 +209,41 @@ DAY_COLORS = {
 
 ### 版型
 ```js
-toggleEdit()       // 切換 body.edit-mode；啟用/銷毀 SortableJS
-saveOrder()        // 儲存排序到 localStorage
-deleteCard(id)     // 移除卡片 + 記錄 localStorage
-resetLayout()      // 清 localStorage + reload
-loadState()        // 還原刪除/排序（DOMContentLoaded）
+toggleEdit()          // 切換 body.edit-mode；啟用/銷毀 SortableJS
+saveOrder()           // 儲存排序 + 欄寬到 localStorage
+deleteCard(id)        // 移除卡片 + 記錄 localStorage
+resetLayout()         // 清所有 localStorage（含 timeline/cols）+ reload
+loadState()           // 還原刪除/排序/欄寬，並 renderTimeline 全部 4 天
+resizeCard(id)        // 循環切換 card 的 col-1/2/3，呼叫 saveCardCols()
+saveCardCols()        // 把 sortable-area 各 card 的欄寬存入 busanCardCols
 ```
 
 ### Modal
 ```js
-openModal(mode)    // 注入欄位、顯示 modal
-closeModal()       // 隱藏 modal
-submitModal()      // 依 currentModalMode 分派 submit
+openModal(mode, extra) // 注入欄位、顯示 modal；extra = day（timeline mode）
+closeModal()           // 隱藏 modal
+submitModal()          // 依 currentModalMode 分派 submit
+```
+
+### Timeline（D1–D4 行程）
+```js
+DEFAULT_TIMELINE       // 物件 {1:[...], 2:[...], 3:[...], 4:[...]}，種子資料
+getTimelineItems(day)  // 讀 localStorage busanTimeline_{day}，無則用 DEFAULT_TIMELINE
+renderTimeline(day, items) // 渲染 #timeline-dN；同時提取 tag-ig 項目到 _timelineIgItems
+deleteTlItem(id, day)  // 刪除後存 localStorage，re-render timeline + IG 區
+submitAddTimeline(day) // modal 欄位 → 存 localStorage → re-render
+escHtml(s)             // HTML 跳脫工具函式
+extractLeadingEmoji(s) // 取字串開頭 emoji，用於 IG mapping icon
 ```
 
 ### IG 地點
 ```js
-extractIgCode(url)   // 抓 /p/ 或 /reel/ shortcode；無則回 null
-renderIgCards(spots) // 渲染卡片；有 igUrl 插入 embed；呼叫 instgrm.Embeds.process()
-loadIgSpots()        // fetch get → renderIgCards
-submitAddSpot()      // modal 欄位 → fetch add → reload
-deleteIgSpot(id)     // fetch delete → reload
+extractIgCode(url)     // 抓 /p/ 或 /reel/ shortcode；無則回 null
+renderIgCards(spots)   // 合併 _timelineIgItems（唯讀）+ GAS spots 渲染
+                       // timeline 來源有 .ig-source-badge，無刪除按鈕
+loadIgSpots()          // fetch get → 存 _lastIgSpots → renderIgCards
+submitAddSpot()        // modal 欄位 → fetch add → loadIgSpots
+deleteIgSpot(id)       // fetch delete → loadIgSpots
 ```
 
 ### 清單
@@ -235,7 +279,18 @@ deleteTransportItem(id)  // fetch delete_transport → reload
 |-----|------|
 | `busanCardOrder` | `string[]` 卡片 ID 排列順序 |
 | `busanDeletedCards` | `string[]` 已刪除的卡片 ID |
+| `busanCardCols` | `{[cardId]: 'col-N'}` 各 sortable card 的欄寬 |
+| `busanTimeline_{day}` | `TlItem[]` 第 N 天行程（1–4），覆蓋 DEFAULT_TIMELINE |
 | `busanCheck_{id}` | `'1'` 表示該清單項目已勾選 |
+
+---
+
+## 全域狀態變數
+
+| 變數 | 用途 |
+|------|------|
+| `window._timelineIgItems` | timeline tag-ig 項目快取，供 renderIgCards 使用 |
+| `window._lastIgSpots` | 最後一次 GAS 回傳的 IG 地點，timeline 變更後 re-render 用 |
 
 ---
 
