@@ -1882,9 +1882,8 @@ async function deleteHotelInfoItem(id) {
 }
 
 // ===== Phase 5: Thread Spots =====
-function getThreadEmbedSrc(url) {
-  const m = url && url.match(/threads\.net\/((@[^/]+)\/post\/([^/?]+))/);
-  return m ? `https://www.threads.net/${m[1]}/embed/` : null;
+function hasThreadUrl(url) {
+  return !!(url && url.match(/threads\.net\/@[^/]+\/post\/[^/?]+/));
 }
 
 async function loadThreadSpots() {
@@ -1914,13 +1913,11 @@ function renderThreadCards(spots) {
     const naverBtn = s.naverUrl
       ? `<a class="naver-link" href="${escHtml(s.naverUrl)}" target="_blank">📍</a>`
       : '<span></span>';
-    const embedSrc = getThreadEmbedSrc(s.threadUrl);
-    const threadEmbed = embedSrc ? `
+    const threadEmbed = hasThreadUrl(s.threadUrl) ? `
       <div class="ig-embed-wrap">
-        <iframe src="${embedSrc}"
-          style="border:none;width:100%;min-height:260px;"
-          loading="lazy" allowfullscreen>
-        </iframe>
+        <blockquote class="text-post-media"
+          data-text-post-permalink="${escHtml(s.threadUrl)}"
+          style="margin:0;background:#fff;border:1px solid #ddd;border-radius:12px;"></blockquote>
       </div>` : '';
     return `
       <div class="ig-card" data-id="${s.id}">
@@ -1939,6 +1936,11 @@ function renderThreadCards(spots) {
         ${threadEmbed}
       </div>`;
   }).join('');
+  document.querySelectorAll('script[src*="threads.net/embed"]').forEach(el => el.remove());
+  const ts = document.createElement('script');
+  ts.async = true;
+  ts.src = 'https://www.threads.net/embed/iframe.js?r=' + Date.now();
+  document.body.appendChild(ts);
 }
 
 async function submitAddThreadSpot() {
