@@ -1893,6 +1893,12 @@ function renderThreadCards(spots) {
         ${threadEmbed}
       </div>`;
   }).join('');
+  const old = document.querySelector('script[src*="threads.net/embed"]');
+  if (old) old.remove();
+  const ts = document.createElement('script');
+  ts.async = true;
+  ts.src = 'https://www.threads.net/embed/iframe.js';
+  document.body.appendChild(ts);
 }
 
 async function submitAddThreadSpot() {
