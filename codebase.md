@@ -184,6 +184,26 @@ Sheets ID：`1ZXw0zHHBW48ApYBE070nGuB5ZGsTE_lvmVtQIMNLmVs`
 | `add_transport` | 新增對比列 | `item,charter,taxi` |
 | `delete_transport&id=` | 刪除對比列 | — |
 
+### GAS doGet 寫法（重要：勿用 switch/case）
+
+GAS 腳本用 `else if` 鏈，並透過 `addGenericRow(sheetName, p)` 新增資料：
+
+```js
+if (action === 'get_flights') {
+  result = getGenericRows('flights');
+} else if (action === 'add_flight') {
+  result = addGenericRow('flights', p);
+} else if (action === 'delete_flight') {
+  result = deleteGenericRow('flights', p.id);
+} else if (action === 'get_layout') {
+  result = getLayoutSetting();
+} else if (action === 'save_layout') {
+  result = saveLayoutSetting(p.data);
+}
+```
+
+**新增 action 時一律用 `else if`，不用 `case`。**
+
 ### Sheet 欄位
 
 | Tab | 欄位 |
@@ -192,6 +212,12 @@ Sheets ID：`1ZXw0zHHBW48ApYBE070nGuB5ZGsTE_lvmVtQIMNLmVs`
 | `checklist` | `id, label, note` |
 | `budget` | `id, label, desc, price_min, price_max` |
 | `transport` | `id, item, charter, taxi` |
+| `flights` | `id, direction, airline, flight_no, date, depart_time, arrive_time, price_no_bag, price_bag, note` |
+| `hotels_info` | `id, day, hotel_name, address, checkin, checkout, price_per_night, naverUrl, note` |
+| `threads_spots` | `id, name, detail, day, icon, color1, color2, naverUrl, threadUrl` |
+| `hotel_bar` | `id, day, hotel_name, hotel_detail` |
+| `car_bar` | `id, day, car_title, car_desc` |
+| `trip_settings` | `key, value`（headcount, layout 兩個 key） |
 
 ### Day 顏色常數
 ```js
