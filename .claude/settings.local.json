@@ -6,7 +6,20 @@
       "Bash(node *)",
       "WebFetch(domain:developers.facebook.com)",
       "WebFetch(domain:embedsocial.substack.com)",
-      "WebFetch(domain:www.techswill.com)"
+      "WebFetch(domain:www.techswill.com)",
+      "Bash(curl -s \"https://graph.threads.net/v1.0/oembed?url=https://www.threads.net/@zuck/post/C3C6P8tOIgG\")",
+      "Bash(curl -sI \"https://www.threads.com/embed.js\")",
+      "Bash(curl -sI \"https://www.threads.net/embed/iframe.js\")",
+      "Bash(curl -sI \"https://cdn.threads.net/embed.js\")",
+      "Bash(curl -s \"https://www.threads.com/embed.js\")",
+      "Bash(grep -o '..\\\\{80\\\\}text-post-media.\\\\{80\\\\}')",
+      "Bash(curl -sf \"https://busan99.netlify.app\")",
+      "WebFetch(domain:busan99.netlify.app)",
+      "Bash(npx playwright *)",
+      "Bash(npx playwright@latest --yes node -e ' *)",
+      "Read(//private/tmp/**)",
+      "Bash(npm init *)",
+      "Bash(npm install *)"
     ]
   }
 }
