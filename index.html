@@ -1936,12 +1936,20 @@ function renderThreadCards(spots) {
         ${threadEmbed}
       </div>`;
   }).join('');
-  if (window.instgrm?.Embeds?.process) {
-    window.instgrm.Embeds.process();
+  if (window._threadsProcess) {
+    window._threadsProcess();
   } else if (!document.querySelector('script[data-threads-embed]')) {
+    // Instagram 的 embed.js 會搶先設 instgrm.Embeds.process，導致 Threads 的 init() 跳過 R()
+    // 解法：載入前暫時清空，讓 Threads 的 init() → R() 執行後再還原
+    const savedIgProcess = window.instgrm?.Embeds?.process;
+    if (window.instgrm?.Embeds) window.instgrm.Embeds.process = null;
     const ts = document.createElement('script');
     ts.async = true;
     ts.dataset.threadsEmbed = '1';
+    ts.onload = () => {
+      window._threadsProcess = window.instgrm?.Embeds?.process;
+      if (savedIgProcess && window.instgrm?.Embeds) window.instgrm.Embeds.process = savedIgProcess;
+    };
     ts.src = 'https://www.threads.com/embed.js';
     document.body.appendChild(ts);
   }
