@@ -104,19 +104,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC
 
 /* Info cards */
 .checklist-section { padding: 10px 14px; }
-.check-item { display: flex; gap: 9px; padding: 5px 0; border-bottom: 1px solid #f5f5f5; align-items: flex-start; }
+.check-item { display: flex; gap: 9px; padding: 5px 0; border-bottom: 1px solid #f5f5f5; align-items: flex-start; position: relative; }
 .check-item:last-child { border-bottom: none; }
-.check-box { width: 15px; height: 15px; border: 2px solid #ddd; border-radius: 4px; flex-shrink: 0; margin-top: 2px; cursor: pointer; }
+.check-box { width: 15px; height: 15px; border: 2px solid #ddd; border-radius: 4px; flex-shrink: 0; margin-top: 2px; cursor: pointer; transition: all 0.15s; }
+.check-box.checked { background: #2d6a9f; border-color: #2d6a9f; }
 .check-label { font-size: 12px; color: #333; flex: 1; }
 .check-note { font-size: 10.5px; color: #999; margin-top: 2px; }
 
 .budget-table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .budget-table th { background: #f8f8f8; padding: 8px 12px; text-align: left; font-size: 10.5px; color: #888; font-weight: 600; border-bottom: 1px solid #ececec; }
-.budget-table td { padding: 8px 12px; border-bottom: 1px solid #f5f5f5; vertical-align: top; }
-.budget-table tr:last-child td { border-bottom: none; }
+.budget-table td { padding: 8px 12px; border-bottom: 1px solid #f5f5f5; vertical-align: middle; }
+.budget-table tbody tr:last-child td { border-bottom: none; }
 .budget-table .price { font-weight: 600; text-align: right; white-space: nowrap; }
 .budget-total { background: #f0f6ff; }
-.budget-total td { font-weight: 700; font-size: 13px; color: #1a3c5e; }
+.budget-total td { font-weight: 700; font-size: 13px; color: #1a3c5e; border-bottom: none; }
 
 .alert { border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; }
 .alert-yellow { background: #fff8e8; border: 1px solid #f5d98a; }
@@ -144,6 +145,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC
 .ig-add-btn { display: inline-block; margin-top: 5px; background: none; border: 1px dashed #ccc; border-radius: 20px; padding: 2px 10px; font-size: 11px; color: #888; cursor: pointer; transition: all 0.2s; }
 .ig-add-btn:hover { border-color: #2d6a9f; color: #2d6a9f; }
 .ig-loading { text-align: center; padding: 20px; color: #aaa; font-size: 12px; }
+
+/* IG embed */
+.ig-embed-wrap { padding: 8px 10px 0; }
+.ig-embed-wrap .instagram-media { min-width: 0 !important; width: 100% !important; }
+
+/* Item delete buttons (checklist / budget / transport) */
+.item-del-btn { background: none; border: none; color: #ccc; cursor: pointer; font-size: 11px; padding: 2px 5px; border-radius: 4px; line-height: 1; transition: color 0.2s, background 0.2s; visibility: hidden; flex-shrink: 0; }
+.check-item:hover .item-del-btn,
+.budget-table tbody tr:hover .item-del-btn { visibility: visible; }
+.item-del-btn:hover { color: #e05050; background: #ffeaea; }
+
+/* Modal */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
 .modal { background: white; border-radius: 16px; padding: 20px; width: 90%; max-width: 380px; }
@@ -571,46 +584,18 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
     <!-- Checklist -->
     <div class="card col-1" id="card-checklist">
       <div class="card-header">
-        <div class="card-header-left"><span class="card-title-text">📋 出發前準備清單</span></div>
+        <div class="card-header-left">
+          <span class="card-title-text">📋 出發前準備清單</span>
+          <button class="ig-add-btn" onclick="openModal('checklist')">＋ 新增項目</button>
+        </div>
         <div class="card-toolbar">
           <span class="drag-handle">⠿</span>
           <button class="card-delete" onclick="deleteCard('card-checklist')">✕</button>
         </div>
       </div>
       <div class="card-body">
-        <div class="checklist-section">
-          <div class="check-item">
-            <div class="check-box" onclick="toggleCheck(this)"></div>
-            <div><div class="check-label">機票（廉航來回含行李 NT$6,000–8,000）</div><div class="check-note">建議出發前 40 天訂，九月淡季最划算</div></div>
-          </div>
-          <div class="check-item">
-            <div class="check-box" onclick="toggleCheck(this)"></div>
-            <div><div class="check-label">包車（15人座，提前 4 週以上）</div><div class="check-note">KKday / Klook / City Tour 旅行社 LINE：@387iqypf</div></div>
-          </div>
-          <div class="check-item">
-            <div class="check-box" onclick="toggleCheck(this)"></div>
-            <div><div class="check-label">釜山通行證 Visit Busan Pass <span class="price-tag">24HR NT$1,200 / 48HR NT$1,850</span></div><div class="check-note">含 X the Sky、Skyline Luge、汗蒸幕、膠囊列車、樂天世界</div></div>
-          </div>
-          <div class="check-item">
-            <div class="check-box" onclick="toggleCheck(this)"></div>
-            <div><div class="check-label">天空膠囊列車 線上預約</div><div class="check-note">提前 1–2 個月，人多可能需要分批</div></div>
-          </div>
-          <div class="check-item">
-            <div class="check-box" onclick="toggleCheck(this)"></div>
-            <div><div class="check-label">樂天世界門票（Klook/KKday，約 85 折）</div></div>
-          </div>
-          <div class="check-item">
-            <div class="check-box" onclick="toggleCheck(this)"></div>
-            <div><div class="check-label">X the Sky 門票（Klook 先買省排隊）</div></div>
-          </div>
-          <div class="check-item">
-            <div class="check-box" onclick="toggleCheck(this)"></div>
-            <div><div class="check-label">旅遊保險（含颱風取消保障，9月必備！）</div></div>
-          </div>
-          <div class="check-item">
-            <div class="check-box" onclick="toggleCheck(this)"></div>
-            <div><div class="check-label">WOWPASS 換匯卡</div><div class="check-note">機場取卡，存台幣自動換韓幣，匯率最優</div></div>
-          </div>
+        <div class="checklist-section" id="checklist-body">
+          <div class="ig-loading">載入中…</div>
         </div>
       </div>
     </div>
@@ -620,7 +605,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
       <div class="card-header">
         <div class="card-header-left">
           <span class="card-title-text">📸 IG 收藏地點</span>
-          <button class="ig-add-btn" onclick="showAddModal()">＋ 新增地點</button>
+          <button class="ig-add-btn" onclick="openModal('ig')">＋ 新增地點</button>
         </div>
         <div class="card-toolbar">
           <span class="drag-handle">⠿</span>
@@ -637,7 +622,10 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
     <!-- Budget -->
     <div class="card col-2" id="card-budget">
       <div class="card-header">
-        <div class="card-header-left"><span class="card-title-text">💰 費用試算（9月出發，12人均攤）</span></div>
+        <div class="card-header-left">
+          <span class="card-title-text">💰 費用試算（9月出發，12人均攤）</span>
+          <button class="ig-add-btn" onclick="openModal('budget')">＋ 新增費用</button>
+        </div>
         <div class="card-toolbar">
           <span class="drag-handle">⠿</span>
           <button class="card-delete" onclick="deleteCard('card-budget')">✕</button>
@@ -646,20 +634,22 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
       <div class="card-body" style="padding: 0 14px 14px;">
         <table class="budget-table" style="margin-top:12px;">
           <thead>
-            <tr><th>項目</th><th style="text-align:right;">費用 /人</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>✈️ 機票（廉航，九月淡季含行李）<br><small style="color:#aaa;">比暑假省約 NT$2,000–3,000</small></td><td class="price" style="color:#1a7a45;">NT$ 6,000–8,000</td></tr>
-            <tr><td>🚐 包車交通均攤（4天，15人座）<br><small style="color:#aaa;">全車 NT$27,000–30,000 / 12人均攤</small></td><td class="price">NT$ 2,250–2,500</td></tr>
-            <tr><td>🏨 住宿（3晚，九月淡季）</td><td class="price" style="color:#1a7a45;">NT$ 4,200–9,000</td></tr>
-            <tr><td>🎟 景點門票（Pass + 樂天世界）</td><td class="price">NT$ 2,900–3,100</td></tr>
-            <tr><td>🍽 餐費（4天）</td><td class="price">NT$ 4,500–7,000</td></tr>
-            <tr><td>🛍 購物伴手禮</td><td class="price">NT$ 2,000–6,000</td></tr>
-            <tr class="budget-total">
-              <td>每人總預算（省錢→舒適）</td>
-              <td class="price">NT$ 21,850–35,600</td>
+            <tr>
+              <th>項目</th>
+              <th style="text-align:right;">費用 /人</th>
+              <th style="width:24px;"></th>
             </tr>
+          </thead>
+          <tbody id="budget-tbody">
+            <tr><td colspan="3" class="ig-loading">載入中…</td></tr>
           </tbody>
+          <tfoot>
+            <tr id="budget-total-row" class="budget-total">
+              <td>每人總預算（省錢→舒適）</td>
+              <td class="price" id="budget-total-text">—</td>
+              <td></td>
+            </tr>
+          </tfoot>
         </table>
         <div style="margin-top:10px; font-size:11px; color:#888; line-height:1.8;">
           <strong>包車費依人數均攤：</strong><br>9人→NT$3,000–3,333 ／ 10人→NT$2,700–3,000 ／ 11人→NT$2,455–2,727 ／ 12人→NT$2,250–2,500 ／ 13人→NT$2,077–2,308
@@ -670,7 +660,10 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
     <!-- Transport -->
     <div class="card col-3" id="card-transport">
       <div class="card-header">
-        <div class="card-header-left"><span class="card-title-text">🚗 交通方案對比：包車 vs 計程車</span></div>
+        <div class="card-header-left">
+          <span class="card-title-text">🚗 交通方案對比：包車 vs 計程車</span>
+          <button class="ig-add-btn" onclick="openModal('transport')">＋ 新增對比</button>
+        </div>
         <div class="card-toolbar">
           <span class="drag-handle">⠿</span>
           <button class="card-delete" onclick="deleteCard('card-transport')">✕</button>
@@ -679,21 +672,24 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
       <div class="card-body" style="padding: 10px 14px 14px;">
         <table class="budget-table">
           <thead>
-            <tr><th style="text-align:left;">項目</th><th style="text-align:right;">包車方案</th><th style="text-align:right;">計程車方案</th></tr>
+            <tr>
+              <th style="text-align:left;">項目</th>
+              <th style="text-align:right;">包車方案</th>
+              <th style="text-align:right;">計程車方案</th>
+              <th style="width:24px;"></th>
+            </tr>
           </thead>
-          <tbody>
-            <tr><td>機場往返接送</td><td class="price">含於包車費</td><td class="price">約 NT$1,500–2,000</td></tr>
-            <tr><td>日間景點交通（3天）</td><td class="price">含於包車費</td><td class="price">約 NT$9,000–12,000</td></tr>
-            <tr><td>晚間/夜間往返</td><td class="price">含於包車費</td><td class="price">約 NT$2,500–3,500</td></tr>
-            <tr><td>行李搬運困擾</td><td class="price" style="color:#1a7a45;">✅ 無需搬運</td><td class="price" style="color:#c0400a;">❌ 每次搬進搬出</td></tr>
-            <tr><td>購物 / 逛街</td><td class="price" style="color:#1a7a45;">✅ 戰利品放車上</td><td class="price" style="color:#c0400a;">❌ 提著走很疲憊</td></tr>
-            <tr><td>司機熟悉路線</td><td class="price" style="color:#1a7a45;">✅ 中文司機協助</td><td class="price" style="color:#c0400a;">❌ 自己研究路線</td></tr>
+          <tbody id="transport-tbody">
+            <tr><td colspan="4" class="ig-loading">載入中…</td></tr>
+          </tbody>
+          <tfoot>
             <tr class="budget-total">
               <td>每人交通費用（12人均攤）</td>
               <td class="price" style="color:#1a7a45;">NT$ 1,875–2,500</td>
               <td class="price" style="color:#c0400a;">NT$ 3,750–6,500</td>
+              <td></td>
             </tr>
-          </tbody>
+          </tfoot>
         </table>
         <div style="margin-top:10px; font-size:11px; color:#1a3c5e; line-height:1.8; background:#f0f6ff; padding:10px; border-radius:8px;">
           💡 <strong>建議</strong>：9–13人同遊 → 包車划算且舒適，每人省 NT$2,000–4,000，且免去搬行李困擾！
@@ -706,52 +702,31 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
 
 <footer>釜山四天三夜行程規劃｜2025年9月出發版</footer>
 
-<div class="modal-overlay" id="ig-modal">
+<!-- Universal modal -->
+<div class="modal-overlay" id="modal">
   <div class="modal">
-    <div class="modal-title">📍 新增 IG 地點</div>
-    <div class="modal-field">
-      <label class="modal-label">地點名稱 *</label>
-      <input class="modal-input" id="f-name" placeholder="例：Keveren House" />
-    </div>
-    <div class="modal-field">
-      <label class="modal-label">描述（地區｜特色）*</label>
-      <input class="modal-input" id="f-detail" placeholder="例：海理團路｜奶油派必買" />
-    </div>
-    <div class="modal-field">
-      <label class="modal-label">天數 *</label>
-      <select class="modal-select" id="f-day">
-        <option value="1">Day 1</option>
-        <option value="2">Day 2</option>
-        <option value="3">Day 3</option>
-        <option value="4">Day 4</option>
-      </select>
-    </div>
-    <div class="modal-field">
-      <label class="modal-label">表情符號</label>
-      <input class="modal-input" id="f-icon" placeholder="📍" maxlength="2" />
-    </div>
-    <div class="modal-field">
-      <label class="modal-label">Naver 地圖連結（選填）</label>
-      <input class="modal-input" id="f-naver" placeholder="nmap://place?lat=…" />
-    </div>
+    <div class="modal-title" id="modal-title"></div>
+    <div id="modal-fields"></div>
     <div class="modal-actions">
-      <button class="modal-cancel" onclick="hideModal()">取消</button>
-      <button class="modal-submit" id="submit-btn" onclick="submitAddSpot()">新增</button>
+      <button class="modal-cancel" onclick="closeModal()">取消</button>
+      <button class="modal-submit" id="modal-submit-btn" onclick="submitModal()">新增</button>
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script async src="https://www.instagram.com/embed.js"></script>
 <script>
 let sortable = null;
 let isEditMode = false;
+let currentModalMode = null;
 
+// ===== Layout =====
 function toggleEdit() {
   isEditMode = !isEditMode;
   document.body.classList.toggle('edit-mode', isEditMode);
   document.getElementById('edit-btn').textContent = isEditMode ? '✅ 完成編輯' : '✏️ 編輯版面';
   document.getElementById('reset-btn').style.display = isEditMode ? 'inline-block' : 'none';
-
   if (isEditMode) {
     sortable = new Sortable(document.getElementById('sortable-area'), {
       animation: 150,
@@ -786,15 +761,9 @@ function resetLayout() {
   location.reload();
 }
 
-function toggleCheck(box) {
-  box.style.background = box.style.background ? '' : '#2d6a9f';
-  box.style.borderColor = box.style.borderColor === 'rgb(45, 106, 159)' ? '#ddd' : '#2d6a9f';
-}
-
 function loadState() {
   const deleted = JSON.parse(localStorage.getItem('busanDeletedCards') || '[]');
   deleted.forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
-
   const order = JSON.parse(localStorage.getItem('busanCardOrder') || 'null');
   if (!order) return;
   const container = document.getElementById('sortable-area');
@@ -804,8 +773,115 @@ function loadState() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => { loadState(); loadIgSpots(); });
+// ===== Modal =====
+const MODAL_CONFIGS = {
+  ig: {
+    title: '📍 新增 IG 地點',
+    fields: `
+      <div class="modal-field">
+        <label class="modal-label">地點名稱 *</label>
+        <input class="modal-input" id="f-name" placeholder="例：Keveren House" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">描述（地區｜特色）*</label>
+        <input class="modal-input" id="f-detail" placeholder="例：海理團路｜奶油派必買" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">天數 *</label>
+        <select class="modal-select" id="f-day">
+          <option value="1">Day 1</option>
+          <option value="2">Day 2</option>
+          <option value="3">Day 3</option>
+          <option value="4">Day 4</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">表情符號</label>
+        <input class="modal-input" id="f-icon" placeholder="📍" maxlength="2" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Naver 地圖連結（選填）</label>
+        <input class="modal-input" id="f-naver" placeholder="nmap://place?lat=…" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">IG 貼文連結（選填）</label>
+        <input class="modal-input" id="f-igurl" placeholder="https://www.instagram.com/p/XXXXXX/" />
+      </div>`
+  },
+  checklist: {
+    title: '📋 新增準備項目',
+    fields: `
+      <div class="modal-field">
+        <label class="modal-label">項目名稱 *</label>
+        <input class="modal-input" id="f-label" placeholder="例：旅遊保險" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">備注（選填）</label>
+        <input class="modal-input" id="f-note" placeholder="例：含颱風取消保障，9月必備" />
+      </div>`
+  },
+  budget: {
+    title: '💰 新增費用項目',
+    fields: `
+      <div class="modal-field">
+        <label class="modal-label">項目名稱 *</label>
+        <input class="modal-input" id="f-label" placeholder="例：餐費" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">說明（選填）</label>
+        <input class="modal-input" id="f-desc" placeholder="例：4天含早午晚" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">最低費用（NT$）*</label>
+        <input class="modal-input" type="number" id="f-price-min" placeholder="例：4500" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">最高費用（NT$）*</label>
+        <input class="modal-input" type="number" id="f-price-max" placeholder="例：7000" />
+      </div>`
+  },
+  transport: {
+    title: '🚗 新增交通對比項目',
+    fields: `
+      <div class="modal-field">
+        <label class="modal-label">項目名稱 *</label>
+        <input class="modal-input" id="f-item" placeholder="例：機場往返接送" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">包車方案</label>
+        <input class="modal-input" id="f-charter" placeholder="例：含於包車費" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">計程車方案</label>
+        <input class="modal-input" id="f-taxi" placeholder="例：約 NT$1,500–2,000" />
+      </div>`
+  }
+};
 
+function openModal(mode) {
+  const cfg = MODAL_CONFIGS[mode];
+  if (!cfg) return;
+  currentModalMode = mode;
+  document.getElementById('modal-title').textContent = cfg.title;
+  document.getElementById('modal-fields').innerHTML = cfg.fields;
+  document.getElementById('modal-submit-btn').textContent = '新增';
+  document.getElementById('modal-submit-btn').disabled = false;
+  document.getElementById('modal').classList.add('open');
+  const first = document.querySelector('#modal-fields input, #modal-fields select');
+  if (first) first.focus();
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  currentModalMode = null;
+}
+
+function submitModal() {
+  const map = { ig: submitAddSpot, checklist: submitAddChecklist, budget: submitAddBudget, transport: submitAddTransport };
+  map[currentModalMode]?.();
+}
+
+// ===== GAS / Constants =====
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbyCHxzRostMcu7OFiAJYqb0Q188qF_wYDMoODfE9os5NZ9INQTD_w4z-UXmS-78Q8B4Gg/exec';
 
 const DAY_COLORS = {
@@ -814,6 +890,12 @@ const DAY_COLORS = {
   3: { c1: '#5030a0', c2: '#9966e0', badge: '#9966e0' },
   4: { c1: '#8b2000', c2: '#e05252', badge: '#e05252' }
 };
+
+// ===== IG Spots =====
+function extractIgCode(url) {
+  const m = url && url.match(/instagram\.com\/p\/([^/?]+)/);
+  return m ? m[1] : null;
+}
 
 function renderIgCards(spots) {
   const container = document.getElementById('ig-cards-container');
@@ -829,6 +911,14 @@ function renderIgCards(spots) {
     const naverBtn = s.naverUrl
       ? `<a class="naver-link" href="${s.naverUrl}" target="_blank">📍</a>`
       : '<span></span>';
+    const igCode = extractIgCode(s.igUrl);
+    const igEmbed = igCode ? `
+      <div class="ig-embed-wrap">
+        <blockquote class="instagram-media"
+          data-instgrm-permalink="https://www.instagram.com/p/${igCode}/"
+          data-instgrm-version="14" style="margin:0;">
+        </blockquote>
+      </div>` : '';
     return `
       <div class="ig-card" data-id="${s.id}">
         <div class="ig-card-photo" style="background:linear-gradient(135deg,${c1},${c2});">
@@ -843,8 +933,10 @@ function renderIgCards(spots) {
             ${naverBtn}
           </div>
         </div>
+        ${igEmbed}
       </div>`;
   }).join('');
+  window.instgrm?.Embeds?.process();
 }
 
 async function loadIgSpots() {
@@ -859,43 +951,26 @@ async function loadIgSpots() {
   }
 }
 
-function showAddModal() {
-  document.getElementById('ig-modal').classList.add('open');
-  document.getElementById('f-name').focus();
-}
-
-function hideModal() {
-  document.getElementById('ig-modal').classList.remove('open');
-  ['f-name', 'f-detail', 'f-icon', 'f-naver'].forEach(id => {
-    document.getElementById(id).value = '';
-  });
-  document.getElementById('f-day').value = '1';
-}
-
 async function submitAddSpot() {
   const name = document.getElementById('f-name').value.trim();
   const detail = document.getElementById('f-detail').value.trim();
   const day = document.getElementById('f-day').value;
   const icon = document.getElementById('f-icon').value.trim() || '📍';
   const naverUrl = document.getElementById('f-naver').value.trim();
+  const igUrl = document.getElementById('f-igurl').value.trim();
   if (!name || !detail) { alert('請填寫地點名稱和描述'); return; }
 
   const col = DAY_COLORS[Number(day)] || DAY_COLORS[1];
-  const btn = document.getElementById('submit-btn');
+  const btn = document.getElementById('modal-submit-btn');
   btn.textContent = '新增中…';
   btn.disabled = true;
-
   try {
-    const params = new URLSearchParams({
-      action: 'add', name, detail, day, icon,
-      color1: col.c1, color2: col.c2, naverUrl
-    });
+    const params = new URLSearchParams({ action: 'add', name, detail, day, icon, color1: col.c1, color2: col.c2, naverUrl, igUrl });
     await fetch(`${GAS_URL}?${params}`);
-    hideModal();
+    closeModal();
     await loadIgSpots();
   } catch {
     alert('新增失敗，請稍後再試');
-  } finally {
     btn.textContent = '新增';
     btn.disabled = false;
   }
@@ -910,6 +985,206 @@ async function deleteIgSpot(id) {
     alert('刪除失敗，請稍後再試');
   }
 }
+
+// ===== Checklist =====
+async function loadChecklist() {
+  document.getElementById('checklist-body').innerHTML = '<div class="ig-loading">載入中…</div>';
+  try {
+    const res = await fetch(`${GAS_URL}?action=get_checklist`);
+    const json = await res.json();
+    if (json.status === 'ok') renderChecklist(json.data);
+    else throw new Error();
+  } catch {
+    document.getElementById('checklist-body').innerHTML = '<div class="ig-loading">載入失敗，請重新整理</div>';
+  }
+}
+
+function renderChecklist(items) {
+  const el = document.getElementById('checklist-body');
+  if (!items || !items.length) {
+    el.innerHTML = '<div class="ig-loading">尚無項目，點「＋ 新增項目」開始新增</div>';
+    return;
+  }
+  el.innerHTML = items.map(item => {
+    const checked = localStorage.getItem(`busanCheck_${item.id}`) === '1';
+    return `
+      <div class="check-item" data-id="${item.id}">
+        <div class="check-box${checked ? ' checked' : ''}" onclick="toggleCheckItem(${item.id}, this)"></div>
+        <div style="flex:1;">
+          <div class="check-label">${item.label}</div>
+          ${item.note ? `<div class="check-note">${item.note}</div>` : ''}
+        </div>
+        <button class="item-del-btn" onclick="deleteChecklistItem(${item.id})" title="刪除">✕</button>
+      </div>`;
+  }).join('');
+}
+
+function toggleCheckItem(id, box) {
+  const checked = localStorage.getItem(`busanCheck_${id}`) === '1';
+  if (checked) {
+    localStorage.removeItem(`busanCheck_${id}`);
+    box.classList.remove('checked');
+  } else {
+    localStorage.setItem(`busanCheck_${id}`, '1');
+    box.classList.add('checked');
+  }
+}
+
+async function submitAddChecklist() {
+  const label = document.getElementById('f-label').value.trim();
+  const note = document.getElementById('f-note').value.trim();
+  if (!label) { alert('請填寫項目名稱'); return; }
+  const btn = document.getElementById('modal-submit-btn');
+  btn.textContent = '新增中…'; btn.disabled = true;
+  try {
+    const params = new URLSearchParams({ action: 'add_checklist', label, note });
+    await fetch(`${GAS_URL}?${params}`);
+    closeModal();
+    await loadChecklist();
+  } catch {
+    alert('新增失敗，請稍後再試');
+    btn.textContent = '新增'; btn.disabled = false;
+  }
+}
+
+async function deleteChecklistItem(id) {
+  if (!confirm('確定刪除這個項目？')) return;
+  try {
+    await fetch(`${GAS_URL}?action=delete_checklist&id=${id}`);
+    await loadChecklist();
+  } catch {
+    alert('刪除失敗，請稍後再試');
+  }
+}
+
+// ===== Budget =====
+async function loadBudget() {
+  document.getElementById('budget-tbody').innerHTML = '<tr><td colspan="3" class="ig-loading">載入中…</td></tr>';
+  try {
+    const res = await fetch(`${GAS_URL}?action=get_budget`);
+    const json = await res.json();
+    if (json.status === 'ok') renderBudget(json.data);
+    else throw new Error();
+  } catch {
+    document.getElementById('budget-tbody').innerHTML = '<tr><td colspan="3" class="ig-loading">載入失敗，請重新整理</td></tr>';
+  }
+}
+
+function renderBudget(items) {
+  const tbody = document.getElementById('budget-tbody');
+  if (!items || !items.length) {
+    tbody.innerHTML = '<tr><td colspan="3" class="ig-loading">尚無費用項目</td></tr>';
+    document.getElementById('budget-total-text').textContent = '—';
+    return;
+  }
+  let totalMin = 0, totalMax = 0;
+  tbody.innerHTML = items.map(item => {
+    const min = Number(item.price_min) || 0;
+    const max = Number(item.price_max) || 0;
+    totalMin += min; totalMax += max;
+    return `
+      <tr data-id="${item.id}">
+        <td>${item.label}${item.desc ? `<br><small style="color:#aaa;">${item.desc}</small>` : ''}</td>
+        <td class="price">NT$ ${min.toLocaleString()}–${max.toLocaleString()}</td>
+        <td><button class="item-del-btn" onclick="deleteBudgetItem(${item.id})" title="刪除">✕</button></td>
+      </tr>`;
+  }).join('');
+  document.getElementById('budget-total-text').textContent = `NT$ ${totalMin.toLocaleString()}–${totalMax.toLocaleString()}`;
+}
+
+async function submitAddBudget() {
+  const label = document.getElementById('f-label').value.trim();
+  const desc = document.getElementById('f-desc').value.trim();
+  const price_min = document.getElementById('f-price-min').value.trim();
+  const price_max = document.getElementById('f-price-max').value.trim();
+  if (!label || !price_min || !price_max) { alert('請填寫項目名稱和費用'); return; }
+  const btn = document.getElementById('modal-submit-btn');
+  btn.textContent = '新增中…'; btn.disabled = true;
+  try {
+    const params = new URLSearchParams({ action: 'add_budget', label, desc, price_min, price_max });
+    await fetch(`${GAS_URL}?${params}`);
+    closeModal();
+    await loadBudget();
+  } catch {
+    alert('新增失敗，請稍後再試');
+    btn.textContent = '新增'; btn.disabled = false;
+  }
+}
+
+async function deleteBudgetItem(id) {
+  if (!confirm('確定刪除這個費用項目？')) return;
+  try {
+    await fetch(`${GAS_URL}?action=delete_budget&id=${id}`);
+    await loadBudget();
+  } catch {
+    alert('刪除失敗，請稍後再試');
+  }
+}
+
+// ===== Transport =====
+async function loadTransport() {
+  document.getElementById('transport-tbody').innerHTML = '<tr><td colspan="4" class="ig-loading">載入中…</td></tr>';
+  try {
+    const res = await fetch(`${GAS_URL}?action=get_transport`);
+    const json = await res.json();
+    if (json.status === 'ok') renderTransport(json.data);
+    else throw new Error();
+  } catch {
+    document.getElementById('transport-tbody').innerHTML = '<tr><td colspan="4" class="ig-loading">載入失敗，請重新整理</td></tr>';
+  }
+}
+
+function renderTransport(items) {
+  const tbody = document.getElementById('transport-tbody');
+  if (!items || !items.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="ig-loading">尚無對比項目</td></tr>';
+    return;
+  }
+  tbody.innerHTML = items.map(item => `
+    <tr data-id="${item.id}">
+      <td>${item.item}</td>
+      <td class="price">${item.charter}</td>
+      <td class="price">${item.taxi}</td>
+      <td><button class="item-del-btn" onclick="deleteTransportItem(${item.id})" title="刪除">✕</button></td>
+    </tr>`).join('');
+}
+
+async function submitAddTransport() {
+  const item = document.getElementById('f-item').value.trim();
+  const charter = document.getElementById('f-charter').value.trim();
+  const taxi = document.getElementById('f-taxi').value.trim();
+  if (!item) { alert('請填寫項目名稱'); return; }
+  const btn = document.getElementById('modal-submit-btn');
+  btn.textContent = '新增中…'; btn.disabled = true;
+  try {
+    const params = new URLSearchParams({ action: 'add_transport', item, charter, taxi });
+    await fetch(`${GAS_URL}?${params}`);
+    closeModal();
+    await loadTransport();
+  } catch {
+    alert('新增失敗，請稍後再試');
+    btn.textContent = '新增'; btn.disabled = false;
+  }
+}
+
+async function deleteTransportItem(id) {
+  if (!confirm('確定刪除這個對比項目？')) return;
+  try {
+    await fetch(`${GAS_URL}?action=delete_transport&id=${id}`);
+    await loadTransport();
+  } catch {
+    alert('刪除失敗，請稍後再試');
+  }
+}
+
+// ===== Init =====
+document.addEventListener('DOMContentLoaded', () => {
+  loadState();
+  loadIgSpots();
+  loadChecklist();
+  loadBudget();
+  loadTransport();
+});
 </script>
 </body>
 </html>
