@@ -3,7 +3,10 @@
     "allow": [
       "WebSearch",
       "Bash(git *)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "WebFetch(domain:developers.facebook.com)",
+      "WebFetch(domain:embedsocial.substack.com)",
+      "WebFetch(domain:www.techswill.com)"
     ]
   }
 }
