@@ -343,10 +343,19 @@ GAS `flights` schema：`id, direction, airline, flight_no, date, depart_time, ar
 
 ## Thread 收藏地點卡（card-thread）
 
-Embed 方式：直接用 `<iframe src="https://www.threads.net/@user/post/ID/embed/" loading="lazy">` 嵌入。
-不依賴 `threads.net/embed/iframe.js`（已移除）。
+Embed 方式：`<blockquote class="text-post-media" data-text-post-permalink="URL">` +
+動態載入 `https://www.threads.com/embed.js`（**非** `threads.net`，舊路徑已 404）。
 
-`getThreadEmbedSrc(url)` — 從 threadUrl 轉換出 iframe src，無法解析則回 null。
+**注意**：Instagram 與 Threads 共用 `window.instgrm.Embeds.process` namespace。
+Instagram embed.js 會搶先設好此函式，導致 Threads 的 init() 跳過 R()。
+解法：載入 threads.com/embed.js 前暫時清空 `process`，onload 後將 Threads 的 R()
+存成 `window._threadsProcess`，並還原 Instagram 的 process。
+
+`hasThreadUrl(url)` — 判斷 threadUrl 是否合法（支援 threads.net / threads.com）。
+
+Embed 流程（renderThreadCards 尾端）：
+- `window._threadsProcess` 已存在 → 直接呼叫（後續重渲染用）
+- 否則暫存 IG process、清空、插入 script[data-threads-embed]、onload 存 _threadsProcess 並還原 IG process
 
 ---
 
