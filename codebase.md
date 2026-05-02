@@ -83,6 +83,10 @@ Timeline 由 `renderTimeline(day, items)` 動態渲染，資料優先讀 `busanT
 | `card-ig` | 📸 IG 收藏地點 | col-1 | GAS `get` + timeline mapping | `#ig-cards-container` |
 | `card-budget` | 💰 費用試算 | col-2 | GAS `get_budget` | `#budget-tbody`, `#budget-total-text` |
 | `card-transport` | 🚗 交通方案對比 | col-3 | GAS `get_transport` | `#transport-tbody` |
+| `card-flight` | ✈️ 機票資訊 | col-3 | GAS `get_flights` | 動態 `<tbody>` |
+| `card-hotel-info` | 🏨 住宿資訊 | col-2 | GAS `get_hotels_info` | 動態 `<tbody>` |
+| `card-thread` | 🧵 Thread 收藏地點 | col-1 | GAS `get_threads` | `#thread-cards-container` |
+| `card-video` | 🎬 拍片靈感 | col-1 | GAS `get_videos` | `#video-cards-container` |
 
 ---
 
@@ -183,6 +187,9 @@ Sheets ID：`1ZXw0zHHBW48ApYBE070nGuB5ZGsTE_lvmVtQIMNLmVs`
 | `get_transport` | 交通對比列表 | — |
 | `add_transport` | 新增對比列 | `item,charter,taxi` |
 | `delete_transport&id=` | 刪除對比列 | — |
+| `get_videos` | 拍片靈感列表 | — |
+| `add_video` | 新增拍片靈感 | `name,detail,day,icon,color1,color2,naverUrl,igUrl,threadUrl` |
+| `delete_video&id=` | 刪除拍片靈感 | — |
 
 ### GAS doGet 寫法（重要：勿用 switch/case）
 
@@ -215,6 +222,7 @@ if (action === 'get_flights') {
 | `flights` | `id, direction, airline, flight_no, date, depart_time, arrive_time, price_no_bag, price_bag, note` |
 | `hotels_info` | `id, day, hotel_name, address, checkin, checkout, price_per_night, naverUrl, note` |
 | `threads_spots` | `id, name, detail, day, icon, color1, color2, naverUrl, threadUrl` |
+| `video_spots` | `id, name, detail, day, icon, color1, color2, naverUrl, igUrl, threadUrl` |
 | `hotel_bar` | `id, day, hotel_name, hotel_detail` |
 | `car_bar` | `id, day, car_title, car_desc` |
 | `trip_settings` | `key, value`（headcount, layout 兩個 key） |
@@ -297,6 +305,14 @@ loadTransport()          // fetch get_transport → renderTransport
 renderTransport(items)   // 動態 <tr>；結論列在 <tfoot>（hardcoded）
 submitAddTransport()     // fetch add_transport → reload
 deleteTransportItem(id)  // fetch delete_transport → reload
+```
+
+### 拍片靈感
+```js
+loadVideoSpots()         // fetch get_videos → renderVideoCards
+renderVideoCards(spots)  // 渲染 .ig-card；igUrl → IG embed；threadUrl（無 igUrl 時）→ Thread embed
+submitAddVideo()         // modal 欄位 → fetch add_video → loadVideoSpots
+deleteVideoSpot(id)      // fetch delete_video → loadVideoSpots
 ```
 
 ---

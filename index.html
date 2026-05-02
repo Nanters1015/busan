@@ -844,6 +844,25 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
       </div>
     </div>
 
+    <div class="card col-1" id="card-video">
+      <div class="card-header">
+        <div class="card-header-left">
+          <span class="card-title-text">🎬 拍片靈感</span>
+          <button class="ig-add-btn" onclick="openModal('video')">＋ 新增靈感</button>
+        </div>
+        <div class="card-toolbar">
+          <button class="card-resize" onclick="resizeCard('card-video')" title="調整欄寬">⊞</button>
+          <span class="drag-handle">⠿</span>
+          <button class="card-delete" onclick="deleteCard('card-video')">✕</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="ig-cards" id="video-cards-container">
+          <div class="ig-loading">載入中…</div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /sortable-area -->
 </div><!-- /dashboard -->
 
@@ -1240,6 +1259,44 @@ const MODAL_CONFIGS = {
         <label class="modal-label">Thread 貼文連結（選填）</label>
         <input class="modal-input" id="f-threadurl" placeholder="https://www.threads.net/@username/post/…" />
       </div>`
+  },
+  video: {
+    title: '🎬 新增拍片靈感',
+    fields: `
+      <div class="modal-field">
+        <label class="modal-label">標題 *</label>
+        <input class="modal-input" id="f-name" placeholder="例：廣安大橋夕陽拍攝點" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">說明（景點｜拍攝技巧）*</label>
+        <input class="modal-input" id="f-detail" placeholder="例：廣安里｜黃昏光線最美" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">天數</label>
+        <select class="modal-select" id="f-day">
+          <option value="0">不指定</option>
+          <option value="1">Day 1</option>
+          <option value="2">Day 2</option>
+          <option value="3">Day 3</option>
+          <option value="4">Day 4</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">表情符號</label>
+        <input class="modal-input" id="f-icon" placeholder="🎬" maxlength="2" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Naver 地圖連結（選填）</label>
+        <input class="modal-input" id="f-naver" placeholder="nmap://place?lat=…" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">IG 貼文連結（選填）</label>
+        <input class="modal-input" id="f-igurl" placeholder="https://www.instagram.com/p/XXXXXX/" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Thread 貼文連結（選填）</label>
+        <input class="modal-input" id="f-threadurl" placeholder="https://www.threads.net/@username/post/…" />
+      </div>`
   }
 };
 
@@ -1276,7 +1333,8 @@ function submitModal() {
     'car-bar': submitCarBar,
     flight: submitAddFlight,
     'hotel-info': submitAddHotelInfo,
-    thread: submitAddThreadSpot
+    thread: submitAddThreadSpot,
+    video: submitAddVideo
   };
   map[currentModalMode]?.();
 }
@@ -1989,6 +2047,124 @@ async function deleteThreadSpot(id) {
   } catch { alert('刪除失敗，請稍後再試'); }
 }
 
+// ===== Video Spots =====
+async function loadVideoSpots() {
+  const c = document.getElementById('video-cards-container');
+  if (!c) return;
+  try {
+    const res = await fetch(`${GAS_URL}?action=get_videos`);
+    const json = await res.json();
+    if (json.status === 'ok') renderVideoCards(json.data);
+    else throw new Error();
+  } catch {
+    c.innerHTML = '<div class="ig-loading">載入失敗，請重新整理</div>';
+  }
+}
+
+function renderVideoCards(spots) {
+  const container = document.getElementById('video-cards-container');
+  if (!spots?.length) {
+    container.innerHTML = '<div class="ig-loading">尚無靈感，點「＋ 新增靈感」開始新增</div>';
+    return;
+  }
+  container.innerHTML = spots.map(s => {
+    const day = Number(s.day) || 0;
+    const col = DAY_COLORS[day] || { c1: '#555', c2: '#888', badge: '#888' };
+    const c1 = s.color1 || col.c1;
+    const c2 = s.color2 || col.c2;
+    const naverBtn = s.naverUrl
+      ? `<a class="naver-link" href="${escHtml(s.naverUrl)}" target="_blank">📍</a>`
+      : '<span></span>';
+    const igCode = extractIgCode(s.igUrl);
+    let embedHtml = '';
+    if (igCode) {
+      embedHtml = `
+      <div class="ig-embed-wrap">
+        <blockquote class="instagram-media"
+          data-instgrm-permalink="https://www.instagram.com/p/${igCode}/"
+          data-instgrm-version="14" style="margin:0;">
+        </blockquote>
+      </div>`;
+    } else if (hasThreadUrl(s.threadUrl)) {
+      embedHtml = `
+      <div class="ig-embed-wrap">
+        <blockquote class="text-post-media"
+          data-text-post-permalink="${escHtml(s.threadUrl)}"
+          style="margin:0;background:#fff;border:1px solid #ddd;border-radius:12px;"></blockquote>
+      </div>`;
+    }
+    return `
+      <div class="ig-card" data-id="${s.id}">
+        <div class="ig-card-photo" style="background:linear-gradient(135deg,${c1},${c2});">
+          <div class="ig-photo-icon">${escHtml(s.icon || '🎬')}</div>
+          <button class="ig-card-del" onclick="deleteVideoSpot(${s.id})" title="刪除">✕</button>
+        </div>
+        <div class="ig-card-body">
+          <div class="ig-card-name">${escHtml(s.name)}</div>
+          <div class="ig-card-detail">${escHtml(s.detail)}</div>
+          <div class="ig-card-footer">
+            ${day ? `<span class="ig-day-badge" style="background:${col.badge};">Day ${day}</span>` : '<span></span>'}
+            ${naverBtn}
+          </div>
+        </div>
+        ${embedHtml}
+      </div>`;
+  }).join('');
+  window.instgrm?.Embeds?.process();
+  if (spots.some(s => !extractIgCode(s.igUrl) && hasThreadUrl(s.threadUrl))) {
+    if (window._threadsProcess) {
+      window._threadsProcess();
+    } else if (!document.querySelector('script[data-threads-embed]')) {
+      const savedIgProcess = window.instgrm?.Embeds?.process;
+      if (window.instgrm?.Embeds) window.instgrm.Embeds.process = null;
+      const ts = document.createElement('script');
+      ts.async = true;
+      ts.dataset.threadsEmbed = '1';
+      ts.onload = () => {
+        window._threadsProcess = window.instgrm?.Embeds?.process;
+        if (savedIgProcess && window.instgrm?.Embeds) window.instgrm.Embeds.process = savedIgProcess;
+      };
+      ts.src = 'https://www.threads.com/embed.js';
+      document.body.appendChild(ts);
+    }
+  }
+}
+
+async function submitAddVideo() {
+  const name = document.getElementById('f-name').value.trim();
+  const detail = document.getElementById('f-detail').value.trim();
+  if (!name || !detail) { alert('請填寫標題和說明'); return; }
+  const day = document.getElementById('f-day').value;
+  const col = DAY_COLORS[Number(day)] || { c1: '#555', c2: '#888' };
+  const btn = document.getElementById('modal-submit-btn');
+  btn.textContent = '新增中…'; btn.disabled = true;
+  try {
+    const params = new URLSearchParams({
+      action: 'add_video',
+      name, detail, day,
+      icon: document.getElementById('f-icon').value.trim() || '🎬',
+      color1: col.c1, color2: col.c2,
+      naverUrl: document.getElementById('f-naver').value.trim(),
+      igUrl: document.getElementById('f-igurl').value.trim(),
+      threadUrl: document.getElementById('f-threadurl').value.trim()
+    });
+    await fetch(`${GAS_URL}?${params}`);
+    closeModal();
+    await loadVideoSpots();
+  } catch {
+    alert('新增失敗，請稍後再試');
+    btn.textContent = '新增'; btn.disabled = false;
+  }
+}
+
+async function deleteVideoSpot(id) {
+  if (!confirm('確定刪除這個靈感？')) return;
+  try {
+    await fetch(`${GAS_URL}?action=delete_video&id=${id}`);
+    await loadVideoSpots();
+  } catch { alert('刪除失敗，請稍後再試'); }
+}
+
 // ===== Card Resize =====
 function resizeCard(id) {
   const el = document.getElementById(id);
@@ -2148,6 +2324,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadFlights();
   loadHotelsInfo();
   loadThreadSpots();
+  loadVideoSpots();
 });
 </script>
 </body>
