@@ -912,7 +912,8 @@ function saveOrder() {
   localStorage.setItem('busanCardOrder', JSON.stringify(ids));
   saveCardCols();
   const cols = JSON.parse(localStorage.getItem('busanCardCols') || '{}');
-  const data = JSON.stringify({ order: ids, cols });
+  const deleted = JSON.parse(localStorage.getItem('busanDeletedCards') || '[]');
+  const data = JSON.stringify({ order: ids, cols, deleted });
   fetch(`${GAS_URL}?action=save_layout&data=${encodeURIComponent(data)}`).catch(() => {});
 }
 
@@ -937,6 +938,7 @@ async function resetLayout() {
       const layout = JSON.parse(json.data);
       if (layout.order) localStorage.setItem('busanCardOrder', JSON.stringify(layout.order));
       if (layout.cols) localStorage.setItem('busanCardCols', JSON.stringify(layout.cols));
+      if (layout.deleted) localStorage.setItem('busanDeletedCards', JSON.stringify(layout.deleted));
     }
   } catch {}
   location.reload();
@@ -958,24 +960,41 @@ function applyCardCols(cols) {
 }
 
 async function loadState() {
+  // 先從 localStorage 讀出已刪除卡片並立即隱藏
   const deleted = JSON.parse(localStorage.getItem('busanDeletedCards') || '[]');
   deleted.forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
-  const localOrder = JSON.parse(localStorage.getItem('busanCardOrder') || 'null');
-  if (localOrder) {
-    applyCardOrder(localOrder);
+
+  // 快速初始渲染：從 localStorage 讀出快取排版
+  const cachedOrder = JSON.parse(localStorage.getItem('busanCardOrder') || 'null');
+  if (cachedOrder) {
+    applyCardOrder(cachedOrder);
     const savedCols = JSON.parse(localStorage.getItem('busanCardCols') || '{}');
     applyCardCols(savedCols);
-  } else {
-    try {
-      const res = await fetch(`${GAS_URL}?action=get_layout`);
-      const json = await res.json();
-      if (json.status === 'ok' && json.data) {
-        const layout = JSON.parse(json.data);
-        if (layout.order) applyCardOrder(layout.order);
-        if (layout.cols) applyCardCols(layout.cols);
-      }
-    } catch {}
   }
+
+  // 永遠同步 GAS（正式共享排版）
+  try {
+    const res = await fetch(`${GAS_URL}?action=get_layout`);
+    const json = await res.json();
+    if (json.status === 'ok' && json.data) {
+      const layout = JSON.parse(json.data);
+      // 套用已刪除卡片（覆蓋 localStorage）
+      if (layout.deleted) {
+        layout.deleted.forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
+        localStorage.setItem('busanDeletedCards', JSON.stringify(layout.deleted));
+      }
+      // 套用排序與欄寬
+      if (layout.order) {
+        applyCardOrder(layout.order);
+        localStorage.setItem('busanCardOrder', JSON.stringify(layout.order));
+      }
+      if (layout.cols) {
+        applyCardCols(layout.cols);
+        localStorage.setItem('busanCardCols', JSON.stringify(layout.cols));
+      }
+    }
+  } catch {}  // GAS 失敗時維持 localStorage 快取渲染（fallback）
+
   [1,2,3,4].forEach(day => renderTimeline(day, getTimelineItems(day)));
 }
 

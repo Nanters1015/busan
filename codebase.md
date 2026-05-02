@@ -244,10 +244,10 @@ DAY_COLORS = {
 ### 版型
 ```js
 toggleEdit()          // 切換 body.edit-mode；啟用/銷毀 SortableJS
-saveOrder()           // 儲存排序 + 欄寬到 localStorage，同時 fire-and-forget 寫 GAS save_layout
+saveOrder()           // 儲存排序 + 欄寬 + deletedCards 到 localStorage，同時 fire-and-forget 寫 GAS save_layout
 deleteCard(id)        // 移除卡片 + 記錄 localStorage
-resetLayout()         // 清所有 localStorage → 從 GAS 讀回共享排版 → reload（async）
-loadState()           // 還原刪除/排序/欄寬，並 renderTimeline 全部 4 天（async；無 localStorage 時 fallback GAS）
+resetLayout()         // 清所有 localStorage → 從 GAS 讀回共享排版（含 deleted） → reload（async）
+loadState()           // 快速初始渲染 localStorage 快取，永遠同步 GAS 共享排版；GAS 失敗時 fallback localhost（async）
 applyCardOrder(order) // 將 order 陣列套用到 sortable-area DOM
 applyCardCols(cols)   // 將 cols 物件套用到各卡片 className
 resizeCard(id)        // 循環切換 card 的 col-1/2/3，呼叫 saveCardCols()
@@ -321,9 +321,9 @@ deleteVideoSpot(id)      // fetch delete_video → loadVideoSpots
 
 | Key | 內容 |
 |-----|------|
-| `busanCardOrder` | `string[]` 卡片 ID 排列順序 |
-| `busanDeletedCards` | `string[]` 已刪除的卡片 ID |
-| `busanCardCols` | `{[cardId]: 'col-N'}` 各 sortable card 的欄寬 |
+| `busanCardOrder` | `string[]` 卡片 ID 排列順序；從 GAS 同步回來的快取 |
+| `busanDeletedCards` | `string[]` 已刪除的卡片 ID；從 GAS `trip_settings.layout` 同步 |
+| `busanCardCols` | `{[cardId]: 'col-N'}` 各 sortable card 的欄寬；從 GAS 同步回來的快取 |
 | `busanTimeline_{day}` | `TlItem[]` 第 N 天行程（1–4），覆蓋 DEFAULT_TIMELINE |
 | `busanCheck_{id}` | `'1'` 表示該清單項目已勾選 |
 
@@ -377,10 +377,10 @@ Embed 流程（renderThreadCards 尾端）：
 
 ## 排版同步（GAS 共享）
 
-`busanCardOrder` / `busanCardCols` 除存 localStorage 外，同步至 GAS `trip_settings.layout`（JSON 字串）。
+`busanCardOrder` / `busanCardCols` / `busanDeletedCards` 除存 localStorage 外，同步至 GAS `trip_settings.layout`（JSON 字串 `{order, cols, deleted}`）。
 
-- `saveOrder()` 每次呼叫同時 fire-and-forget `save_layout`
-- `loadState()` 無 localStorage 時 fetch `get_layout` 作 fallback（async）
-- `resetLayout()` 清 localStorage 後從 GAS 讀回共享排版再 reload
+- `saveOrder()` 每次呼叫同時 fire-and-forget `save_layout`（payload 含 order / cols / deleted）
+- `loadState()` **永遠** fetch `get_layout` 同步共享排版；localStorage 作快速初始渲染快取（async）
+- `resetLayout()` 清 localStorage 後從 GAS 讀回共享排版（含 deleted）再 reload
 
 GAS actions：`get_layout`、`save_layout&data=JSON`（寫入 trip_settings.layout）
