@@ -170,6 +170,24 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC
 .modal-submit { flex: 2; background: #2d6a9f; color: white; border: none; border-radius: 20px; padding: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
 .modal-submit:disabled { background: #aaa; cursor: not-allowed; }
 
+/* Timeline editable */
+.tl-item { position: relative; }
+.tl-del-btn { position: absolute; right: 0; top: 2px; background: none; border: none; color: #ccc; cursor: pointer; font-size: 11px; padding: 2px 5px; border-radius: 4px; visibility: hidden; line-height: 1; }
+.tl-item:hover .tl-del-btn { visibility: visible; }
+.tl-del-btn:hover { color: #e05050; background: #ffeaea; }
+.tl-add-btn { display: none; margin-top: 5px; }
+.edit-mode .tl-add-btn { display: inline-block; }
+/* Card resize */
+.card-resize { background: none; border: none; color: #bbb; cursor: pointer; font-size: 12px; padding: 2px 6px; border-radius: 4px; line-height: 1; transition: color 0.2s; font-weight: 700; }
+.card-resize:hover { color: #2d6a9f; background: #e8f4fd; }
+/* IG timeline source badge */
+.ig-source-badge { font-size: 9px; padding: 1px 6px; border-radius: 10px; background: #e8f4fd; color: #1565a8; display: inline-block; margin-top: 3px; }
+/* Modal tag checkboxes */
+.modal-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.modal-tag-label { display: flex; align-items: center; gap: 3px; font-size: 11px; color: #555; cursor: pointer; padding: 3px 8px; border-radius: 20px; background: #f5f5f5; }
+.modal-tag-label input { cursor: pointer; margin: 0; width: auto; }
+.modal-tag-label:has(input:checked) { background: #e8f4fd; color: #1565a8; }
+
 ul { list-style: none; }
 ul li { margin: 3px 0; font-size: 11.5px; line-height: 1.6; color: #666; }
 ul li::before { content: "• "; color: #1565a8; font-weight: 600; margin-right: 4px; }
@@ -230,6 +248,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
               <div class="day-sub">下午班機入境，包車接機直奔廣安里</div>
             </div>
           </div>
+          <button class="ig-add-btn tl-add-btn" onclick="openModal('timeline', 1)">＋ 新增行程</button>
         </div>
       </div>
       <div class="card-body">
@@ -244,7 +263,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
           <div>🚐</div>
           <div class="car-bar-text"><strong>交通：包車從金海機場接機</strong><br>司機在出關口舉牌等候，行李全部上車，直達廣安里飯店</div>
         </div>
-        <div class="timeline">
+        <div class="timeline" id="timeline-d1">
           <div class="tl-item">
             <div class="tl-time">下午</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#378ADD;"></div><div class="tl-line"></div></div>
@@ -305,6 +324,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
               <div class="day-sub">膠囊列車、X the Sky、海理團路下午茶</div>
             </div>
           </div>
+          <button class="ig-add-btn tl-add-btn" onclick="openModal('timeline', 2)">＋ 新增行程</button>
         </div>
       </div>
       <div class="card-body">
@@ -319,7 +339,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
           <div>🚐</div>
           <div class="car-bar-text"><strong>交通：包車全天接送</strong><br>廣安里→海雲台各景點→換旅館，行李放車上不用搬</div>
         </div>
-        <div class="timeline">
+        <div class="timeline" id="timeline-d2">
           <div class="tl-item">
             <div class="tl-time">早餐</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
@@ -398,6 +418,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
               <div class="day-sub">Skyline Luge → 樂天世界 → 西面購物</div>
             </div>
           </div>
+          <button class="ig-add-btn tl-add-btn" onclick="openModal('timeline', 3)">＋ 新增行程</button>
         </div>
       </div>
       <div class="card-body">
@@ -413,7 +434,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
           <div class="car-bar-text"><strong>交通：包車全天（海雲台→機張→西面）</strong><br>⚠️ 機張屬郊區，訂車時確認是否加價</div>
         </div>
         <div class="tip-box">💡 建議先玩 Skyline Luge 再進樂天世界，步行 5 分鐘銜接！</div>
-        <div class="timeline">
+        <div class="timeline" id="timeline-d3">
           <div class="tl-item">
             <div class="tl-time">早餐</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
@@ -492,6 +513,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
               <div class="day-sub">扎嘎其市場→南浦洞→包車送機</div>
             </div>
           </div>
+          <button class="ig-add-btn tl-add-btn" onclick="openModal('timeline', 4)">＋ 新增行程</button>
         </div>
       </div>
       <div class="card-body">
@@ -499,7 +521,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
           <div>🚐</div>
           <div class="car-bar-text"><strong>交通：包車全天送機</strong><br>飯店→南浦洞→扎嘎其→金海機場，行李全丟車上！<br>✈️ 提前 2 小時到機場 / 預留 40 分鐘車程 / 記得退稅！</div>
         </div>
-        <div class="timeline">
+        <div class="timeline" id="timeline-d4">
           <div class="tl-item">
             <div class="tl-time">早餐</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
@@ -550,6 +572,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
       <div class="card-header">
         <div class="card-header-left"><span class="card-title-text">🌤 九月出發資訊</span></div>
         <div class="card-toolbar">
+          <button class="card-resize" onclick="resizeCard('card-weather')" title="調整欄寬">⊞</button>
           <span class="drag-handle">⠿</span>
           <button class="card-delete" onclick="deleteCard('card-weather')">✕</button>
         </div>
@@ -589,6 +612,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
           <button class="ig-add-btn" onclick="openModal('checklist')">＋ 新增項目</button>
         </div>
         <div class="card-toolbar">
+          <button class="card-resize" onclick="resizeCard('card-checklist')" title="調整欄寬">⊞</button>
           <span class="drag-handle">⠿</span>
           <button class="card-delete" onclick="deleteCard('card-checklist')">✕</button>
         </div>
@@ -608,6 +632,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
           <button class="ig-add-btn" onclick="openModal('ig')">＋ 新增地點</button>
         </div>
         <div class="card-toolbar">
+          <button class="card-resize" onclick="resizeCard('card-ig')" title="調整欄寬">⊞</button>
           <span class="drag-handle">⠿</span>
           <button class="card-delete" onclick="deleteCard('card-ig')">✕</button>
         </div>
@@ -627,6 +652,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
           <button class="ig-add-btn" onclick="openModal('budget')">＋ 新增費用</button>
         </div>
         <div class="card-toolbar">
+          <button class="card-resize" onclick="resizeCard('card-budget')" title="調整欄寬">⊞</button>
           <span class="drag-handle">⠿</span>
           <button class="card-delete" onclick="deleteCard('card-budget')">✕</button>
         </div>
@@ -665,6 +691,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
           <button class="ig-add-btn" onclick="openModal('transport')">＋ 新增對比</button>
         </div>
         <div class="card-toolbar">
+          <button class="card-resize" onclick="resizeCard('card-transport')" title="調整欄寬">⊞</button>
           <span class="drag-handle">⠿</span>
           <button class="card-delete" onclick="deleteCard('card-transport')">✕</button>
         </div>
@@ -720,6 +747,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
 let sortable = null;
 let isEditMode = false;
 let currentModalMode = null;
+let currentModalExtra = null;
 
 // ===== Layout =====
 function toggleEdit() {
@@ -743,6 +771,7 @@ function toggleEdit() {
 function saveOrder() {
   const ids = [...document.getElementById('sortable-area').children].map(el => el.id);
   localStorage.setItem('busanCardOrder', JSON.stringify(ids));
+  saveCardCols();
 }
 
 function deleteCard(id) {
@@ -756,8 +785,9 @@ function deleteCard(id) {
 }
 
 function resetLayout() {
-  localStorage.removeItem('busanCardOrder');
-  localStorage.removeItem('busanDeletedCards');
+  ['busanCardOrder','busanDeletedCards','busanCardCols',
+   'busanTimeline_1','busanTimeline_2','busanTimeline_3','busanTimeline_4'
+  ].forEach(k => localStorage.removeItem(k));
   location.reload();
 }
 
@@ -765,12 +795,19 @@ function loadState() {
   const deleted = JSON.parse(localStorage.getItem('busanDeletedCards') || '[]');
   deleted.forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
   const order = JSON.parse(localStorage.getItem('busanCardOrder') || 'null');
-  if (!order) return;
-  const container = document.getElementById('sortable-area');
-  order.forEach(id => {
+  if (order) {
+    const container = document.getElementById('sortable-area');
+    order.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.parentNode === container) container.appendChild(el);
+    });
+  }
+  const savedCols = JSON.parse(localStorage.getItem('busanCardCols') || '{}');
+  Object.entries(savedCols).forEach(([id, col]) => {
     const el = document.getElementById(id);
-    if (el && el.parentNode === container) container.appendChild(el);
+    if (el) { el.classList.remove('col-1','col-2','col-3'); el.classList.add(col); }
   });
+  [1,2,3,4].forEach(day => renderTimeline(day, getTimelineItems(day)));
 }
 
 // ===== Modal =====
@@ -855,15 +892,52 @@ const MODAL_CONFIGS = {
         <label class="modal-label">計程車方案</label>
         <input class="modal-input" id="f-taxi" placeholder="例：約 NT$1,500–2,000" />
       </div>`
+  },
+  timeline: {
+    title: day => `📅 D${day} 新增行程`,
+    fields: () => `
+      <div class="modal-field">
+        <label class="modal-label">時段 *</label>
+        <input class="modal-input" id="f-tl-time" placeholder="例：早餐、上午、下午、晚餐、宵夜" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">行程名稱 *</label>
+        <input class="modal-input" id="f-tl-name" placeholder="例：🍜 XX 餐廳" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">描述（選填）</label>
+        <input class="modal-input" id="f-tl-desc" placeholder="例：道地釜山口味，必點辣炒年糕" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Naver 地圖連結（選填）</label>
+        <input class="modal-input" id="f-tl-naver" placeholder="nmap://place?lat=…" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">標籤（選填）</label>
+        <div class="modal-tags">
+          <label class="modal-tag-label"><input type="checkbox" value="tag-food" data-label="餐食"> 🍽 餐食</label>
+          <label class="modal-tag-label"><input type="checkbox" value="tag-spot" data-label="景點"> 📸 景點</label>
+          <label class="modal-tag-label"><input type="checkbox" value="tag-ig" data-label="IG 收藏"> 📷 IG</label>
+          <label class="modal-tag-label"><input type="checkbox" value="tag-shop" data-label="購物"> 🛍 購物</label>
+          <label class="modal-tag-label"><input type="checkbox" value="tag-night" data-label="夜晚活動"> 🌙 夜晚</label>
+          <label class="modal-tag-label"><input type="checkbox" value="tag-spa" data-label="溫泉/汗蒸幕"> ♨️ 溫泉</label>
+          <label class="modal-tag-label"><input type="checkbox" value="tag-car" data-label="包車接送"> 🚐 包車</label>
+          <label class="modal-tag-label"><input type="checkbox" value="tag-thrill" data-label="刺激娛樂"> 🎢 刺激</label>
+          <label class="modal-tag-label"><input type="checkbox" value="tag-note" data-label="注意事項"> 📌 注意</label>
+        </div>
+      </div>`
   }
 };
 
-function openModal(mode) {
+function openModal(mode, extra) {
   const cfg = MODAL_CONFIGS[mode];
   if (!cfg) return;
   currentModalMode = mode;
-  document.getElementById('modal-title').textContent = cfg.title;
-  document.getElementById('modal-fields').innerHTML = cfg.fields;
+  currentModalExtra = extra ?? null;
+  const title = typeof cfg.title === 'function' ? cfg.title(extra) : cfg.title;
+  const fields = typeof cfg.fields === 'function' ? cfg.fields(extra) : cfg.fields;
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-fields').innerHTML = fields;
   document.getElementById('modal-submit-btn').textContent = '新增';
   document.getElementById('modal-submit-btn').disabled = false;
   document.getElementById('modal').classList.add('open');
@@ -877,7 +951,13 @@ function closeModal() {
 }
 
 function submitModal() {
-  const map = { ig: submitAddSpot, checklist: submitAddChecklist, budget: submitAddBudget, transport: submitAddTransport };
+  const map = {
+    ig: submitAddSpot,
+    checklist: submitAddChecklist,
+    budget: submitAddBudget,
+    transport: submitAddTransport,
+    timeline: () => submitAddTimeline(currentModalExtra)
+  };
   map[currentModalMode]?.();
 }
 
@@ -899,11 +979,38 @@ function extractIgCode(url) {
 
 function renderIgCards(spots) {
   const container = document.getElementById('ig-cards-container');
-  if (!spots || !spots.length) {
+  const tlItems = window._timelineIgItems || [];
+  if (!spots?.length && !tlItems.length) {
     container.innerHTML = '<div class="ig-loading">尚無地點，點「＋ 新增地點」開始新增</div>';
     return;
   }
-  container.innerHTML = spots.map(s => {
+
+  // Timeline-sourced cards (read-only)
+  const tlHtml = tlItems.map(s => {
+    const day = Number(s.day) || 1;
+    const col = DAY_COLORS[day] || DAY_COLORS[1];
+    const naverBtn = s.naverUrl
+      ? `<a class="naver-link" href="${s.naverUrl}" target="_blank">📍</a>`
+      : '<span></span>';
+    return `
+      <div class="ig-card">
+        <div class="ig-card-photo" style="background:linear-gradient(135deg,${col.c1},${col.c2});">
+          <div class="ig-photo-icon">${s.icon || '📍'}</div>
+        </div>
+        <div class="ig-card-body">
+          <div class="ig-card-name">${escHtml(s.name)}</div>
+          <div class="ig-card-detail">${escHtml(s.detail)}</div>
+          <div class="ig-card-footer">
+            <span class="ig-day-badge" style="background:${col.badge};">Day ${day}</span>
+            ${naverBtn}
+          </div>
+          <span class="ig-source-badge">📅 來自行程</span>
+        </div>
+      </div>`;
+  }).join('');
+
+  // GAS-sourced cards (with delete button)
+  const gasHtml = (spots || []).map(s => {
     const day = Number(s.day) || 1;
     const col = DAY_COLORS[day] || DAY_COLORS[1];
     const c1 = s.color1 || col.c1;
@@ -936,6 +1043,8 @@ function renderIgCards(spots) {
         ${igEmbed}
       </div>`;
   }).join('');
+
+  container.innerHTML = tlHtml + gasHtml;
   window.instgrm?.Embeds?.process();
 }
 
@@ -943,8 +1052,10 @@ async function loadIgSpots() {
   try {
     const res = await fetch(`${GAS_URL}?action=get`);
     const json = await res.json();
-    if (json.status === 'ok') renderIgCards(json.data);
-    else throw new Error();
+    if (json.status === 'ok') {
+      window._lastIgSpots = json.data;
+      renderIgCards(json.data);
+    } else throw new Error();
   } catch {
     const c = document.getElementById('ig-cards-container');
     if (c) c.innerHTML = '<div class="ig-loading">載入失敗，請重新整理</div>';
@@ -1175,6 +1286,153 @@ async function deleteTransportItem(id) {
   } catch {
     alert('刪除失敗，請稍後再試');
   }
+}
+
+// ===== Card Resize =====
+function resizeCard(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const cols = ['col-1', 'col-2', 'col-3'];
+  const cur = cols.find(c => el.classList.contains(c)) || 'col-1';
+  const next = cols[(cols.indexOf(cur) + 1) % cols.length];
+  el.classList.remove(...cols);
+  el.classList.add(next);
+  saveCardCols();
+}
+
+function saveCardCols() {
+  const cols = {};
+  [...document.getElementById('sortable-area').children].forEach(el => {
+    const col = ['col-1','col-2','col-3'].find(c => el.classList.contains(c));
+    if (col) cols[el.id] = col;
+  });
+  localStorage.setItem('busanCardCols', JSON.stringify(cols));
+}
+
+// ===== Timeline =====
+function escHtml(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function extractLeadingEmoji(str) {
+  const m = (str || '').match(/^([\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}☕♨️]+)/u);
+  return m ? m[1] : '📍';
+}
+
+const DEFAULT_TIMELINE = {
+  1: [
+    { id:'d1-1', time:'下午',  name:'🚐 包車接機 → 廣安里 check-in', desc:'30–40 分鐘抵達廣安里飯店，先放行李換輕便衣物', dotColor:'#378ADD', tags:[['tag-car','中文司機接機'],['tag-note','無需拖行李']] },
+    { id:'d1-2', time:'傍晚',  name:'🌅 廣安里海灘散步', desc:'廣安大橋黃昏最美，沙灘邊走走放鬆', dotColor:'#378ADD', tags:[['tag-spot','廣安大橋夕陽']], naverUrl:'nmap://place?lat=35.1525&lng=129.1190&name=광안리해수욕장' },
+    { id:'d1-3', time:'晚餐',  name:'🍖 seokhwayeon Korean BBQ', desc:'廣安里人氣韓式烤肉，第一頓飯豪邁開吃！', dotColor:'#D85A30', tags:[['tag-ig','IG 收藏'],['tag-food','韓式烤肉']], naverUrl:'nmap://place?lat=35.1520998&lng=129.1170955&name=석화연' },
+    { id:'d1-4', time:'晚上',  name:'♨️ Hotel Aqua Palace 汗蒸幕', desc:'廣安大橋海景，24hr 開放。約 NT$650（Pass可免費）', dotColor:'#1D9E75', tags:[['tag-spa','汗蒸幕'],['tag-spot','廣安大橋夜景']] },
+    { id:'d1-5', time:'宵夜',  name:'🍺 廣安里海灘布帳馬車', desc:'炸雞＋啤酒＋廣安大橋夜景，釜山最道地宵夜體驗', dotColor:'#7F77DD', tags:[['tag-night','炸雞啤酒海景']] }
+  ],
+  2: [
+    { id:'d2-1', time:'早餐',  name:'☕ working holiday（廣安里海景早午餐）', desc:'面向廣安大橋大片落地窗，09:00 起', dotColor:'#D85A30', tags:[['tag-food','早餐 09:00+'],['tag-spot','廣安大橋海景']], naverUrl:'nmap://place?lat=35.1547583&lng=129.1197477&name=워킹홀리데이' },
+    { id:'d2-2', time:'上午',  name:'🚞 天空膠囊列車', desc:'包車送到尾浦站，沿海岸線觀景。Pass可免費搭乘2次', dotColor:'#378ADD', tags:[['tag-spot','空中膠囊列車'],['tag-note','需提前預約']], priceTag:'NT$1,200-1,680/人', naverUrl:'nmap://place?lat=35.1607&lng=129.1847&name=해운대블루라인park' },
+    { id:'d2-3', time:'午餐',  name:'🦀 海雲台傳統市場', desc:'烤鰻魚、活章魚、海鮮湯飯，道地釜山味', dotColor:'#D85A30', tags:[['tag-food','海鮮市場小吃']], naverUrl:'nmap://place?lat=35.1614537&lng=129.1622489&name=해운대전통시장' },
+    { id:'d2-4', time:'下午',  name:'🏙 BUSAN X the Sky', desc:'100F 俯瞰整個海雲台，透明橋 Shocking Bridge，99F 世界最高星巴克', dotColor:'#378ADD', tags:[['tag-spot','100F 全景'],['tag-note','Klook 先買票']], priceTag:'NT$590-650/人', naverUrl:'nmap://place?lat=35.1637&lng=129.1584&name=BUSAN+X+the+SKY' },
+    { id:'d2-5', time:'下午茶', nameHtml:'☕ <a class="naver-link" href="nmap://place?lat=35.1645337&lng=129.1580765&name=캐버린하우스" target="_blank">Keveren House</a> + <a class="naver-link" href="nmap://place?lat=35.1643054&lng=129.1576309&name=듀플릿" target="_blank">DUPLIT</a>（IG×2）', desc:'海理團路，奶油派必買＋affogato 必試，兩間緊鄰連著逛', dotColor:'#7F77DD', tags:[['tag-ig','IG×2'],['tag-food','奶油派 / affogato']] },
+    { id:'d2-6', time:'晚餐',  name:'🦀 尾浦家 醬蟹', desc:'40 年老店，醬汁拌飯必點', dotColor:'#D85A30', tags:[['tag-food','醬蟹'],['tag-note','請司機協助訂位']], naverUrl:'nmap://place?lat=35.160751&lng=129.1714544&name=미포지브' },
+    { id:'d2-7', time:'夜晚',  name:'🌃 The Bay 101 海景夜生活', desc:'冬柏島入口夜景聖地，戶外酒吧看海上燈光倒影', dotColor:'#1D9E75', tags:[['tag-night','海景酒吧'],['tag-car','包車送回']], naverUrl:'nmap://place?lat=35.1567&lng=129.1521&name=The+Bay+101' }
+  ],
+  3: [
+    { id:'d3-1', time:'早餐',  name:'🥚 EGG DROP 西面樂天後門店', desc:'爆漿滑蛋吐司 08:00 起，蒜香培根起司必點', dotColor:'#D85A30', tags:[['tag-food','早餐 08:00+']], naverUrl:'nmap://place?lat=35.1557765&lng=129.0553859&name=에그드롭' },
+    { id:'d3-2', time:'上午',  name:'🛷 Skyline Luge', desc:'搭纜車上山、坐滑板車衝下來。Pass 免費 2 次，多玩再加購', dotColor:'#E24B4A', tags:[['tag-thrill','斜坡滑車'],['tag-car','包車直達']], priceTag:'NT$675-850/人 2次', naverUrl:'nmap://place?lat=35.1883&lng=129.2233&name=스카이라인루지부산' },
+    { id:'d3-3', time:'上午→', name:'🎢 釜山樂天世界冒險樂園', desc:'步行 5 分鐘進場！6 大區域 24 項設施。Klook約NT$610，Pass可免費', dotColor:'#378ADD', tags:[['tag-spot','主題樂園'],['tag-thrill','倒掛雲霄飛車']] },
+    { id:'d3-4', time:'午餐',  name:'🍟 樂天世界園內餐廳', desc:'BHC 炸雞、韓式拌飯、辣炒年糕', dotColor:'#D85A30', tags:[['tag-food','園內用餐']] },
+    { id:'d3-5', time:'下午',  name:'🛍 包車送到西面 Shopping', desc:'樂天百貨、Olive Young、西面地下街。Sulyamyeok Seomyeon（IG）順路', dotColor:'#7F77DD', tags:[['tag-ig','IG 收藏'],['tag-shop','Olive Young']] },
+    { id:'d3-6', time:'晚餐',  name:'🥩 味贊王 西面 鹽烤肉', desc:'厚達 3.5cm 豬五花，全程專人幫烤，17:00–23:00', dotColor:'#D85A30', tags:[['tag-food','厚切烤肉']], naverUrl:'nmap://place?lat=35.1554917&lng=129.0556616&name=맛찬들왕' },
+    { id:'d3-7', time:'宵夜',  nameHtml:'🍹 <a class="naver-link" href="nmap://place?lat=35.162329&lng=129.1916555&name=루아&티그레" target="_blank">lua&amp;tigre</a>（IG）＋ 西面酒吧街', desc:'西面大型咖啡廳酒吧，調酒氛圍超好', dotColor:'#1D9E75', tags:[['tag-ig','IG 收藏'],['tag-night','調酒 / 酒吧']] }
+  ],
+  4: [
+    { id:'d4-1', time:'早餐', name:'🍲 浦項豬肉湯飯', desc:'70 年老店，24hr 營業，最後一餐吃最道地的釜山代表美食！', dotColor:'#D85A30', tags:[['tag-food','釜山代表美食'],['tag-note','24hr']], naverUrl:'nmap://place?lat=35.1557935&lng=129.0585494&name=포항돼지국밥' },
+    { id:'d4-2', time:'上午', name:'🐟 扎嘎其市場＋南浦洞', desc:'韓國最大海鮮市場，BIFF 廣場掃最後一輪伴手禮（海苔、零食、韓國咖啡）', dotColor:'#378ADD', tags:[['tag-food','扎嘎其海鮮'],['tag-shop','伴手禮掃貨']], naverUrl:'nmap://place?lat=35.0967&lng=129.0300&name=자갈치시장' },
+    { id:'d4-3', time:'午餐', nameHtml:'🦑 <a class="naver-link" href="nmap://place?lat=35.098409&lng=129.025761&name=대양烤腸" target="_blank">大光烤腸</a> / 扎嘎其市場 2F 海鮮', desc:'最後一頓飯，吃好吃滿！', dotColor:'#D85A30', tags:[['tag-food','烤腸 / 海鮮']] },
+    { id:'d4-4', time:'下午', name:'🚐 包車直送金海機場返台', desc:'飯店門口上車，直達機場，記得辦退稅！', dotColor:'#7F77DD', tags:[['tag-car','包車送機'],['tag-note','記得退稅']] }
+  ]
+};
+
+function getTimelineItems(day) {
+  const saved = localStorage.getItem(`busanTimeline_${day}`);
+  return saved ? JSON.parse(saved) : (DEFAULT_TIMELINE[day] || []);
+}
+
+function renderTimeline(day, items) {
+  const container = document.getElementById(`timeline-d${day}`);
+  if (!container) return;
+
+  // Update Phase 3 IG mapping
+  window._timelineIgItems = (window._timelineIgItems || []).filter(i => i._day !== day);
+  items.forEach(item => {
+    if (item.tags && item.tags.some(([cls]) => cls === 'tag-ig')) {
+      const rawName = item.nameHtml ? item.nameHtml.replace(/<[^>]+>/g, '').trim() : (item.name || '');
+      window._timelineIgItems.push({
+        _day: day,
+        id: 'tl-' + item.id,
+        name: rawName,
+        detail: item.desc || '',
+        day,
+        icon: extractLeadingEmoji(rawName),
+        naverUrl: item.naverUrl || ''
+      });
+    }
+  });
+
+  container.innerHTML = items.map((item, i) => {
+    const isLast = i === items.length - 1;
+    const nameContent = item.nameHtml ||
+      (escHtml(item.name) +
+       (item.priceTag ? ` <span class="price-tag">${escHtml(item.priceTag)}</span>` : '') +
+       (item.naverUrl ? ` <a class="naver-link" href="${item.naverUrl}" target="_blank">📍</a>` : ''));
+    const tagsHtml = (item.tags || []).map(([cls, label]) =>
+      `<span class="tag ${cls}">${escHtml(label)}</span>`).join('');
+    return `
+      <div class="tl-item" data-id="${item.id}">
+        <div class="tl-time">${escHtml(item.time)}</div>
+        <div class="tl-dot-wrap">
+          <div class="tl-dot" style="background:${item.dotColor};"></div>
+          ${isLast ? '' : '<div class="tl-line"></div>'}
+        </div>
+        <div class="tl-body">
+          <div class="tl-name">${nameContent}</div>
+          ${item.desc ? `<div class="tl-desc">${escHtml(item.desc)}</div>` : ''}
+          ${tagsHtml ? `<div class="tags">${tagsHtml}</div>` : ''}
+          <button class="tl-del-btn" onclick="deleteTlItem('${item.id}',${day})" title="刪除此行程">✕</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function deleteTlItem(id, day) {
+  if (!confirm('確定刪除這筆行程？')) return;
+  const items = getTimelineItems(day).filter(item => item.id !== id);
+  localStorage.setItem(`busanTimeline_${day}`, JSON.stringify(items));
+  renderTimeline(day, items);
+  renderIgCards(window._lastIgSpots || []);
+}
+
+function submitAddTimeline(day) {
+  const time = document.getElementById('f-tl-time').value.trim();
+  const name = document.getElementById('f-tl-name').value.trim();
+  const desc = document.getElementById('f-tl-desc').value.trim();
+  const naverUrl = document.getElementById('f-tl-naver').value.trim();
+  if (!time || !name) { alert('請填寫時段和名稱'); return; }
+
+  const tags = [];
+  document.querySelectorAll('#modal-fields input[type=checkbox]:checked').forEach(cb => {
+    tags.push([cb.value, cb.dataset.label]);
+  });
+
+  const dotMap = { 'tag-food':'#D85A30','tag-spot':'#378ADD','tag-ig':'#7F77DD','tag-night':'#1D9E75','tag-spa':'#1D9E75','tag-car':'#378ADD','tag-thrill':'#E24B4A','tag-shop':'#7F77DD','tag-note':'#aaa' };
+  const dotColor = tags.length ? (dotMap[tags[0][0]] || DAY_COLORS[day].c2) : DAY_COLORS[day].c2;
+
+  const newItem = { id:`d${day}-${Date.now()}`, time, name, desc, dotColor, tags, naverUrl: naverUrl || null };
+  const items = [...getTimelineItems(day), newItem];
+  localStorage.setItem(`busanTimeline_${day}`, JSON.stringify(items));
+  closeModal();
+  renderTimeline(day, items);
+  renderIgCards(window._lastIgSpots || []);
 }
 
 // ===== Init =====

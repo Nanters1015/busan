@@ -23,12 +23,10 @@
 
 ## Grid 系統
 
-| 容器 | 預設欄數 | 說明 |
-|------|----------|------|
-| `#fixed-area` | 4 欄 | D1~D4 各佔 `col-1` |
-| `#sortable-area` | 3 欄 | 資訊卡用 `col-1/2/3` |
-
-欄寬 class：`col-1`（1欄）、`col-2`（2欄）、`col-3`（全寬）
+| 容器 | 預設欄數 |
+|------|----------|
+| `#fixed-area` | 4 欄，D1~D4 各 `col-1` |
+| `#sortable-area` | 3 欄，資訊卡用 `col-1/2/3` |
 
 響應式斷點：`≤1200px` → 2欄 / `≤768px` → 2欄 / `≤480px` → 單欄
 
@@ -71,9 +69,9 @@ Day 卡內部：`card-header(.day-header-row)` → `.hotel-bar` → `.car-bar` �
 
 ### Sortable area（可拖曳）
 
-| ID | 標題 | col | 資料來源 | 動態 DOM ID |
-|----|------|-----|----------|-------------|
-| `card-weather` | 🌤 九月出發資訊 | col-1 | 靜態 HTML | — |
+| ID | 標題 | col | 資料來源 | 動態容器 |
+|----|------|-----|----------|----------|
+| `card-weather` | 🌤 九月出發資訊 | col-1 | 靜態 | — |
 | `card-checklist` | 📋 出發前準備清單 | col-1 | GAS `get_checklist` | `#checklist-body` |
 | `card-ig` | 📸 IG 收藏地點 | col-1 | GAS `get` | `#ig-cards-container` |
 | `card-budget` | 💰 費用試算 | col-2 | GAS `get_budget` | `#budget-tbody`, `#budget-total-text` |
@@ -91,31 +89,29 @@ Day 卡內部：`card-header(.day-header-row)` → `.hotel-bar` → `.car-bar` �
 ### Tag pills
 `.tag-food` `.tag-spot` `.tag-shop` `.tag-night` `.tag-spa` `.tag-note` `.tag-ig` `.tag-car` `.tag-thrill`
 
-`.price-tag` → 橘色價格標籤
+`.price-tag` → 橘色價格標籤  
 `.naver-link` → 綠色 Naver Map 連結（`nmap://` scheme）
 
 ### 其他元件
 - `.hotel-bar` / `.car-bar` → 淡藍底資訊列
 - `.tip-box` → 黃色左邊框提示框
 - `.weather-grid` / `.weather-card` → 天氣格
-- `.ig-card` → IG 地點卡（漸層色彩圖 + hover 顯示刪除按鈕 `.ig-card-del`）
-- `.ig-embed-wrap` → IG 貼文 embed 容器（`<blockquote class="instagram-media">`）
-- `.budget-table` → 費用/交通表，`.budget-total` 為合計列（放在 `<tfoot>`）
+- `.ig-card` → IG 地點卡（漸層色彩圖 + hover 顯示 `.ig-card-del`）
+- `.ig-embed-wrap` → IG 貼文 embed 容器（支援 `/p/` 和 `/reel/`）
+- `.budget-table` → 費用/交通表，`.budget-total` 合計列在 `<tfoot>`
 - `.checklist-section` / `.check-item` → 可勾選清單
-- `.item-del-btn` → hover 顯示的刪除按鈕（checklist/budget/transport 共用）
-- `.ig-add-btn` → 卡片 header 的「＋ 新增」按鈕（共用樣式）
+- `.item-del-btn` → hover 顯示刪除按鈕（checklist/budget/transport 共用）
+- `.ig-add-btn` → 卡片 header「＋ 新增」按鈕（共用樣式）
 
 ---
 
 ## 通用 Modal（`#modal`）
 
-單一 modal 元素，動態切換內容。
-
 ```html
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-title" id="modal-title"></div>
-    <div id="modal-fields"></div>   <!-- 由 openModal() 動態注入 -->
+    <div id="modal-fields"></div>   <!-- openModal() 動態注入 -->
     <div class="modal-actions">
       <button onclick="closeModal()">取消</button>
       <button id="modal-submit-btn" onclick="submitModal()">新增</button>
@@ -124,41 +120,41 @@ Day 卡內部：`card-header(.day-header-row)` → `.hotel-bar` → `.car-bar` �
 </div>
 ```
 
-| mode | 標題 | 欄位 IDs |
-|------|------|----------|
-| `'ig'` | 📍 新增 IG 地點 | `f-name`, `f-detail`, `f-day`, `f-icon`, `f-naver`, `f-igurl` |
-| `'checklist'` | 📋 新增準備項目 | `f-label`, `f-note` |
-| `'budget'` | 💰 新增費用項目 | `f-label`, `f-desc`, `f-price-min`, `f-price-max` |
-| `'transport'` | 🚗 新增交通對比項目 | `f-item`, `f-charter`, `f-taxi` |
+| mode | 欄位 IDs |
+|------|----------|
+| `'ig'` | `f-name`, `f-detail`, `f-day`, `f-icon`, `f-naver`, `f-igurl` |
+| `'checklist'` | `f-label`, `f-note` |
+| `'budget'` | `f-label`, `f-desc`, `f-price-min`, `f-price-max` |
+| `'transport'` | `f-item`, `f-charter`, `f-taxi` |
 
 ---
 
 ## GAS 串接
 
-### 設定
 ```js
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbyCHxzRostMcu7OFiAJYqb0Q188qF_wYDMoODfE9os5NZ9INQTD_w4z-UXmS-78Q8B4Gg/exec';
 ```
+
 Sheets ID：`1ZXw0zHHBW48ApYBE070nGuB5ZGsTE_lvmVtQIMNLmVs`
 
-### GAS action 一覽
+### action 一覽
 
-| action | Sheet tab | 說明 |
-|--------|-----------|------|
-| `get` | `ig_spots` | 取得所有 IG 地點 |
-| `add` | `ig_spots` | 新增地點，params: `name,detail,day,icon,color1,color2,naverUrl,igUrl` |
-| `delete&id=` | `ig_spots` | 刪除 |
-| `get_checklist` | `checklist` | 取得所有清單項目 |
-| `add_checklist` | `checklist` | 新增，params: `label,note` |
-| `delete_checklist&id=` | `checklist` | 刪除 |
-| `get_budget` | `budget` | 取得所有費用列 |
-| `add_budget` | `budget` | 新增，params: `label,desc,price_min,price_max` |
-| `delete_budget&id=` | `budget` | 刪除 |
-| `get_transport` | `transport` | 取得所有交通對比列 |
-| `add_transport` | `transport` | 新增，params: `item,charter,taxi` |
-| `delete_transport&id=` | `transport` | 刪除 |
+| action | 說明 | params |
+|--------|------|--------|
+| `get` | IG 地點列表 | — |
+| `add` | 新增 IG 地點 | `name,detail,day,icon,color1,color2,naverUrl,igUrl` |
+| `delete&id=` | 刪除 IG 地點 | — |
+| `get_checklist` | 清單列表 | — |
+| `add_checklist` | 新增清單項目 | `label,note` |
+| `delete_checklist&id=` | 刪除清單項目 | — |
+| `get_budget` | 費用列表 | — |
+| `add_budget` | 新增費用 | `label,desc,price_min,price_max` |
+| `delete_budget&id=` | 刪除費用 | — |
+| `get_transport` | 交通對比列表 | — |
+| `add_transport` | 新增對比列 | `item,charter,taxi` |
+| `delete_transport&id=` | 刪除對比列 | — |
 
-### Sheet 欄位結構
+### Sheet 欄位
 
 | Tab | 欄位 |
 |-----|------|
@@ -167,7 +163,7 @@ Sheets ID：`1ZXw0zHHBW48ApYBE070nGuB5ZGsTE_lvmVtQIMNLmVs`
 | `budget` | `id, label, desc, price_min, price_max` |
 | `transport` | `id, item, charter, taxi` |
 
-### Day 顏色映射（JS 常數）
+### Day 顏色常數
 ```js
 DAY_COLORS = {
   1: { c1:'#1a3c5e', c2:'#378ADD', badge:'#378ADD' },
@@ -181,54 +177,54 @@ DAY_COLORS = {
 
 ## JavaScript 函式一覽
 
-### 版型控制
+### 版型
 ```js
-toggleEdit()          // 切換 body.edit-mode；啟用/銷毀 SortableJS
-saveOrder()           // 儲存 sortable-area 子元素順序到 localStorage
-deleteCard(id)        // 移除卡片 DOM + 記錄到 localStorage
-resetLayout()         // 清除 localStorage 並 reload
-loadState()           // 還原刪除/排序狀態（DOMContentLoaded）
+toggleEdit()       // 切換 body.edit-mode；啟用/銷毀 SortableJS
+saveOrder()        // 儲存排序到 localStorage
+deleteCard(id)     // 移除卡片 + 記錄 localStorage
+resetLayout()      // 清 localStorage + reload
+loadState()        // 還原刪除/排序（DOMContentLoaded）
 ```
 
 ### Modal
 ```js
-openModal(mode)       // 注入對應 mode 的標題與欄位，顯示 modal
-closeModal()          // 隱藏 modal，清除 currentModalMode
-submitModal()         // 依 currentModalMode 分派到對應 submit 函式
+openModal(mode)    // 注入欄位、顯示 modal
+closeModal()       // 隱藏 modal
+submitModal()      // 依 currentModalMode 分派 submit
 ```
 
 ### IG 地點
 ```js
-extractIgCode(url)    // 從 IG URL 提取 shortcode（無 URL 回傳 null）
-renderIgCards(spots)  // 渲染卡片列表；有 igUrl 則插入 <blockquote embed>；呼叫 instgrm.Embeds.process()
-loadIgSpots()         // fetch GAS get → renderIgCards
-submitAddSpot()       // 讀 modal 欄位 → fetch GAS add → reload
-deleteIgSpot(id)      // fetch GAS delete → reload
+extractIgCode(url)   // 抓 /p/ 或 /reel/ shortcode；無則回 null
+renderIgCards(spots) // 渲染卡片；有 igUrl 插入 embed；呼叫 instgrm.Embeds.process()
+loadIgSpots()        // fetch get → renderIgCards
+submitAddSpot()      // modal 欄位 → fetch add → reload
+deleteIgSpot(id)     // fetch delete → reload
 ```
 
 ### 清單
 ```js
-loadChecklist()             // fetch GAS get_checklist → renderChecklist
-renderChecklist(items)      // 動態生成 .check-item；讀 localStorage 還原勾選狀態
-toggleCheckItem(id, box)    // 切換勾選，讀寫 localStorage key: busanCheck_{id}
-submitAddChecklist()        // fetch GAS add_checklist → reload
-deleteChecklistItem(id)     // fetch GAS delete_checklist → reload
+loadChecklist()           // fetch get_checklist → renderChecklist
+renderChecklist(items)    // 動態生成 .check-item；讀 localStorage 還原勾選
+toggleCheckItem(id, box)  // 切換勾選，key: busanCheck_{id}
+submitAddChecklist()      // fetch add_checklist → reload
+deleteChecklistItem(id)   // fetch delete_checklist → reload
 ```
 
 ### 費用
 ```js
-loadBudget()          // fetch GAS get_budget → renderBudget
-renderBudget(items)   // 動態生成 <tr>；加總 price_min/max 更新 #budget-total-text
-submitAddBudget()     // fetch GAS add_budget → reload
-deleteBudgetItem(id)  // fetch GAS delete_budget → reload
+loadBudget()        // fetch get_budget → renderBudget
+renderBudget(items) // 動態 <tr>；加總 price_min/max → #budget-total-text
+submitAddBudget()   // fetch add_budget → reload
+deleteBudgetItem(id)// fetch delete_budget → reload
 ```
 
 ### 交通
 ```js
-loadTransport()           // fetch GAS get_transport → renderTransport
-renderTransport(items)    // 動態生成 <tr>；結論列在 <tfoot>（hardcoded）
-submitAddTransport()      // fetch GAS add_transport → reload
-deleteTransportItem(id)   // fetch GAS delete_transport → reload
+loadTransport()          // fetch get_transport → renderTransport
+renderTransport(items)   // 動態 <tr>；結論列在 <tfoot>（hardcoded）
+submitAddTransport()     // fetch add_transport → reload
+deleteTransportItem(id)  // fetch delete_transport → reload
 ```
 
 ---
@@ -245,15 +241,7 @@ deleteTransportItem(id)   // fetch GAS delete_transport → reload
 
 ## 外部依賴
 
-| 用途 | 載入方式 |
-|------|----------|
-| SortableJS 1.15.2 | `<script src="cdn.jsdelivr.net/npm/sortablejs@1.15.2/...">` |
-| Instagram embed.js | `<script async src="https://www.instagram.com/embed.js">` |
-
----
-
-## 後端待辦（使用者需手動完成）
-
-- [ ] `ig_spots` 新增 `igUrl` 欄位（第 9 欄），更新 GAS mapping，重新部署
-- [ ] 建立 `checklist` / `budget` / `transport` Sheet tab，更新 GAS，重新部署
-- [ ] 將靜態資料手動輸入各 Sheet
+| 用途 | 載入 |
+|------|------|
+| SortableJS 1.15.2 | `cdn.jsdelivr.net/npm/sortablejs@1.15.2` |
+| Instagram embed.js | `https://www.instagram.com/embed.js`（async） |
