@@ -893,7 +893,7 @@ const DAY_COLORS = {
 
 // ===== IG Spots =====
 function extractIgCode(url) {
-  const m = url && url.match(/instagram\.com\/p\/([^/?]+)/);
+  const m = url && url.match(/instagram\.com\/(?:p|reel)\/([^/?]+)/);
   return m ? m[1] : null;
 }
 
