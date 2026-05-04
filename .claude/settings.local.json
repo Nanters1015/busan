@@ -20,7 +20,9 @@
       "Read(//private/tmp/**)",
       "Bash(npm init *)",
       "Bash(npm install *)",
-      "Bash(python3 *)"
+      "Bash(python3 *)",
+      "Skill(codex:rescue)",
+      "Skill(codex:setup)"
     ]
   }
 }
