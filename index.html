@@ -641,7 +641,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
     </div>
 
     <!-- Checklist -->
-    <div class="card col-1" id="card-checklist">
+    <div class="card col-2" id="card-checklist">
       <div class="card-header">
         <div class="card-header-left">
           <span class="card-title-text">📋 出發前準備清單</span>
@@ -889,6 +889,26 @@ let currentModalMode = null;
 let currentModalExtra = null;
 
 // ===== Layout =====
+const LOCKED_CARD_COLS = {
+  'card-checklist': 'col-2',
+  'card-video': 'col-1',
+  'card-ig': 'col-1',
+  'card-thread': 'col-1'
+};
+const BOTTOM_ROW_CARD_IDS = ['card-video', 'card-ig', 'card-thread'];
+
+function enforceLockedCardLayout() {
+  Object.entries(LOCKED_CARD_COLS).forEach(([id, col]) => {
+    const el = document.getElementById(id);
+    if (el) { el.classList.remove('col-1','col-2','col-3'); el.classList.add(col); }
+  });
+  const container = document.getElementById('sortable-area');
+  BOTTOM_ROW_CARD_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.parentNode === container) container.appendChild(el);
+  });
+}
+
 function toggleEdit() {
   isEditMode = !isEditMode;
   document.body.classList.toggle('edit-mode', isEditMode);
@@ -908,6 +928,7 @@ function toggleEdit() {
 }
 
 function saveOrder() {
+  enforceLockedCardLayout();
   const ids = [...document.getElementById('sortable-area').children].map(el => el.id);
   localStorage.setItem('busanCardOrder', JSON.stringify(ids));
   saveCardCols();
@@ -950,6 +971,7 @@ function applyCardOrder(order) {
     const el = document.getElementById(id);
     if (el && el.parentNode === container) container.appendChild(el);
   });
+  enforceLockedCardLayout();
 }
 
 function applyCardCols(cols) {
@@ -957,6 +979,7 @@ function applyCardCols(cols) {
     const el = document.getElementById(id);
     if (el) { el.classList.remove('col-1','col-2','col-3'); el.classList.add(col); }
   });
+  enforceLockedCardLayout();
 }
 
 async function loadState() {
@@ -995,6 +1018,7 @@ async function loadState() {
     }
   } catch {}  // GAS 失敗時維持 localStorage 快取渲染（fallback）
 
+  enforceLockedCardLayout();
   [1,2,3,4].forEach(day => renderTimeline(day, getTimelineItems(day)));
 }
 
@@ -2188,6 +2212,11 @@ async function deleteVideoSpot(id) {
 function resizeCard(id) {
   const el = document.getElementById(id);
   if (!el) return;
+  if (LOCKED_CARD_COLS[id]) {
+    enforceLockedCardLayout();
+    saveCardCols();
+    return;
+  }
   const cols = ['col-1', 'col-2', 'col-3'];
   const cur = cols.find(c => el.classList.contains(c)) || 'col-1';
   const next = cols[(cols.indexOf(cur) + 1) % cols.length];
