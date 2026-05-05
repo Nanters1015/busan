@@ -25,7 +25,9 @@
       "Skill(codex:setup)",
       "Bash(gh repo *)",
       "Bash(gh api *)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(file /Users/keith/claudeWorkSpace/busan/screenshots/*.png)",
+      "Bash(sips -g pixelWidth -g pixelHeight /Users/keith/claudeWorkSpace/busan/screenshots/*.png)"
     ]
   }
 }
