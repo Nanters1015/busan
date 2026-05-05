@@ -196,6 +196,9 @@ textarea.modal-input { font-family: inherit; resize: vertical; }
 /* Phase 3: flight direction tags */
 .tag-outbound { background: #e8f4fd; color: #1565a8; }
 .tag-return { background: #fff3e0; color: #e65100; }
+.flight-row-handle { cursor: grab; color: #bbb; font-size: 14px; line-height: 1; user-select: none; padding: 2px 4px; display: inline-block; vertical-align: middle; }
+.flight-row-handle:active { cursor: grabbing; }
+.flight-row-actions { white-space: nowrap; text-align: right; }
 
 /* Phase 4: hotel info card */
 .hotel-info-body { padding: 0 14px 14px; }
@@ -794,7 +797,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
               <th>出發 → 抵達</th>
               <th style="text-align:right;">無托運</th>
               <th style="text-align:right;">有托運</th>
-              <th style="width:24px;"></th>
+              <th style="width:44px;"></th>
             </tr>
           </thead>
           <tbody id="flight-tbody">
@@ -884,6 +887,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
 <script async src="https://www.instagram.com/embed.js"></script>
 <script>
 let sortable = null;
+let flightSortable = null;
 let isEditMode = false;
 let currentModalMode = null;
 let currentModalExtra = null;
@@ -950,7 +954,8 @@ function deleteCard(id) {
 
 async function resetLayout() {
   ['busanCardOrder','busanDeletedCards','busanCardCols',
-   'busanTimeline_1','busanTimeline_2','busanTimeline_3','busanTimeline_4'
+   'busanTimeline_1','busanTimeline_2','busanTimeline_3','busanTimeline_4',
+   'busanFlightOrder'
   ].forEach(k => localStorage.removeItem(k));
   try {
     const res = await fetch(`${GAS_URL}?action=get_layout`);
@@ -1842,6 +1847,8 @@ function recalcBudgetPerPerson() {
 }
 
 // ===== Phase 3: Flights =====
+const FLIGHT_ORDER_KEY = 'busanFlightOrder';
+
 async function loadFlights() {
   const el = document.getElementById('flight-tbody');
   if (!el) return;
@@ -1860,6 +1867,7 @@ function renderFlights(items) {
   const tbody = document.getElementById('flight-tbody');
   if (!items || !items.length) {
     tbody.innerHTML = '<tr><td colspan="7" class="ig-loading">尚無航班，點「＋ 新增航班」開始新增</td></tr>';
+    if (flightSortable) { flightSortable.destroy(); flightSortable = null; }
     return;
   }
   tbody.innerHTML = items.map(item => {
@@ -1875,9 +1883,51 @@ function renderFlights(items) {
         <td style="white-space:nowrap;">${escHtml(route)}</td>
         <td class="price">${escHtml(noBag)}</td>
         <td class="price">${escHtml(hasBag)}</td>
-        <td><button class="item-del-btn" onclick="deleteFlightItem(${item.id})" title="刪除">✕</button></td>
+        <td class="flight-row-actions">
+          <span class="flight-row-handle" title="拖曳排序">⠿</span>
+          <button class="item-del-btn" onclick="deleteFlightItem(${item.id})" title="刪除">✕</button>
+        </td>
       </tr>`;
   }).join('');
+  applyFlightOrder();
+  initFlightSortable();
+  saveFlightOrder();
+}
+
+function getFlightOrder() {
+  return JSON.parse(localStorage.getItem(FLIGHT_ORDER_KEY) || '[]');
+}
+
+function applyFlightOrder() {
+  const tbody = document.getElementById('flight-tbody');
+  if (!tbody) return;
+  const rows = [...tbody.querySelectorAll('tr[data-id]')];
+  const rowMap = new Map(rows.map(row => [row.dataset.id, row]));
+  getFlightOrder().forEach(id => {
+    const row = rowMap.get(String(id));
+    if (row) tbody.appendChild(row);
+  });
+}
+
+function saveFlightOrder() {
+  const tbody = document.getElementById('flight-tbody');
+  if (!tbody) return;
+  const ids = [...tbody.querySelectorAll('tr[data-id]')].map(row => row.dataset.id);
+  localStorage.setItem(FLIGHT_ORDER_KEY, JSON.stringify(ids));
+}
+
+function initFlightSortable() {
+  const tbody = document.getElementById('flight-tbody');
+  if (!tbody || typeof Sortable === 'undefined') return;
+  if (flightSortable) flightSortable.destroy();
+  flightSortable = new Sortable(tbody, {
+    animation: 150,
+    handle: '.flight-row-handle',
+    draggable: 'tr[data-id]',
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    onEnd: saveFlightOrder
+  });
 }
 
 async function submitAddFlight() {
