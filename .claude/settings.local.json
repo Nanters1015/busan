@@ -22,7 +22,10 @@
       "Bash(npm install *)",
       "Bash(python3 *)",
       "Skill(codex:rescue)",
-      "Skill(codex:setup)"
+      "Skill(codex:setup)",
+      "Bash(gh repo *)",
+      "Bash(gh api *)",
+      "WebFetch(domain:github.com)"
     ]
   }
 }

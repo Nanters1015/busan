@@ -116,6 +116,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC
 .budget-table td { padding: 8px 12px; border-bottom: 1px solid #f5f5f5; vertical-align: middle; }
 .budget-table tbody tr:last-child td { border-bottom: none; }
 .budget-table .price { font-weight: 600; text-align: right; white-space: nowrap; }
+.flight-screenshot-item { margin-bottom: 10px; }
+.flight-screenshot-title { font-size: 11px; color: #666; font-weight: 600; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+.flight-screenshot-img { width: 100%; border-radius: 8px; display: block; cursor: zoom-in; border: 1px solid #ececec; }
 .budget-total { background: #f0f6ff; }
 .budget-total td { font-weight: 700; font-size: 13px; color: #1a3c5e; border-bottom: none; }
 
@@ -799,6 +802,16 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
             <tr><td colspan="7" class="ig-loading">載入中…</td></tr>
           </tbody>
         </table>
+        <!-- 月費用參考截圖 -->
+        <div id="flight-screenshots-section" style="margin-top:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-size:11px;color:#888;font-weight:600;letter-spacing:.5px;">月費用參考截圖</span>
+            <button class="ig-add-btn" onclick="openModal('flight-screenshot')">＋ 新增截圖</button>
+          </div>
+          <div id="flight-screenshots-body">
+            <div class="ig-loading">載入中…</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1229,6 +1242,17 @@ const MODAL_CONFIGS = {
         <input class="modal-input" id="f-note" placeholder="例：托運行李限 20kg" />
       </div>`
   },
+  'flight-screenshot': {
+    title: '📸 新增月費用參考截圖',
+    fields: `
+      <label class="modal-label">截圖標題（如：去程 9月）*</label>
+      <input class="modal-input" id="f-screenshot-title" placeholder="去程 9月">
+      <label class="modal-label">圖片 URL *</label>
+      <input class="modal-input" id="f-screenshot-url" placeholder="https://busan99.netlify.app/screenshots/檔名.jpg">
+      <div style="font-size:11px;color:#aaa;margin-top:4px;">💡 把截圖放進專案 screenshots/ 資料夾後 push，URL 格式：https://busan99.netlify.app/screenshots/檔名.jpg</div>
+    `,
+    submit: 'submitAddFlightScreenshot'
+  },
   'hotel-info': {
     title: '🏨 新增住宿資訊',
     fields: `
@@ -1375,6 +1399,7 @@ function submitModal() {
     'hotel-bar': submitHotelBar,
     'car-bar': submitCarBar,
     flight: submitAddFlight,
+    'flight-screenshot': submitAddFlightScreenshot,
     'hotel-info': submitAddHotelInfo,
     thread: submitAddThreadSpot,
     video: submitAddVideo
@@ -1974,6 +1999,63 @@ async function deleteFlightItem(id) {
   } catch { alert('刪除失敗，請稍後再試'); }
 }
 
+async function loadFlightScreenshots() {
+  const el = document.getElementById('flight-screenshots-body');
+  if (!el) return;
+  el.innerHTML = '<div class="ig-loading">載入中…</div>';
+  try {
+    const res = await fetch(`${GAS_URL}?action=get_flight_screenshots`);
+    const json = await res.json();
+    if (json.status === 'ok') renderFlightScreenshots(json.data);
+    else throw new Error();
+  } catch {
+    el.innerHTML = '<div class="ig-loading">載入失敗，請重新整理</div>';
+  }
+}
+
+function renderFlightScreenshots(items) {
+  const el = document.getElementById('flight-screenshots-body');
+  if (!items || !items.length) {
+    el.innerHTML = '<div class="ig-loading" style="font-size:11px;">尚無截圖，點「＋ 新增截圖」貼上圖片 URL</div>';
+    return;
+  }
+  el.innerHTML = items.map(item => `
+    <div class="flight-screenshot-item">
+      <div class="flight-screenshot-title">
+        <span>${escHtml(item.title || '未命名')}</span>
+        <button class="item-del-btn" style="visibility:visible;" onclick="deleteFlightScreenshot(${item.id})" title="刪除">✕</button>
+      </div>
+      <img class="flight-screenshot-img" src="${escHtml(item.img_url)}" alt="${escHtml(item.title)}"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <div style="display:none;font-size:11px;color:#aaa;padding:8px;text-align:center;">圖片載入失敗，請確認 URL</div>
+    </div>`).join('');
+}
+
+async function deleteFlightScreenshot(id) {
+  if (!confirm('確定刪除這張截圖？')) return;
+  try {
+    await fetch(`${GAS_URL}?action=delete_flight_screenshot&id=${id}`);
+    await loadFlightScreenshots();
+  } catch { alert('刪除失敗，請稍後再試'); }
+}
+
+async function submitAddFlightScreenshot() {
+  const title = document.getElementById('f-screenshot-title').value.trim();
+  const img_url = document.getElementById('f-screenshot-url').value.trim();
+  if (!title || !img_url) { alert('請填寫標題和圖片 URL'); return; }
+  const btn = document.getElementById('modal-submit-btn');
+  btn.textContent = '新增中…'; btn.disabled = true;
+  try {
+    const params = new URLSearchParams({ action: 'add_flight_screenshot', title, img_url });
+    await fetch(`${GAS_URL}?${params}`);
+    closeModal();
+    await loadFlightScreenshots();
+  } catch {
+    alert('新增失敗，請稍後再試');
+    btn.textContent = '新增'; btn.disabled = false;
+  }
+}
+
 // ===== Phase 4: Hotels Info =====
 async function loadHotelsInfo() {
   const el = document.getElementById('hotel-info-body');
@@ -2449,6 +2531,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initHeadcountSelect();
   loadHeadcount();
   loadFlights();
+  loadFlightScreenshots();
   loadHotelsInfo();
   loadThreadSpots();
   loadVideoSpots();
