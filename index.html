@@ -690,11 +690,6 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <span class="card-title-text">💰 費用試算</span>
             <select id="budget-headcount" class="modal-select" style="width:auto;padding:3px 8px;font-size:11px;" onchange="setHeadcount(this.value)" title="出發人數">
-              <option value="9">9人</option>
-              <option value="10">10人</option>
-              <option value="11">11人</option>
-              <option value="12" selected>12人</option>
-              <option value="13">13人</option>
             </select>
           </div>
           <button class="ig-add-btn" onclick="openModal('budget')">＋ 新增費用</button>
@@ -761,7 +756,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
           </tbody>
           <tfoot>
             <tr class="budget-total">
-              <td>每人交通費用（12人均攤）</td>
+              <td id="transport-per-person-label">每人交通費用（12人均攤）</td>
               <td class="price" style="color:#1a7a45;">NT$ 1,875–2,500</td>
               <td class="price" style="color:#c0400a;">NT$ 3,750–6,500</td>
               <td></td>
@@ -1819,13 +1814,25 @@ async function submitCarBar() {
 // ===== Phase 2: Budget Headcount =====
 window._budgetTotal = { min: 0, max: 0 };
 
+function initHeadcountSelect() {
+  const sel = document.getElementById('budget-headcount');
+  if (!sel) return;
+  for (let i = 1; i <= 13; i++) {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `${i}人`;
+    if (i === 12) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
 async function loadHeadcount() {
   try {
     const res = await fetch(`${GAS_URL}?action=get_headcount`);
     const json = await res.json();
     if (json.status === 'ok') {
       const val = Number(json.data);
-      if (val >= 9 && val <= 13) {
+      if (val >= 1 && val <= 13) {
         const sel = document.getElementById('budget-headcount');
         if (sel) sel.value = val;
       }
@@ -1844,6 +1851,8 @@ function recalcBudgetPerPerson() {
   if (!min && !max) return;
   const text = document.getElementById('budget-per-person-text');
   if (text) text.textContent = `NT$ ${Math.round(min / headcount).toLocaleString()}–${Math.round(max / headcount).toLocaleString()}`;
+  const label = document.getElementById('transport-per-person-label');
+  if (label) label.textContent = `每人交通費用（${headcount}人均攤）`;
 }
 
 // ===== Phase 3: Flights =====
@@ -2437,6 +2446,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadBudget();
   loadTransport();
   loadHotelCarBars();
+  initHeadcountSelect();
   loadHeadcount();
   loadFlights();
   loadHotelsInfo();
