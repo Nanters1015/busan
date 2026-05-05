@@ -116,6 +116,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC
 .budget-table td { padding: 8px 12px; border-bottom: 1px solid #f5f5f5; vertical-align: middle; }
 .budget-table tbody tr:last-child td { border-bottom: none; }
 .budget-table .price { font-weight: 600; text-align: right; white-space: nowrap; }
+.budget-table .twd-note { display: block; margin-top: 2px; font-size: 10.5px; font-weight: 500; color: #999; }
 .flight-screenshots-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .flight-screenshot-item { display: flex; flex-direction: column; }
 .flight-screenshot-title { font-size: 11px; color: #666; font-weight: 600; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
@@ -732,6 +733,78 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
       </div>
     </div>
 
+    <!-- Taxi Estimate -->
+    <div class="card col-3" id="card-taxi-estimate">
+      <div class="card-header">
+        <div class="card-header-left">
+          <span class="card-title-text">🚕 計程車費用估算</span>
+        </div>
+        <div class="card-toolbar">
+          <button class="card-resize" onclick="resizeCard('card-taxi-estimate')" title="調整欄寬">⊞</button>
+          <span class="drag-handle">⠿</span>
+          <button class="card-delete" onclick="deleteCard('card-taxi-estimate')">✕</button>
+        </div>
+      </div>
+      <div class="card-body" style="padding: 10px 14px 14px;">
+        <details open>
+          <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#1a3c5e;margin-bottom:10px;">依釜山一般計程車跳表估算：起跳 ₩4,800 / 1.6km，之後約每 131m 加 ₩100</summary>
+          <table class="budget-table">
+            <thead>
+              <tr>
+                <th style="width:46px;">日期</th>
+                <th>起點</th>
+                <th>目的地</th>
+                <th style="text-align:right;">距離</th>
+                <th style="text-align:right;">約略車資（KRW / TWD）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>D1</td><td>金海機場</td><td>廣安里飯店</td><td class="price">22.0 km</td><td class="price">₩20,400<span class="twd-note">約 NT$510</span></td></tr>
+              <tr><td>D1</td><td>廣安里飯店</td><td>廣安里海灘</td><td class="price">0.5 km</td><td class="price">₩4,800<span class="twd-note">約 NT$120</span></td></tr>
+              <tr><td>D1</td><td>廣安里海灘</td><td>seokhwayeon Korean BBQ</td><td class="price">0.3 km</td><td class="price">₩4,800<span class="twd-note">約 NT$120</span></td></tr>
+              <tr><td>D1</td><td>seokhwayeon Korean BBQ</td><td>Hotel Aqua Palace 汗蒸幕</td><td class="price">0.4 km</td><td class="price">₩4,800<span class="twd-note">約 NT$120</span></td></tr>
+              <tr><td>D1</td><td>Hotel Aqua Palace</td><td>廣安里海灘布帳馬車</td><td class="price">0.6 km</td><td class="price">₩4,800<span class="twd-note">約 NT$120</span></td></tr>
+              <tr class="budget-total"><td colspan="4">D1 小計</td><td class="price">₩39,600<span class="twd-note">約 NT$990</span></td></tr>
+
+              <tr><td>D2</td><td>廣安里飯店</td><td>working holiday 早午餐</td><td class="price">0.6 km</td><td class="price">₩4,800<span class="twd-note">約 NT$120</span></td></tr>
+              <tr><td>D2</td><td>working holiday</td><td>尾浦天空膠囊列車站</td><td class="price">8.8 km</td><td class="price">₩10,300<span class="twd-note">約 NT$258</span></td></tr>
+              <tr><td>D2</td><td>尾浦站</td><td>海雲台傳統市場</td><td class="price">2.3 km</td><td class="price">₩5,400<span class="twd-note">約 NT$135</span></td></tr>
+              <tr><td>D2</td><td>海雲台傳統市場</td><td>BUSAN X the Sky</td><td class="price">0.8 km</td><td class="price">₩4,800<span class="twd-note">約 NT$120</span></td></tr>
+              <tr><td>D2</td><td>BUSAN X the Sky</td><td>Keveren House / DUPLIT</td><td class="price">0.2 km</td><td class="price">₩4,800<span class="twd-note">約 NT$120</span></td></tr>
+              <tr><td>D2</td><td>海理團路下午茶區</td><td>尾浦家醬蟹</td><td class="price">1.6 km</td><td class="price">₩4,800<span class="twd-note">約 NT$120</span></td></tr>
+              <tr><td>D2</td><td>尾浦家醬蟹</td><td>The Bay 101</td><td class="price">2.6 km</td><td class="price">₩5,600<span class="twd-note">約 NT$140</span></td></tr>
+              <tr><td>D2</td><td>The Bay 101</td><td>海雲台飯店</td><td class="price">1.5 km</td><td class="price">₩4,800<span class="twd-note">約 NT$120</span></td></tr>
+              <tr class="budget-total"><td colspan="4">D2 小計</td><td class="price">₩45,300<span class="twd-note">約 NT$1,133</span></td></tr>
+
+              <tr><td>D3</td><td>海雲台飯店</td><td>EGG DROP 西面樂天後門店</td><td class="price">16.0 km</td><td class="price">₩15,800<span class="twd-note">約 NT$395</span></td></tr>
+              <tr><td>D3</td><td>西面早餐店</td><td>機張 Skyline Luge</td><td class="price">23.0 km</td><td class="price">₩21,200<span class="twd-note">約 NT$530</span></td></tr>
+              <tr><td>D3</td><td>Skyline Luge</td><td>釜山樂天世界冒險樂園</td><td class="price">0.7 km</td><td class="price">₩4,800<span class="twd-note">約 NT$120</span></td></tr>
+              <tr><td>D3</td><td>樂天世界</td><td>西面 Shopping 區</td><td class="price">23.0 km</td><td class="price">₩21,200<span class="twd-note">約 NT$530</span></td></tr>
+              <tr><td>D3</td><td>西面 Shopping 區</td><td>味贊王西面鹽烤肉</td><td class="price">0.3 km</td><td class="price">₩4,800<span class="twd-note">約 NT$120</span></td></tr>
+              <tr><td>D3</td><td>味贊王西面鹽烤肉</td><td>lua&amp;tigre</td><td class="price">18.0 km</td><td class="price">₩17,400<span class="twd-note">約 NT$435</span></td></tr>
+              <tr><td>D3</td><td>lua&amp;tigre</td><td>西面飯店</td><td class="price">18.0 km</td><td class="price">₩17,400<span class="twd-note">約 NT$435</span></td></tr>
+              <tr class="budget-total"><td colspan="4">D3 小計</td><td class="price">₩102,600<span class="twd-note">約 NT$2,565</span></td></tr>
+
+              <tr><td>D4</td><td>西面飯店</td><td>浦項豬肉湯飯</td><td class="price">0.5 km</td><td class="price">₩4,800<span class="twd-note">約 NT$120</span></td></tr>
+              <tr><td>D4</td><td>浦項豬肉湯飯</td><td>扎嘎其市場 / 南浦洞</td><td class="price">7.5 km</td><td class="price">₩9,400<span class="twd-note">約 NT$235</span></td></tr>
+              <tr><td>D4</td><td>扎嘎其市場</td><td>大光烤腸 / 市場 2F 海鮮</td><td class="price">0.5 km</td><td class="price">₩4,800<span class="twd-note">約 NT$120</span></td></tr>
+              <tr><td>D4</td><td>扎嘎其市場 / 南浦洞</td><td>金海機場</td><td class="price">16.0 km</td><td class="price">₩15,800<span class="twd-note">約 NT$395</span></td></tr>
+              <tr class="budget-total"><td colspan="4">D4 小計</td><td class="price">₩34,800<span class="twd-note">約 NT$870</span></td></tr>
+            </tbody>
+            <tfoot>
+              <tr class="budget-total" style="background:#e8f4fd;">
+                <td colspan="4" style="color:#1565a8;">四日計程車跳表估算總計</td>
+                <td class="price" style="color:#1565a8;">₩222,300<span class="twd-note" style="color:#5b87aa;">約 NT$5,558</span></td>
+              </tr>
+            </tfoot>
+          </table>
+          <div style="margin-top:10px; font-size:11px; color:#666; line-height:1.7; background:#f8f8f8; padding:10px; border-radius:8px;">
+            ※ 實際車資會因路線、塞車、夜間或市外附加費、行李與大型車型而變動；短距離路段多以起跳價估算。台幣以 1 TWD ≈ 40 KRW 粗估。D3 的 lua&amp;tigre 依頁面地圖座標估算為海雲台側來回西面。
+          </div>
+        </details>
+      </div>
+    </div>
+
     <!-- Transport -->
     <div class="card col-3" id="card-transport">
       <div class="card-header">
@@ -981,7 +1054,12 @@ async function resetLayout() {
 
 function applyCardOrder(order) {
   const container = document.getElementById('sortable-area');
-  order.forEach(id => {
+  const normalizedOrder = [...order];
+  if (!normalizedOrder.includes('card-taxi-estimate')) {
+    const budgetIndex = normalizedOrder.indexOf('card-budget');
+    if (budgetIndex >= 0) normalizedOrder.splice(budgetIndex + 1, 0, 'card-taxi-estimate');
+  }
+  normalizedOrder.forEach(id => {
     const el = document.getElementById(id);
     if (el && el.parentNode === container) container.appendChild(el);
   });
