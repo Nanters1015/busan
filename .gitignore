@@ -1,1 +1,3 @@
-tasks/
+tasks/*
+!tasks/
+!tasks/codebase.md
