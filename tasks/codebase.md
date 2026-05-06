@@ -2,6 +2,8 @@
 
 單一靜態 HTML 檔，所有 CSS / HTML / JavaScript 都在 `index.html`。沒有 build 工具與 npm 依賴，直接用瀏覽器開啟即可預覽；正式部署為 Netlify 靜態網站。內容語系為繁體中文（zh-TW），主題是釜山 4 天 3 夜團體旅遊行程。
 
+目前主方案：2026 年 6 月上中旬或 9 月中下旬出發，預設獨旅 1 人，也可切換到最多 13 人；已買釜山 Pass，交通以地鐵 / 步行優先，步行到站或目的地超過約 10 分鐘時保留計程車 / 包車。
+
 ---
 
 ## 版型骨架
@@ -80,12 +82,12 @@ Day 卡內容順序：`card-header` → `.hotel-bar`（D1-D3）→ `.car-bar` �
 
 | ID | 標題 | 預設 col | 資料來源 / 容器 |
 |----|------|----------|-----------------|
-| `card-weather` | 九月出發資訊 | `col-1` | 靜態 `.weather-grid` |
+| `card-weather` | 六月 / 九月出發資訊 | `col-1` | 靜態 `.weather-month-title` + `.weather-grid` |
 | `card-checklist` | 出發前準備清單 | `col-2` | GAS `get_checklist` → `#checklist-body` |
 | `card-ig` | IG 收藏地點 | `col-1` | GAS `get` + timeline IG mapping → `#ig-cards-container` |
 | `card-budget` | 費用試算 | `col-2` | GAS `get_budget` → `#budget-tbody` |
-| `card-taxi-estimate` | 計程車費用估算 | `col-3` | 靜態表格；舊 layout 沒有此卡時會自動插在 budget 後 |
-| `card-transport` | 交通方案對比 | `col-3` | GAS `get_transport` → `#transport-tbody` |
+| `card-taxi-estimate` | 地鐵 / 步行優先交通費估算 | `col-3` | 靜態表格；舊 layout 沒有此卡時會自動插在 budget 後 |
+| `card-transport` | 交通使用時機 | `col-3` | GAS `get_transport` → `#transport-tbody`；目前共享 layout 已刪除此卡，保留為可恢復工具 |
 | `card-flight` | 機票資訊 | `col-2` | GAS `get_flights` → `#flight-tbody`；另有截圖區 |
 | `card-hotel-info` | 住宿資訊 | `col-2` | GAS `get_hotels_info` → `#hotel-info-body` |
 | `card-thread` | Thread 收藏地點 | `col-1` | GAS `get_threads` → `#thread-cards-container` |
@@ -128,7 +130,8 @@ Day 卡內容順序：`card-header` → `.hotel-bar`（D1-D3）→ `.car-bar` �
 
 - `.hotel-bar` / `.car-bar`：Day 卡內的住宿與交通資訊列。
 - `.tip-box`：黃色左邊框提示。
-- `.weather-grid` / `.weather-card`：九月出發資訊。
+- `.weather-month-title`：天氣卡月份小標（六月出發 / 九月出發）。
+- `.weather-grid` / `.weather-card`：六月 / 九月出發資訊三欄摘要。
 - `.ig-card`：IG / Thread / Video 共用收藏卡。
 - `.ig-embed-wrap`：Instagram 或 Threads embed 容器。
 - `.budget-table`：費用、交通、航班、計程車表格共用表格樣式。
@@ -138,7 +141,25 @@ Day 卡內容順序：`card-header` → `.hotel-bar`（D1-D3）→ `.car-bar` �
 ### Tag classes
 
 `tag-food`、`tag-spot`、`tag-shop`、`tag-night`、`tag-spa`、`tag-note`、`tag-ig`、`tag-car`、`tag-thrill`、`tag-outbound`、`tag-return`。  
-`price-tag` 是橘色價格標籤；`naver-link` 是 Naver Map 連結按鈕。
+`price-tag` 是橘色價格標籤；`price-tag-pass` 是 Pass 已包含 / 已扣除的綠色價格標籤；`price-tag-muted` 用於免費或弱化價格資訊；`naver-link` 是 Naver Map 連結按鈕。
+
+### 天氣 / 出發資訊
+
+`#card-weather` 是靜態 HTML，不走 GAS。內容分成兩段：
+
+- 六月出發：平均氣溫約 `19-25°C`，降雨趨勢月底漸增，建議 `6月上中旬`，提醒梅雨、濕度、防水鞋、摺疊傘、薄外套與防曬。
+- 九月出發：平均氣溫約 `24-28°C`，建議 `9月中下旬`，提醒七到九月初颱風季與旅遊保險。
+
+### 費用 / Pass 原則
+
+Day 卡 timeline 與每日小計已把部分釜山 Pass 項目扣除：
+
+- Hotel Aqua Palace 汗蒸幕
+- BUSAN X the Sky
+- Skyline Luge
+- 釜山樂天世界冒險樂園
+
+天空膠囊列車暫不扣除，因常見 Pass 覆蓋 Beach Train，不一定包含 Sky Capsule。相關提醒出現在 `#card-budget` 的 `.cost-note` 與 D2 timeline。
 
 ---
 
@@ -179,7 +200,7 @@ Google Sheets ID：`1ZXw0zHHBW48ApYBE070nGuB5ZGsTE_lvmVtQIMNLmVs`
 | `get` / `add` / `delete` | IG 收藏地點 |
 | `get_checklist` / `add_checklist` / `delete_checklist` | 準備清單 |
 | `get_budget` / `add_budget` / `delete_budget` | 費用試算 |
-| `get_transport` / `add_transport` / `delete_transport` | 交通方案對比 |
+| `get_transport` / `add_transport` / `delete_transport` | 交通使用時機 |
 | `get_layout` / `save_layout` | 共享版面設定 |
 | `get_hotel_bar` / `set_hotel_bar` | Day 卡住宿列 |
 | `get_car_bar` / `set_car_bar` | Day 卡交通列 |
@@ -277,7 +298,7 @@ extractLeadingEmoji(s)
 initHeadcountSelect()
 loadHeadcount()
 setHeadcount(val)
-recalcBudgetPerPerson()
+recalcBudgetGroupTotal()
 getFlightOrder()
 applyFlightOrder()
 saveFlightOrder()
@@ -310,16 +331,42 @@ initFlightSortable()
 | `window._timelineIgItems` | timeline 中 `tag-ig` 項目快取 |
 | `window._lastIgSpots` | 最近一次 GAS IG 地點結果 |
 | `window._hotelCarData` | Day 住宿/交通列資料快取 |
-| `window._budgetTotal` | 費用試算總額，供人均計算 |
+| `window._budgetTotal` | 每人費用試算總額，供全團估算 |
 | `window._threadsProcess` | Threads embed process 函式快取 |
 
 ---
 
 ## 特殊功能
 
+### 地鐵 / 步行優先交通估算
+
+`#card-taxi-estimate` 目前標題是「地鐵 / 步行優先交通費估算」。此卡是靜態表格，用於說明每段交通採用地鐵、步行、計程車或包車的原因。判斷原則寫在 `<summary>`：步行 10 分鐘內可到站 / 目的地就改地鐵或步行；超過 10 分鐘保留計程車 / 包車。
+
 ### 費用試算人數
 
-`initHeadcountSelect()` 動態產生 1-13 人選項，預設 12 人。`loadHeadcount()` 從 GAS 讀 `trip_settings.headcount`；`setHeadcount(val)` 寫回 GAS 並重新計算人均費用。
+`initHeadcountSelect()` 動態產生 1-13 人選項，預設 1 人。`loadHeadcount()` 從 GAS 讀 `trip_settings.headcount`；`setHeadcount(val)` 寫回 GAS 並重新計算全團估算。
+
+### 費用試算資料
+
+`#card-budget` 只渲染 GAS `budget` tab 回傳的列，前端不內建 fallback seed。每列 `price_min` / `price_max` 是 1 人基準費用。`renderBudget(items)` 會依 `#budget-headcount` 重算每人預算與全團估算，獨旅預設 1 人時，全團估算等於每人總預算。
+
+分攤規則寫在前端 label classifier：
+
+- 機票 / Pass / 備品：每人固定。
+- `住宿`：雙人房分攤，1 人全額，2 人以上以 2 人分攤估。
+- `計程車` / `遠距`：每台最多 4 人，超過 4 人加車估。
+- `吃玩`：多人共食有小幅折扣，2-3 人約 95-96%，4-6 人約 90-92%，7 人以上約 88-90%。
+
+目前 budget tab 已包含六月補充列：
+
+| label | desc | price_min | price_max |
+|-------|------|-----------|-----------|
+| `六月來回機票` | 台灣虎航 6/1 去程 NT$3,223-4,179 + 6/4 回程 NT$3,352-4,271；依航班資訊表 | `6575` | `8450` |
+| `六月梅雨備品` | 摺疊傘、防水鞋套/防潑水噴霧、薄外套、防曬；已有可省略 | `300` | `1200` |
+| `四天吃玩＋市區交通` | 依 D1-D4 日小計，已扣 Pass 可覆蓋門票；不含機票、住宿、Pass 本身與保留計程車 | `5193` | `10855` |
+| `住宿 3 晚` | 依 D1 廣安里、D2 海雲台、D3 西面住宿列參考價；獨旅以單人房估，多人可分攤 | `4200` | `9000` |
+| `釜山 Pass` | Visit Busan Pass Big5 ₩65,000 或 48H ₩85,000；以 1 TWD≈40 KRW 粗估 | `1625` | `2125` |
+| `保留計程車 / 遠距移動` | D2、D3 離站較遠或雨天/深夜/行李多時使用；獨旅抓高一點，多人同行可分攤 | `800` | `2600` |
 
 ### 航班排序
 

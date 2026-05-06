@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>釜山四天三夜行程規劃｜9月出發 × Pass省錢版</title>
+<title>釜山四天三夜行程規劃｜6月 / 9月出發 × Pass省錢版</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', sans-serif; background: #f8f7f4; color: #1a1a1a; line-height: 1.6; }
@@ -256,12 +256,12 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
 
 <div class="header">
   <h1>🇰🇷 釜山四天三夜行程規劃</h1>
-  <p>9月出發 × 9–13人同遊 × Pass＋地鐵/步行優先</p>
+  <p>6月 / 9月出發 × 獨旅到多人彈性版 × Pass＋地鐵/步行優先</p>
   <div class="header-badges">
-    <span class="header-badge">📅 2025年9月中下旬</span>
-    <span class="header-badge">👥 9–13人</span>
+    <span class="header-badge">📅 2026年6月上中旬或9月中下旬</span>
+    <span class="header-badge">👥 預設1人，可切換到13人</span>
     <span class="header-badge">🚇 地鐵/步行優先，遠距保留包車</span>
-    <span class="header-badge">💰 已買 Pass＋交通省錢：約 NT$14,600–27,200 /人</span>
+    <span class="header-badge">💰 含機票/住宿/Pass：約 NT$18,700–34,300 /人</span>
   </div>
 </div>
 
@@ -770,13 +770,13 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
       </div>
       <div class="card-body" style="padding: 0 14px 14px;">
         <div class="cost-note">
-          已買釜山 Pass 的前提下，行程表已先扣除：Hotel Aqua Palace 汗蒸幕、BUSAN X the Sky、Skyline Luge、釜山樂天世界門票，約省 ₩89,000-138,000 / NT$2,225-3,450 / 人。天空膠囊因 Pass 常見是含 Beach Train，不一定含 Sky Capsule，暫不扣除。
+          以下以每人費用試算，切換人數會自動估算住宿、計程車與多人共食分攤。機票、Pass、備品維持每人固定；住宿以雙人房分攤；計程車以每台最多 4 人分攤。行程表已先扣除 Hotel Aqua Palace 汗蒸幕、BUSAN X the Sky、Skyline Luge、釜山樂天世界門票，約省 ₩89,000-138,000 / NT$2,225-3,450 / 人。天空膠囊因 Pass 常見是含 Beach Train，不一定含 Sky Capsule，暫不扣除。
         </div>
         <table class="budget-table" style="margin-top:12px;">
           <thead>
             <tr>
               <th>項目</th>
-              <th style="text-align:right;">費用 /人</th>
+              <th style="text-align:right;">估算 /人</th>
               <th style="width:24px;"></th>
             </tr>
           </thead>
@@ -785,13 +785,13 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
           </tbody>
           <tfoot>
             <tr id="budget-total-row" class="budget-total">
-              <td>每人總預算（省錢→舒適）</td>
+              <td id="budget-total-label">每人總預算（1人）</td>
               <td class="price" id="budget-total-text">—</td>
               <td></td>
             </tr>
-            <tr id="budget-per-person-row" class="budget-total" style="display:none;background:#e8f4fd;">
-              <td style="color:#1565a8;">每人分攤（依人數）</td>
-              <td class="price" id="budget-per-person-text" style="color:#1565a8;">—</td>
+            <tr id="budget-group-row" class="budget-total" style="display:none;background:#e8f4fd;">
+              <td style="color:#1565a8;" id="budget-group-label">全團估算（1人）</td>
+              <td class="price" id="budget-group-text" style="color:#1565a8;">—</td>
               <td></td>
             </tr>
           </tfoot>
@@ -875,7 +875,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
     <div class="card col-3" id="card-transport">
       <div class="card-header">
         <div class="card-header-left">
-          <span class="card-title-text">🚗 交通方案對比：包車 vs 計程車</span>
+          <span class="card-title-text">🚗 交通使用時機</span>
           <button class="ig-add-btn" onclick="openModal('transport')">＋ 新增對比</button>
         </div>
         <div class="card-toolbar">
@@ -889,8 +889,8 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
           <thead>
             <tr>
               <th style="text-align:left;">項目</th>
-              <th style="text-align:right;">包車方案</th>
-              <th style="text-align:right;">計程車方案</th>
+              <th style="text-align:right;">優先方案</th>
+              <th style="text-align:right;">備用方案</th>
               <th style="width:24px;"></th>
             </tr>
           </thead>
@@ -899,15 +899,15 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
           </tbody>
           <tfoot>
             <tr class="budget-total">
-              <td id="transport-per-person-label">每人交通費用（12人均攤）</td>
-              <td class="price" style="color:#1a7a45;">NT$ 1,875–2,500</td>
-              <td class="price" style="color:#c0400a;">NT$ 3,750–6,500</td>
+              <td id="transport-per-person-label">交通原則</td>
+              <td class="price" style="color:#1a7a45;">地鐵 / 步行</td>
+              <td class="price" style="color:#c0400a;">計程車 / 包車</td>
               <td></td>
             </tr>
           </tfoot>
         </table>
         <div style="margin-top:10px; font-size:11px; color:#1a3c5e; line-height:1.8; background:#f0f6ff; padding:10px; border-radius:8px;">
-          💡 <strong>建議</strong>：9–13人同遊 → 包車划算且舒適，每人省 NT$2,000–4,000，且免去搬行李困擾！
+          💡 <strong>建議</strong>：獨旅或少人時以地鐵 / 步行為主；行李多、下雨、深夜移動，或機張等離站較遠路段再改計程車。多人同行時可把遠距路段升級成包車。
         </div>
       </div>
     </div>
@@ -1018,7 +1018,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
 
 </div><!-- /dashboard -->
 
-<footer>釜山四天三夜行程規劃｜2025年9月出發版</footer>
+<footer>釜山四天三夜行程規劃｜2026年6月 / 9月出發版</footer>
 
 <!-- Universal modal -->
 <div class="modal-overlay" id="modal">
@@ -1366,19 +1366,19 @@ const MODAL_CONFIGS = {
       </div>`
   },
   transport: {
-    title: '🚗 新增交通對比項目',
+    title: '🚗 新增交通使用時機',
     fields: `
       <div class="modal-field">
         <label class="modal-label">項目名稱 *</label>
-        <input class="modal-input" id="f-item" placeholder="例：機場往返接送" />
+        <input class="modal-input" id="f-item" placeholder="例：機場往返 / 機張遠距移動" />
       </div>
       <div class="modal-field">
-        <label class="modal-label">包車方案</label>
-        <input class="modal-input" id="f-charter" placeholder="例：含於包車費" />
+        <label class="modal-label">優先方案</label>
+        <input class="modal-input" id="f-charter" placeholder="例：地鐵 / 步行" />
       </div>
       <div class="modal-field">
-        <label class="modal-label">計程車方案</label>
-        <input class="modal-input" id="f-taxi" placeholder="例：約 NT$1,500–2,000" />
+        <label class="modal-label">備用方案</label>
+        <input class="modal-input" id="f-taxi" placeholder="例：行李多或下雨時改計程車" />
       </div>`
   },
   timeline: {
@@ -1409,7 +1409,7 @@ const MODAL_CONFIGS = {
           <label class="modal-tag-label"><input type="checkbox" value="tag-shop" data-label="購物"> 🛍 購物</label>
           <label class="modal-tag-label"><input type="checkbox" value="tag-night" data-label="夜晚活動"> 🌙 夜晚</label>
           <label class="modal-tag-label"><input type="checkbox" value="tag-spa" data-label="溫泉/汗蒸幕"> ♨️ 溫泉</label>
-          <label class="modal-tag-label"><input type="checkbox" value="tag-car" data-label="包車接送"> 🚐 包車</label>
+          <label class="modal-tag-label"><input type="checkbox" value="tag-car" data-label="交通"> 🚇 交通</label>
           <label class="modal-tag-label"><input type="checkbox" value="tag-thrill" data-label="刺激娛樂"> 🎢 刺激</label>
           <label class="modal-tag-label"><input type="checkbox" value="tag-note" data-label="注意事項"> 📌 注意</label>
         </div>
@@ -1432,7 +1432,7 @@ const MODAL_CONFIGS = {
     }
   },
   'car-bar': {
-    title: day => `🚐 D${day} 編輯交通資訊`,
+    title: day => `🚇 D${day} 編輯交通資訊`,
     submitText: '儲存',
     fields: day => {
       const d = window._hotelCarData?.[`car-${day}`] || HOTEL_CAR_SEED.car[day] || {};
@@ -1899,25 +1899,76 @@ function renderBudget(items) {
   if (!items || !items.length) {
     tbody.innerHTML = '<tr><td colspan="3" class="ig-loading">尚無費用項目</td></tr>';
     document.getElementById('budget-total-text').textContent = '—';
-    document.getElementById('budget-per-person-row').style.display = 'none';
+    document.getElementById('budget-group-row').style.display = 'none';
     return;
   }
-  let totalMin = 0, totalMax = 0;
+  window._budgetItems = items;
+  const headcount = Number(document.getElementById('budget-headcount')?.value) || 1;
+  renderBudgetRows(items, headcount);
+  updateBudgetTotals(getBudgetTotals(items, headcount), headcount);
+}
+
+function renderBudgetRows(items, headcount) {
+  const tbody = document.getElementById('budget-tbody');
   tbody.innerHTML = items.map(item => {
     const min = Number(item.price_min) || 0;
     const max = Number(item.price_max) || 0;
-    totalMin += min; totalMax += max;
+    const adjusted = getAdjustedBudgetRange(item, headcount);
+    const type = getBudgetSplitType(item);
+    const adjustedNote = adjusted.min !== min || adjusted.max !== max
+      ? `<br><small style="color:#1565a8;">${headcount}人估算：NT$ ${adjusted.min.toLocaleString()}–${adjusted.max.toLocaleString()} /人</small>` : '';
     return `
       <tr data-id="${item.id}">
-        <td>${item.label}${item.desc ? `<br><small style="color:#aaa;">${item.desc}</small>` : ''}</td>
-        <td class="price">NT$ ${min.toLocaleString()}–${max.toLocaleString()}</td>
+        <td>${item.label}${item.desc ? `<br><small style="color:#aaa;">${item.desc}</small>` : ''}<br><small style="color:#aaa;">${type.note}</small>${adjustedNote}</td>
+        <td class="price">NT$ ${adjusted.min.toLocaleString()}–${adjusted.max.toLocaleString()}</td>
         <td><button class="item-del-btn" onclick="deleteBudgetItem(${item.id})" title="刪除">✕</button></td>
       </tr>`;
   }).join('');
-  document.getElementById('budget-total-text').textContent = `NT$ ${totalMin.toLocaleString()}–${totalMax.toLocaleString()}`;
-  window._budgetTotal = { min: totalMin, max: totalMax };
-  document.getElementById('budget-per-person-row').style.display = '';
-  recalcBudgetPerPerson();
+  document.getElementById('budget-group-row').style.display = '';
+}
+
+function getBudgetSplitType(item) {
+  const label = String(item?.label || '');
+  if (/住宿/.test(label)) return { kind: 'room', note: '雙人房分攤：1人全額，2人以上以2人分攤估' };
+  if (/計程車|遠距/.test(label)) return { kind: 'taxi', note: '計程車分攤：每台最多4人，超過4人加車估' };
+  if (/吃玩/.test(label)) return { kind: 'shared_meals', note: '多人共食：依人數小幅下修每人餐飲彈性' };
+  return { kind: 'fixed', note: '每人固定費用' };
+}
+
+function sharedMealFactor(headcount) {
+  if (headcount >= 7) return { min: 0.88, max: 0.90 };
+  if (headcount >= 4) return { min: 0.90, max: 0.92 };
+  if (headcount >= 2) return { min: 0.95, max: 0.96 };
+  return { min: 1, max: 1 };
+}
+
+function getAdjustedBudgetRange(item, headcount) {
+  const min = Number(item.price_min) || 0;
+  const max = Number(item.price_max) || 0;
+  const count = Math.max(1, Number(headcount) || 1);
+  const { kind } = getBudgetSplitType(item);
+  if (kind === 'room') {
+    const divisor = Math.min(count, 2);
+    return { min: Math.round(min / divisor), max: Math.round(max / divisor) };
+  }
+  if (kind === 'taxi') {
+    const cars = Math.ceil(count / 4);
+    return { min: Math.round((min * cars) / count), max: Math.round((max * cars) / count) };
+  }
+  if (kind === 'shared_meals') {
+    const factor = sharedMealFactor(count);
+    return { min: Math.round(min * factor.min), max: Math.round(max * factor.max) };
+  }
+  return { min, max };
+}
+
+function getBudgetTotals(items, headcount) {
+  return (items || []).reduce((sum, item) => {
+    const adjusted = getAdjustedBudgetRange(item, headcount);
+    sum.min += adjusted.min;
+    sum.max += adjusted.max;
+    return sum;
+  }, { min: 0, max: 0 });
 }
 
 async function submitAddBudget() {
@@ -2034,7 +2085,8 @@ function normalizeCarBarData(data) {
   if (!seed) return data;
   const title = data?.car_title || '';
   const desc = data?.car_desc || '';
-  const stale = /包車從金海|包車全天|包車接機|包車送機|行李全部上車|行李放車上|行李全丟車上/.test(`${title} ${desc}`);
+  const genericTaxiOnly = title.trim() === '交通：計程車' && !desc.trim();
+  const stale = genericTaxiOnly || /包車從金海|包車全天|包車接機|包車送機|行李全部上車|行李放車上|行李全丟車上/.test(`${title} ${desc}`);
   return stale ? { day, ...seed } : data;
 }
 
@@ -2105,7 +2157,7 @@ function initHeadcountSelect() {
     const opt = document.createElement('option');
     opt.value = i;
     opt.textContent = `${i}人`;
-    if (i === 12) opt.selected = true;
+    if (i === 1) opt.selected = true;
     sel.appendChild(opt);
   }
 }
@@ -2119,6 +2171,7 @@ async function loadHeadcount() {
       if (val >= 1 && val <= 13) {
         const sel = document.getElementById('budget-headcount');
         if (sel) sel.value = val;
+        recalcBudgetGroupTotal();
       }
     }
   } catch { /* keep default */ }
@@ -2126,17 +2179,31 @@ async function loadHeadcount() {
 
 async function setHeadcount(val) {
   fetch(`${GAS_URL}?action=set_headcount&value=${val}`); // fire and forget
-  recalcBudgetPerPerson();
+  recalcBudgetGroupTotal();
 }
 
-function recalcBudgetPerPerson() {
-  const headcount = Number(document.getElementById('budget-headcount')?.value) || 12;
-  const { min, max } = window._budgetTotal || { min: 0, max: 0 };
+function recalcBudgetGroupTotal() {
+  const headcount = Number(document.getElementById('budget-headcount')?.value) || 1;
+  const items = window._budgetItems || [];
+  const total = getBudgetTotals(items, headcount);
+  renderBudgetRows(items, headcount);
+  updateBudgetTotals(total, headcount);
+}
+
+function updateBudgetTotals(total, headcount) {
+  const { min, max } = total;
   if (!min && !max) return;
-  const text = document.getElementById('budget-per-person-text');
-  if (text) text.textContent = `NT$ ${Math.round(min / headcount).toLocaleString()}–${Math.round(max / headcount).toLocaleString()}`;
+  window._budgetTotal = total;
+  const totalLabel = document.getElementById('budget-total-label');
+  if (totalLabel) totalLabel.textContent = `每人總預算（${headcount}人估）`;
+  const totalText = document.getElementById('budget-total-text');
+  if (totalText) totalText.textContent = `NT$ ${min.toLocaleString()}–${max.toLocaleString()}`;
+  const text = document.getElementById('budget-group-text');
+  if (text) text.textContent = `NT$ ${(min * headcount).toLocaleString()}–${(max * headcount).toLocaleString()}`;
+  const budgetLabel = document.getElementById('budget-group-label');
+  if (budgetLabel) budgetLabel.textContent = `全團估算（${headcount}人）`;
   const label = document.getElementById('transport-per-person-label');
-  if (label) label.textContent = `每人交通費用（${headcount}人均攤）`;
+  if (label) label.textContent = headcount === 1 ? '交通原則（獨旅）' : `交通原則（${headcount}人）`;
 }
 
 // ===== Phase 3: Flights =====
