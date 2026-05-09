@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>釜山四天三夜行程規劃｜6月 / 9月出發 × Pass省錢版</title>
+<title>釜山四天三夜行程規劃｜影島美術館 × 6月 / 9月出發 × Pass省錢版</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', sans-serif; background: #f8f7f4; color: #1a1a1a; line-height: 1.6; }
@@ -128,6 +129,26 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC
 .flight-screenshot-item { display: flex; flex-direction: column; }
 .flight-screenshot-title { font-size: 11px; color: #666; font-weight: 600; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
 .flight-screenshot-img { width: 100%; height: 220px; object-fit: contain; background: #f8f8f8; border-radius: 8px; display: block; cursor: zoom-in; border: 1px solid #ececec; }
+#img-lightbox { position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;cursor:zoom-out;display:none;align-items:center;justify-content:center; }
+#img-lightbox.open { display:flex; }
+#img-lightbox img { max-width:95vw;max-height:92vh;border-radius:8px;object-fit:contain; }
+.map-tab { padding:4px 12px;border:1px solid #ddd;border-radius:20px;background:#fff;cursor:pointer;font-size:12px;font-weight:600;color:#666;transition:background .15s,color .15s; }
+.map-tab.active { background:#2d6a9f;color:#fff;border-color:#2d6a9f; }
+.day-map-frame { width:100%; height:360px; border:0; display:block; background:#f4f4f4; }
+#day-map-canvas { width:100%; min-height:360px; background:#f4f4f4; }
+.day-route-map { width:100%; height:380px; background:#eef1f3; }
+.day-route-map .leaflet-popup-content { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif; font-size:12px; line-height:1.45; margin:8px 10px; }
+.day-route-marker { width:24px; height:24px; border-radius:50%; background:#2d6a9f; color:#fff; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.25); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
+.day-map-empty { min-height:280px; padding:18px 16px; font-size:12px; color:#555; background:#f8f8f8; line-height:1.7; }
+.day-map-empty-title { font-size:13px; font-weight:700; color:#1a3c5e; margin-bottom:8px; }
+.day-map-places { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:8px; margin-top:12px; text-align:left; }
+.day-map-place { background:#fff; border:1px solid #ececec; border-radius:8px; padding:8px 10px; display:flex; gap:8px; align-items:flex-start; }
+.day-map-num { width:20px; height:20px; border-radius:50%; background:#2d6a9f; color:#fff; font-size:10px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+.day-map-place-name { font-size:11.5px; font-weight:600; color:#333; line-height:1.45; }
+.day-map-place-coord { font-size:10px; color:#999; margin-top:2px; }
+.day-map-footer { display:flex; justify-content:space-between; gap:10px; align-items:center; padding:9px 12px; border-top:1px solid #f0f0f0; font-size:11px; color:#777; flex-wrap:wrap; }
+.day-map-open { font-size:11px; font-weight:700; color:#2d6a9f; text-decoration:none; white-space:nowrap; }
+.day-map-open:hover { text-decoration:underline; }
 .budget-total { background: #f0f6ff; }
 .budget-total td { font-weight: 700; font-size: 13px; color: #1a3c5e; border-bottom: none; }
 
@@ -256,12 +277,12 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
 
 <div class="header">
   <h1>🇰🇷 釜山四天三夜行程規劃</h1>
-  <p>6月 / 9月出發 × 獨旅到多人彈性版 × Pass＋地鐵/步行優先</p>
+  <p>6月 / 9月出發 × 影島美術館＋海景路線 × 獨旅到多人彈性版</p>
   <div class="header-badges">
     <span class="header-badge">📅 2026年6月上中旬或9月中下旬</span>
     <span class="header-badge">👥 預設1人，可切換到13人</span>
     <span class="header-badge">🚇 地鐵/步行優先，遠距保留包車</span>
-    <span class="header-badge">💰 含機票/住宿/Pass：約 NT$18,700–34,300 /人</span>
+    <span class="header-badge">💰 含機票/住宿/Pass：約 NT$19,400–35,500 /人＋車資分攤</span>
   </div>
 </div>
 
@@ -282,8 +303,8 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
           <div class="day-header-row">
             <div class="day-circle" style="background:linear-gradient(135deg,#2d6a9f,#378ADD);">D1</div>
             <div>
-              <div class="day-title">廣安里 — 抵達放鬆日 🌊</div>
-              <div class="day-sub">機場輕軌＋2號線到廣安里，市區步行放鬆</div>
+              <div class="day-title">影島＋廣安里 — 抵達美術館日 🌊</div>
+              <div class="day-sub">早班機抵達，先衝 ARTE MUSEUM / P.ARK，再去廣安里 check-in</div>
             </div>
           </div>
           <button class="ig-add-btn tl-add-btn" onclick="openModal('timeline', 1)">＋ 新增行程</button>
@@ -301,63 +322,108 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
         <div class="car-bar" id="car-bar-d1">
           <div>🚇</div>
           <div>
-            <div class="car-bar-text"><strong>交通：機場輕軌＋地鐵 2 號線</strong><br>金海機場→Sasang 轉 2 號線→Geumnyeonsan/Gwangan，出站步行約 10 分到廣安里飯店；晚上廣安里周邊以步行為主</div>
+            <div class="car-bar-text"><strong>交通：D1 以計程車處理行李＋跨區移動</strong><br>金海機場→影島 ARTE MUSEUM 抓 40-55 分；影島→廣安里抓 35-50 分。早班機較適合，若 14:00 後抵達就改回直奔廣安里</div>
             <button class="ig-add-btn bar-edit-btn" onclick="openModal('car-bar', 1)">✏️ 編輯交通</button>
           </div>
         </div>
         <div class="timeline" id="timeline-d1">
           <div class="tl-item">
-            <div class="tl-time">下午</div>
+            <div class="tl-time">10:30-11:30</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#378ADD;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
-              <div class="tl-name">🚇 金海機場 → 廣安里 check-in <span class="price-tag">約 ₩3,000 / NT$75 / 人</span></div>
-              <div class="tl-desc">機場輕軌到 Sasang 轉地鐵 2 號線，Geumnyeonsan/Gwangan 出站步行約 10 分。行李多時可改叫車</div>
-              <div class="tags"><span class="tag tag-car">地鐵優先</span><span class="tag tag-note">行李多可改計程車</span></div>
+              <div class="tl-name">🛬 金海機場入境＋行李緩衝 <span class="price-tag price-tag-muted">抓 60 分</span></div>
+              <div class="tl-desc">建議選 10:00-12:00 前抵達釜山的班機；若班機延誤或入境排隊，這段先吃掉緩衝，不急著壓縮美術館時間</div>
+              <div class="tags"><span class="tag tag-note">早班機優先</span><span class="tag tag-note">保守抓緩衝</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">傍晚</div>
+            <div class="tl-time">11:30-12:25</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#378ADD;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
-              <div class="tl-name">🌅 廣安里海灘散步 <span class="price-tag price-tag-muted">免費</span> <a class="naver-link" href="nmap://place?lat=35.1525&lng=129.1190&name=광안리해수욕장" target="_blank">📍</a></div>
-              <div class="tl-desc">廣安大橋黃昏最美，沙灘邊走走放鬆</div>
-              <div class="tags"><span class="tag tag-spot">廣安大橋夕陽</span></div>
+              <div class="tl-name">🚕 金海機場 → 影島 ARTE MUSEUM Busan <span class="price-tag">約 ₩30,000-45,000 / 台</span> <a class="naver-link" href="https://maps.google.com/?q=35.0789,129.0815" target="_blank">📍</a></div>
+              <div class="tl-desc">拖行李不建議轉地鐵公車；計程車實際車程約 40 分，保守抓 55 分，遇到塞車也比較不慌</div>
+              <div class="tags"><span class="tag tag-car">計程車</span><span class="tag tag-note">行李友善</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">晚餐</div>
+            <div class="tl-time">12:30-14:40</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#7F77DD;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🎨 ARTE MUSEUM Busan <span class="price-tag">約 ₩19,000-22,000 / NT$475-550 / 人</span> <a class="naver-link" href="https://artemuseum.com/BUSAN" target="_blank">📍</a></div>
+              <div class="tl-desc">影島沉浸式媒體藝術館，官方營業 10:00-20:00、最後入場 19:00；展場抓 90-120 分，再預留拍照、寄物與動線緩衝</div>
+              <div class="tags"><span class="tag tag-spot">美術館</span><span class="tag tag-ig">沉浸式媒體藝術</span><span class="tag tag-note">最後入場 19:00</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">14:45-16:15</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
-              <div class="tl-name">🍖 seokhwayeon Korean BBQ <span class="price-tag">約 ₩25,000-45,000 / NT$625-1,125 / 人</span> <a class="naver-link" href="nmap://place?lat=35.1520998&lng=129.1170955&name=석화연" target="_blank">📍</a></div>
-              <div class="tl-desc">廣安里人氣韓式烤肉，第一頓飯豪邁開吃！</div>
+              <div class="tl-name">☕ P.ARK 海景咖啡 / 輕食 <span class="price-tag">約 ₩12,000-28,000 / NT$300-700 / 人</span> <a class="naver-link" href="https://maps.google.com/?q=35.0786,129.0803" target="_blank">📍</a></div>
+              <div class="tl-desc">ARTE 旁邊的影島複合文化空間，適合當第一餐＋海景休息點；抓 90 分鐘，讓剛下飛機的體力回穩</div>
+              <div class="tags"><span class="tag tag-food">海景咖啡</span><span class="tag tag-spot">P.ARK</span><span class="tag tag-car">步行約 5 分</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">16:15-17:20</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#378ADD;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🌊 白淺灘文化村短走（有體力再加） <span class="price-tag price-tag-muted">免費 / 計程車另計</span> <a class="naver-link" href="https://maps.google.com/?q=35.0799,129.0447" target="_blank">📍</a></div>
+              <div class="tl-desc">若班機順、天氣好再去；從 P.ARK 搭車約 15-20 分，現場只抓 30-40 分拍海景，不建議拖到太晚</div>
+              <div class="tags"><span class="tag tag-spot">影島海景</span><span class="tag tag-note">可跳過</span><span class="tag tag-car">短程計程車</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">17:20-18:20</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#1D9E75;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🚕 影島 → 廣安里 check-in <span class="price-tag">約 ₩22,000-35,000 / 台</span></div>
+              <div class="tl-desc">白淺灘或 P.ARK 出發到廣安里，車程約 35-45 分，保守抓 60 分；抵達先放行李、整理一下再出門</div>
+              <div class="tags"><span class="tag tag-car">計程車</span><span class="tag tag-note">check-in 緩衝</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">18:30-19:00</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#378ADD;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🌅 廣安里海灘散步 <span class="price-tag price-tag-muted">免費</span> <a class="naver-link" href="https://maps.google.com/?q=35.1525,129.1190" target="_blank">📍</a></div>
+              <div class="tl-desc">只保留短散步，不硬塞太多；如果前面延誤，這段可以直接併到晚餐後看夜景</div>
+              <div class="tags"><span class="tag tag-spot">廣安大橋夕陽</span><span class="tag tag-note">可壓縮</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">19:10-20:40</div>
+            <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
+            <div class="tl-body">
+              <div class="tl-name">🍖 seokhwayeon Korean BBQ <span class="price-tag">約 ₩25,000-45,000 / NT$625-1,125 / 人</span> <a class="naver-link" href="https://maps.google.com/?q=35.1520998,129.1170955" target="_blank">📍</a></div>
+              <div class="tl-desc">廣安里人氣韓式烤肉，第一頓正式晚餐；抓 90 分鐘，避免美術館日後段太趕</div>
               <div class="tags"><span class="tag tag-ig">IG 收藏</span><span class="tag tag-food">韓式烤肉</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">晚上</div>
+            <div class="tl-time">21:00-22:10</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#1D9E75;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
               <div class="tl-name">♨️ Hotel Aqua Palace 汗蒸幕 <span class="price-tag price-tag-pass">Pass 含｜省 ₩12,000-20,000</span></div>
-              <div class="tl-desc">已從預估花費扣除；實際可用方案與營業規則出發前再核對 Pass 官網 / App</div>
-              <div class="tags"><span class="tag tag-spa">汗蒸幕</span><span class="tag tag-spot">廣安大橋夜景</span><span class="tag tag-note">釜山 Pass 包含</span></div>
+              <div class="tl-desc">體力夠再去，已從預估花費扣除；若 D1 太累，這段改成飯店休息或移到其他晚上</div>
+              <div class="tags"><span class="tag tag-spa">汗蒸幕</span><span class="tag tag-spot">廣安大橋夜景</span><span class="tag tag-note">釜山 Pass 包含</span><span class="tag tag-note">可延後</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">宵夜</div>
+            <div class="tl-time">22:10 後</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#7F77DD;"></div></div>
             <div class="tl-body">
-              <div class="tl-name">🍺 廣安里海灘布帳馬車 <span class="price-tag">約 ₩15,000-30,000 / NT$375-750 / 人</span></div>
-              <div class="tl-desc">炸雞＋啤酒＋廣安大橋夜景，釜山最道地宵夜體驗</div>
-              <div class="tags"><span class="tag tag-night">炸雞啤酒海景</span></div>
+              <div class="tl-name">🎆 廣安里 M 無人機燈光秀 <span class="price-tag price-tag-muted">免費 / 週六限定</span> <a class="naver-link" href="https://maps.google.com/?q=35.1532,129.1186" target="_blank">📍</a></div>
+              <div class="tl-desc">若 D1 剛好是週六，3-9 月可看 20:00 或 22:00 場；10-2 月為 19:00 或 21:00 場。演出約 12 分鐘，廣安里海灘沿線都能看，天候或技術問題可能取消 / 延後</div>
+              <div class="tags"><span class="tag tag-night">廣安大橋夜景</span><span class="tag tag-spot">無人機燈光秀</span><span class="tag tag-note">週六限定</span></div>
             </div>
           </div>
         </div>
         <div class="day-cost-summary">
           <div class="day-cost-title">D1 預估花費 / 人</div>
-          <div class="day-cost-row"><span>吃玩（已扣 Pass）</span><span>₩40,000-75,000｜NT$1,000-1,875</span></div>
-          <div class="day-cost-row"><span>交通（地鐵/步行）</span><span>約 ₩3,000｜NT$75</span></div>
+          <div class="day-cost-row"><span>吃玩（含 ARTE，已扣 Pass）</span><span>₩71,000-125,000｜NT$1,775-3,125</span></div>
+          <div class="day-cost-row"><span>交通（計程車 / 台）</span><span>約 ₩52,000-80,000｜NT$1,300-2,000</span></div>
           <div class="day-cost-row"><span>Pass 已省</span><span>₩12,000-20,000｜NT$300-500</span></div>
-          <div class="day-cost-row"><strong>當日小計</strong><strong>₩43,000-78,000｜NT$1,075-1,950</strong></div>
+          <div class="day-cost-row"><strong>當日小計</strong><strong>吃玩 ₩71,000-125,000 + 車資分攤</strong></div>
         </div>
       </div>
     </div>
@@ -394,65 +460,65 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
         </div>
         <div class="timeline" id="timeline-d2">
           <div class="tl-item">
-            <div class="tl-time">早餐</div>
+            <div class="tl-time">09:00-10:00</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
-              <div class="tl-name">☕ working holiday（廣安里海景早午餐）<span class="price-tag">約 ₩15,000-25,000 / NT$375-625 / 人</span> <a class="naver-link" href="nmap://place?lat=35.1547583&lng=129.1197477&name=워킹홀리데이" target="_blank">📍</a></div>
-              <div class="tl-desc">面向廣安大橋大片落地窗，09:00 起；從廣安里飯店步行約 8-10 分</div>
+              <div class="tl-name">☕ working holiday（廣安里海景早午餐）<span class="price-tag">約 ₩15,000-25,000 / NT$375-625 / 人</span> <a class="naver-link" href="https://maps.google.com/?q=35.1547583,129.1197477" target="_blank">📍</a></div>
+              <div class="tl-desc">面向廣安大橋大片落地窗，09:00 起；從廣安里飯店步行約 8-10 分，早餐抓 60 分鐘，吃完預留叫車 / 上廁所緩衝</div>
               <div class="tags"><span class="tag tag-food">早餐 09:00+</span><span class="tag tag-spot">廣安大橋海景</span><span class="tag tag-car">步行</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">上午</div>
+            <div class="tl-time">10:00-12:10</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#378ADD;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
-              <div class="tl-name">🚞 天空膠囊列車 <span class="price-tag">約 ₩12,500-40,000 / NT$313-1,000 / 人</span> <a class="naver-link" href="nmap://place?lat=35.1607&lng=129.1847&name=해운대블루라인park" target="_blank">📍</a></div>
-              <div class="tl-desc">從廣安里到尾浦：地鐵末段步行約 15 分，超過 10 分門檻，建議保留短程計程車。Pass 常見包含 Beach Train，不一定包含 Sky Capsule，因此此項先保留費用</div>
+              <div class="tl-name">🚞 天空膠囊列車 <span class="price-tag">約 ₩12,500-40,000 / NT$313-1,000 / 人</span> <a class="naver-link" href="https://maps.google.com/?q=35.1607,129.1847" target="_blank">📍</a></div>
+              <div class="tl-desc">廣安里→尾浦建議短程計程車，車程約 25-35 分，保守抓 60 分含等車 / 報到；膠囊列車含排隊與拍照抓 60-70 分。Pass 常見包含 Beach Train，不一定包含 Sky Capsule，因此此項先保留費用</div>
               <div class="tags"><span class="tag tag-spot">空中膠囊列車</span><span class="tag tag-note">需提前預約</span><span class="tag tag-note">Pass 待確認</span><span class="tag tag-car">短程計程車</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">午餐</div>
+            <div class="tl-time">12:10-13:50</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
-              <div class="tl-name">🦀 海雲台傳統市場 <span class="price-tag">約 ₩10,000-25,000 / NT$250-625 / 人</span> <a class="naver-link" href="nmap://place?lat=35.1614537&lng=129.1622489&name=해운대전통시장" target="_blank">📍</a></div>
-              <div class="tl-desc">烤鰻魚、活章魚、海鮮湯飯，道地釜山味；尾浦到市場地鐵不順，保留短程計程車</div>
+              <div class="tl-name">🦀 海雲台傳統市場 <span class="price-tag">約 ₩10,000-25,000 / NT$250-625 / 人</span> <a class="naver-link" href="https://maps.google.com/?q=35.1614537,129.1622489" target="_blank">📍</a></div>
+              <div class="tl-desc">尾浦到市場地鐵不順，保留短程計程車，移動抓 25-35 分；市場午餐抓 60 分，若膠囊延誤這段可壓縮</div>
               <div class="tags"><span class="tag tag-food">海鮮市場小吃</span><span class="tag tag-car">短程計程車</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">下午</div>
+            <div class="tl-time">14:00-15:20</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#378ADD;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
-              <div class="tl-name">🏙 BUSAN X the Sky <span class="price-tag price-tag-pass">Pass 含｜省 ₩23,000-29,000</span> <a class="naver-link" href="nmap://place?lat=35.1637&lng=129.1584&name=BUSAN+X+the+SKY" target="_blank">📍</a></div>
-              <div class="tl-desc">100F 俯瞰整個海雲台，透明橋 Shocking Bridge，99F 世界最高星巴克；從海雲台市場步行約 10 分，門票已從預估花費扣除</div>
+              <div class="tl-name">🏙 BUSAN X the Sky <span class="price-tag price-tag-pass">Pass 含｜省 ₩23,000-29,000</span> <a class="naver-link" href="https://maps.google.com/?q=35.1637,129.1584" target="_blank">📍</a></div>
+              <div class="tl-desc">從海雲台市場步行約 10 分，保守抓 15 分；觀景台抓 60-70 分，門票已從預估花費扣除</div>
               <div class="tags"><span class="tag tag-spot">100F 全景</span><span class="tag tag-note">釜山 Pass 包含</span><span class="tag tag-car">步行</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">下午茶</div>
+            <div class="tl-time">15:20-16:50</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#7F77DD;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
-              <div class="tl-name">☕ <a class="naver-link" href="nmap://place?lat=35.1645337&lng=129.1580765&name=캐버린하우스" target="_blank">Keveren House</a> + <a class="naver-link" href="nmap://place?lat=35.1643054&lng=129.1576309&name=듀플릿" target="_blank">DUPLIT</a>（IG×2） <span class="price-tag">約 ₩8,000-20,000 / NT$200-500 / 人</span></div>
-              <div class="tl-desc">海理團路，奶油派必買＋affogato 必試，兩間緊鄰連著逛；BUSAN X the Sky 周邊步行可達</div>
+              <div class="tl-name">☕ <a class="naver-link" href="https://maps.google.com/?q=35.1645337,129.1580765" target="_blank">Keveren House</a> + <a class="naver-link" href="https://maps.google.com/?q=35.1643054,129.1576309" target="_blank">DUPLIT</a>（IG×2） <span class="price-tag">約 ₩8,000-20,000 / NT$200-500 / 人</span></div>
+              <div class="tl-desc">BUSAN X the Sky 周邊步行 5-10 分可達；兩間緊鄰連著逛，抓 90 分鐘含排隊、拍照與休息</div>
               <div class="tags"><span class="tag tag-ig">IG×2</span><span class="tag tag-food">奶油派 / affogato</span><span class="tag tag-car">步行</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">晚餐</div>
+            <div class="tl-time">16:50-19:00</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
-              <div class="tl-name">🦀 尾浦家 醬蟹 <span class="price-tag">約 ₩18,000-35,000 / NT$450-875 / 人</span> <a class="naver-link" href="nmap://place?lat=35.160751&lng=129.1714544&name=미포지브" target="_blank">📍</a></div>
-              <div class="tl-desc">40 年老店，醬汁拌飯必點；海理團路過去步行偏遠 / 地鐵不順，保留短程計程車</div>
+              <div class="tl-name">🦀 尾浦家 醬蟹 <span class="price-tag">約 ₩18,000-35,000 / NT$450-875 / 人</span> <a class="naver-link" href="https://maps.google.com/?q=35.160751,129.1714544" target="_blank">📍</a></div>
+              <div class="tl-desc">海理團路過去步行偏遠 / 地鐵不順，保留短程計程車，移動抓 25-35 分；建議 17:30 左右入座，晚餐抓 90 分鐘</div>
               <div class="tags"><span class="tag tag-food">醬蟹</span><span class="tag tag-note">建議訂位</span><span class="tag tag-car">短程計程車</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">夜晚</div>
+            <div class="tl-time">19:00-21:20</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#1D9E75;"></div></div>
             <div class="tl-body">
-              <div class="tl-name">🌃 The Bay 101 海景夜生活 <span class="price-tag">約 ₩10,000-25,000 / NT$250-625 / 人</span> <a class="naver-link" href="nmap://place?lat=35.1567&lng=129.1521&name=The+Bay+101" target="_blank">📍</a></div>
-              <div class="tl-desc">冬柏島入口夜景聖地，戶外酒吧看海上燈光倒影；晚間回海雲台飯店可搭 Dongbaek→Haeundae 1 站或短程計程車</div>
+              <div class="tl-name">🌃 The Bay 101 海景夜生活 <span class="price-tag">約 ₩10,000-25,000 / NT$250-625 / 人</span> <a class="naver-link" href="https://maps.google.com/?q=35.1567,129.1521" target="_blank">📍</a></div>
+              <div class="tl-desc">尾浦家→The Bay 101 保留計程車，移動抓 25-35 分；夜景停留抓 60-80 分，回海雲台飯店可搭 Dongbaek→Haeundae 1 站或短程計程車</div>
               <div class="tags"><span class="tag tag-night">海景酒吧</span><span class="tag tag-car">地鐵 / 短程計程車</span></div>
             </div>
           </div>
@@ -500,65 +566,65 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
         <div class="tip-box">💡 建議先玩 Skyline Luge 再進樂天世界，步行 5 分鐘銜接！</div>
         <div class="timeline" id="timeline-d3">
           <div class="tl-item">
-            <div class="tl-time">早餐</div>
+            <div class="tl-time">08:30-09:30</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
-              <div class="tl-name">🥚 EGG DROP 西面樂天後門店 <span class="price-tag">約 ₩6,000-14,000 / NT$150-350 / 人</span> <a class="naver-link" href="nmap://place?lat=35.1557765&lng=129.0553859&name=에그드롭" target="_blank">📍</a></div>
-              <div class="tl-desc">海雲台飯店 → 西面可搭地鐵 2 號線到 Seomyeon，兩端步行約 10 分內；到站後吃爆漿滑蛋吐司</div>
+              <div class="tl-name">🥚 EGG DROP 西面樂天後門店 <span class="price-tag">約 ₩6,000-14,000 / NT$150-350 / 人</span> <a class="naver-link" href="https://maps.google.com/?q=35.1557765,129.0553859" target="_blank">📍</a></div>
+              <div class="tl-desc">海雲台飯店 → 西面搭地鐵 2 號線，含步行與等車抓 45-55 分；到站後吃爆漿滑蛋吐司，早餐抓 30-40 分</div>
               <div class="tags"><span class="tag tag-food">早餐 08:00+</span><span class="tag tag-car">地鐵 2 號線</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">上午</div>
+            <div class="tl-time">09:30-11:45</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#E24B4A;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
-              <div class="tl-name">🛷 Skyline Luge <span class="price-tag price-tag-pass">Pass 含｜省 ₩31,000-42,000</span> <a class="naver-link" href="nmap://place?lat=35.1883&lng=129.2233&name=스카이라인루지부산" target="_blank">📍</a></div>
-              <div class="tl-desc">西面到機張距離遠，Osiria 站到 Luge 步行約 15 分以上；這段保留包車或計程車。Pass 通常含 2 次斜坡滑車，已從預估花費扣除</div>
+              <div class="tl-name">🛷 Skyline Luge <span class="price-tag price-tag-pass">Pass 含｜省 ₩31,000-42,000</span> <a class="naver-link" href="https://maps.google.com/?q=35.1883,129.2233" target="_blank">📍</a></div>
+              <div class="tl-desc">西面到機張距離遠，保留包車或計程車，移動抓 55-70 分；Luge 含報到、排隊、2 次滑車抓 70-80 分。Pass 通常含 2 次斜坡滑車，已從預估花費扣除</div>
               <div class="tags"><span class="tag tag-thrill">斜坡滑車</span><span class="tag tag-car">包車/計程車</span><span class="tag tag-note">釜山 Pass 包含</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">上午→</div>
+            <div class="tl-time">11:45-15:40</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#378ADD;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
               <div class="tl-name">🎢 釜山樂天世界冒險樂園 <span class="price-tag price-tag-pass">Pass 含｜省 ₩23,000-47,000</span></div>
-              <div class="tl-desc">步行 5 分鐘進場！6 大區域 24 項設施；Magic Pass 快速通關另計。門票已從預估花費扣除</div>
+              <div class="tl-desc">Luge → 樂天世界步行約 5-10 分；園區主體抓 3.5-4 小時，熱門設施排隊會吃時間，Magic Pass 快速通關另計。門票已從預估花費扣除</div>
               <div class="tags"><span class="tag tag-spot">主題樂園</span><span class="tag tag-thrill">倒掛雲霄飛車</span><span class="tag tag-note">釜山 Pass 包含</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">午餐</div>
+            <div class="tl-time">13:00-14:00</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
               <div class="tl-name">🍟 樂天世界園內餐廳 <span class="price-tag">約 ₩12,000-25,000 / NT$300-625 / 人</span></div>
-              <div class="tl-desc">BHC 炸雞、韓式拌飯、辣炒年糕</div>
+              <div class="tl-desc">園內用餐穿插在樂天世界時段中；BHC 炸雞、韓式拌飯、辣炒年糕，排隊時抓 60 分鐘比較穩</div>
               <div class="tags"><span class="tag tag-food">園內用餐</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">下午</div>
+            <div class="tl-time">15:40-18:30</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#7F77DD;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
               <div class="tl-name">🛍 包車/計程車回西面 Shopping <span class="price-tag price-tag-muted">購物另計</span></div>
-              <div class="tl-desc">Osiria 站步行約 15 分，回西面這段仍保留包車或計程車；抵達後逛樂天百貨、Olive Young、西面地下街</div>
+              <div class="tl-desc">Osiria 站步行約 15 分，回西面仍保留包車或計程車，移動抓 60-70 分；抵達後逛樂天百貨、Olive Young、西面地下街，購物抓 90 分鐘</div>
               <div class="tags"><span class="tag tag-ig">IG 收藏</span><span class="tag tag-shop">Olive Young</span><span class="tag tag-car">包車/計程車</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">晚餐</div>
+            <div class="tl-time">18:40-20:10</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
-              <div class="tl-name">🥩 味贊王 西面 鹽烤肉 <span class="price-tag">約 ₩25,000-45,000 / NT$625-1,125 / 人</span> <a class="naver-link" href="nmap://place?lat=35.1554917&lng=129.0556616&name=맛찬들왕" target="_blank">📍</a></div>
-              <div class="tl-desc">厚達 3.5cm 豬五花，全程專人幫烤，17:00–23:00</div>
+              <div class="tl-name">🥩 味贊王 西面 鹽烤肉 <span class="price-tag">約 ₩25,000-45,000 / NT$625-1,125 / 人</span> <a class="naver-link" href="https://maps.google.com/?q=35.1554917,129.0556616" target="_blank">📍</a></div>
+              <div class="tl-desc">西面 Shopping 區步行約 5-10 分；厚達 3.5cm 豬五花，全程專人幫烤，17:00–23:00，晚餐抓 90 分鐘</div>
               <div class="tags"><span class="tag tag-food">厚切烤肉</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">宵夜</div>
+            <div class="tl-time">20:10-22:30</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#1D9E75;"></div></div>
             <div class="tl-body">
-              <div class="tl-name">🍹 <a class="naver-link" href="nmap://place?lat=35.162329&lng=129.1916555&name=루아&티그레" target="_blank">lua&tigre</a>（IG）＋ 西面酒吧街 <span class="price-tag">約 ₩10,000-30,000 / NT$250-750 / 人</span></div>
-              <div class="tl-desc">西面大型咖啡廳酒吧，調酒氛圍超好</div>
+              <div class="tl-name">🍹 <a class="naver-link" href="https://maps.google.com/?q=35.162329,129.1916555" target="_blank">lua&tigre</a>（IG）＋ 西面酒吧街 <span class="price-tag">約 ₩10,000-30,000 / NT$250-750 / 人</span></div>
+              <div class="tl-desc">目前座標偏海雲台側，從西面來回交通抓 40-60 分；若當天太累，改逛西面酒吧街，保留 90 分鐘放鬆</div>
               <div class="tags"><span class="tag tag-ig">IG 收藏</span><span class="tag tag-night">調酒 / 酒吧</span></div>
             </div>
           </div>
@@ -597,38 +663,38 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
         </div>
         <div class="timeline" id="timeline-d4">
           <div class="tl-item">
-            <div class="tl-time">早餐</div>
+            <div class="tl-time">09:00-10:00</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
-              <div class="tl-name">🍲 浦項豬肉湯飯 <span class="price-tag">約 ₩10,000-14,000 / NT$250-350 / 人</span> <a class="naver-link" href="nmap://place?lat=35.1557935&lng=129.0585494&name=포항돼지국밥" target="_blank">📍</a></div>
-              <div class="tl-desc">70 年老店，24hr 營業；西面飯店出發步行約 5-8 分</div>
+              <div class="tl-name">🍲 浦項豬肉湯飯 <span class="price-tag">約 ₩10,000-14,000 / NT$250-350 / 人</span> <a class="naver-link" href="https://maps.google.com/?q=35.1557935,129.0585494" target="_blank">📍</a></div>
+              <div class="tl-desc">70 年老店，24hr 營業；西面飯店出發步行約 5-8 分，早餐抓 45-60 分，吃完回飯店拿行李 / 退房</div>
               <div class="tags"><span class="tag tag-food">釜山代表美食</span><span class="tag tag-note">24hr</span><span class="tag tag-car">步行</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">上午</div>
+            <div class="tl-time">10:00-12:30</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#378ADD;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
-              <div class="tl-name">🐟 扎嘎其市場＋南浦洞 <span class="price-tag price-tag-muted">市場參觀免費 / 購物另計</span> <a class="naver-link" href="nmap://place?lat=35.0967&lng=129.0300&name=자갈치시장" target="_blank">📍</a></div>
-              <div class="tl-desc">Seomyeon 搭 1 號線到 Jagalchi / Nampo，兩端步行約 10 分內；BIFF 廣場掃最後一輪伴手禮</div>
+              <div class="tl-name">🐟 扎嘎其市場＋南浦洞 <span class="price-tag price-tag-muted">市場參觀免費 / 購物另計</span> <a class="naver-link" href="https://maps.google.com/?q=35.0967,129.0300" target="_blank">📍</a></div>
+              <div class="tl-desc">Seomyeon → Jagalchi / Nampo 搭 1 號線，含步行、等車與寄物抓 40-50 分；BIFF 廣場、南浦洞、札嘎其周邊掃最後一輪伴手禮</div>
               <div class="tags"><span class="tag tag-food">扎嘎其海鮮</span><span class="tag tag-shop">伴手禮掃貨</span><span class="tag tag-car">地鐵 1 號線</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">午餐</div>
+            <div class="tl-time">12:30-14:00</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#D85A30;"></div><div class="tl-line"></div></div>
             <div class="tl-body">
-              <div class="tl-name">🦑 <a class="naver-link" href="nmap://place?lat=35.098409&lng=129.025761&name=대양烤腸" target="_blank">大光烤腸</a> / 扎嘎其市場 2F 海鮮 <span class="price-tag">約 ₩20,000-50,000 / NT$500-1,250 / 人</span></div>
-              <div class="tl-desc">最後一頓飯，吃好吃滿！</div>
+              <div class="tl-name">🦑 <a class="naver-link" href="https://maps.google.com/?q=35.098409,129.025761" target="_blank">大光烤腸</a> / 扎嘎其市場 2F 海鮮 <span class="price-tag">約 ₩20,000-50,000 / NT$500-1,250 / 人</span></div>
+              <div class="tl-desc">從札嘎其 / 南浦洞步行約 5-10 分；最後一頓飯抓 90 分鐘，若回程班機較早可改簡餐或外帶</div>
               <div class="tags"><span class="tag tag-food">烤腸 / 海鮮</span></div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-time">下午</div>
+            <div class="tl-time">14:00-16:00</div>
             <div class="tl-dot-wrap"><div class="tl-dot" style="background:#7F77DD;"></div></div>
             <div class="tl-body">
               <div class="tl-name">🚇 地鐵＋機場輕軌前往金海機場 <span class="price-tag">約 ₩3,200 / NT$80 / 人</span></div>
-              <div class="tl-desc">Jagalchi/Nampo → Seomyeon → Sasang → 金海機場；行李太多或時間緊再改計程車。記得預留退稅和安檢時間</div>
+              <div class="tl-desc">Jagalchi/Nampo → Seomyeon → Sasang → 金海機場，地鐵＋輕軌抓 70-90 分；建議至少起飛前 2.5-3 小時到機場，行李太多或時間緊再改計程車</div>
               <div class="tags"><span class="tag tag-car">地鐵送機</span><span class="tag tag-note">記得退稅</span></div>
             </div>
           </div>
@@ -639,7 +705,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
           <div class="day-cost-row"><span>交通（地鐵/步行）</span><span>約 ₩4,800｜NT$120</span></div>
           <div class="day-cost-row"><strong>當日小計</strong><strong>₩34,800-68,800｜NT$870-1,720</strong></div>
           <div class="day-cost-row"><span>Pass 四日已省</span><span>₩89,000-138,000｜NT$2,225-3,450</span></div>
-          <div class="day-cost-row"><strong>四日合計（已扣 Pass / 交通改省錢）</strong><strong>約 ₩207,700-434,200 + 計程車分攤｜NT$5,193-10,855+</strong></div>
+          <div class="day-cost-row"><strong>四日合計（已扣 Pass / D1 加 ARTE）</strong><strong>約 ₩235,700-481,200 + 計程車分攤｜NT$5,893-12,030+</strong></div>
         </div>
       </div>
     </div>
@@ -648,6 +714,29 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
 
   <!-- Sortable info cards -->
   <div id="sortable-area">
+
+    <!-- Day Map -->
+    <div class="card col-3" id="card-map">
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="day-title">📍 每日行程地圖</div>
+          <div class="day-sub">點 D1-D4 切換當日地點，地圖會把當天動線串起來</div>
+        </div>
+        <div id="map-tabs" style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+          <button class="map-tab active" data-day="1">D1 廣安里</button>
+          <button class="map-tab" data-day="2">D2 海雲台</button>
+          <button class="map-tab" data-day="3">D3 機張</button>
+          <button class="map-tab" data-day="4">D4 西面・南浦</button>
+        </div>
+      </div>
+      <div class="card-body" style="padding:0;">
+        <div id="day-map-canvas"></div>
+        <div class="day-map-footer">
+          <span id="day-map-summary">載入地圖中…</span>
+          <a class="day-map-open" id="day-map-open" href="#" target="_blank" rel="noopener">在 Google Maps 開啟</a>
+        </div>
+      </div>
+    </div>
 
     <!-- Weather -->
     <div class="card col-1" id="card-weather">
@@ -825,12 +914,15 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
               </tr>
             </thead>
             <tbody>
-              <tr><td>D1</td><td>金海機場</td><td>廣安里飯店</td><td>輕軌 → Sasang 轉 2 號線 → Geumnyeonsan/Gwangan，步行約 10 分</td><td class="price">約 ₩3,000 /人<span class="twd-note">約 NT$75</span></td></tr>
-              <tr><td>D1</td><td>廣安里飯店</td><td>廣安里海灘</td><td>步行約 5-8 分</td><td class="price">₩0</td></tr>
+              <tr><td>D1</td><td>金海機場</td><td>ARTE MUSEUM Busan</td><td>拖行李跨區，建議計程車；車程約 40 分，保守抓 55 分</td><td class="price">約 ₩30,000-45,000 /台<span class="twd-note">約 NT$750-1,125</span></td></tr>
+              <tr><td>D1</td><td>ARTE MUSEUM</td><td>P.ARK</td><td>步行約 5 分</td><td class="price">₩0</td></tr>
+              <tr><td>D1</td><td>P.ARK</td><td>白淺灘文化村</td><td>可選行程；短程計程車約 15-20 分</td><td class="price">約 ₩8,000-12,000 /台<span class="twd-note">約 NT$200-300</span></td></tr>
+              <tr><td>D1</td><td>影島</td><td>廣安里飯店</td><td>計程車約 35-45 分，保守抓 60 分；先 check-in 放行李</td><td class="price">約 ₩22,000-35,000 /台<span class="twd-note">約 NT$550-875</span></td></tr>
+              <tr><td>D1</td><td>廣安里飯店</td><td>廣安里海灘</td><td>步行約 5-8 分；前段延誤可改晚餐後看夜景</td><td class="price">₩0</td></tr>
               <tr><td>D1</td><td>廣安里海灘</td><td>seokhwayeon Korean BBQ</td><td>步行約 5 分</td><td class="price">₩0</td></tr>
               <tr><td>D1</td><td>seokhwayeon Korean BBQ</td><td>Hotel Aqua Palace 汗蒸幕</td><td>步行約 5 分</td><td class="price">₩0</td></tr>
-              <tr><td>D1</td><td>Hotel Aqua Palace</td><td>廣安里海灘布帳馬車</td><td>步行約 5-8 分</td><td class="price">₩0</td></tr>
-              <tr class="budget-total"><td colspan="4">D1 小計（每人）</td><td class="price">約 ₩3,000<span class="twd-note">約 NT$75</span></td></tr>
+              <tr><td>D1</td><td>Hotel Aqua Palace</td><td>廣安里 M 無人機燈光秀</td><td>步行約 5-8 分；週六限定，3-9 月 20:00 / 22:00，10-2 月 19:00 / 21:00</td><td class="price">₩0</td></tr>
+              <tr class="budget-total"><td colspan="4">D1 小計</td><td class="price">計程車約 ₩52,000-80,000 /台，可選白淺灘另加 ₩8,000-12,000 /台</td></tr>
 
               <tr><td>D2</td><td>廣安里飯店</td><td>working holiday 早午餐</td><td>步行約 8-10 分</td><td class="price">₩0</td></tr>
               <tr><td>D2</td><td>working holiday</td><td>尾浦天空膠囊列車站</td><td>地鐵終點步行約 15 分，超過 10 分；保留計程車</td><td class="price">約 ₩10,300 /台<span class="twd-note">約 NT$258</span></td></tr>
@@ -1033,6 +1125,7 @@ footer { text-align: center; padding: 20px; font-size: 11px; color: #bbb; }
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script async src="https://www.instagram.com/embed.js"></script>
 <script>
 let sortable = null;
@@ -1189,7 +1282,7 @@ const HOTEL_CAR_SEED = {
     3: { hotel_name: 'Arban Hotel 或 釜山商務飯店（西面）', hotel_detail: '地鐵 1+2 號線交叉站，樂天百貨旁｜參考價 TWD 1,000–2,200 /晚' }
   },
   car: {
-    1: { car_title: '交通：機場輕軌＋地鐵 2 號線', car_desc: '金海機場→Sasang 轉 2 號線→Geumnyeonsan/Gwangan，出站步行約 10 分到廣安里飯店；晚上廣安里周邊以步行為主' },
+    1: { car_title: '交通：D1 以計程車處理行李＋跨區移動', car_desc: '金海機場→影島 ARTE MUSEUM 抓 40-55 分；影島→廣安里抓 35-50 分。早班機較適合，若 14:00 後抵達就改回直奔廣安里' },
     2: { car_title: '交通：步行＋短程計程車＋1 段地鐵', car_desc: '廣安里早餐可步行；尾浦/海雲台海岸線部分離站較遠保留短程計程車；The Bay 101 回飯店可搭 Dongbaek→Haeundae' },
     3: { car_title: '交通：海雲台→西面搭地鐵；機張段保留包車/計程車', car_desc: 'Osiria 站到 Luge / 樂天世界步行約 15 分以上，超過 10 分門檻；機張往返仍建議包車或計程車' },
     4: { car_title: '交通：步行＋1 號線＋機場輕軌', car_desc: '西面周邊步行吃早餐；Seomyeon→Jagalchi/Nampo 搭 1 號線；返程 Jagalchi/Nampo→Seomyeon→Sasang→金海機場' }
@@ -1325,8 +1418,8 @@ const MODAL_CONFIGS = {
         <input class="modal-input" id="f-icon" placeholder="📍" maxlength="2" />
       </div>
       <div class="modal-field">
-        <label class="modal-label">Naver 地圖連結（選填）</label>
-        <input class="modal-input" id="f-naver" placeholder="nmap://place?lat=…" />
+        <label class="modal-label">Google Maps 連結（選填）</label>
+        <input class="modal-input" id="f-naver" placeholder="https://maps.google.com/?q=緯度,經度" />
       </div>
       <div class="modal-field">
         <label class="modal-label">IG 貼文連結（選填）</label>
@@ -1397,8 +1490,8 @@ const MODAL_CONFIGS = {
         <input class="modal-input" id="f-tl-desc" placeholder="例：道地釜山口味，必點辣炒年糕" />
       </div>
       <div class="modal-field">
-        <label class="modal-label">Naver 地圖連結（選填）</label>
-        <input class="modal-input" id="f-tl-naver" placeholder="nmap://place?lat=…" />
+        <label class="modal-label">Google Maps 連結（選填）</label>
+        <input class="modal-input" id="f-tl-naver" placeholder="https://maps.google.com/?q=緯度,經度" />
       </div>
       <div class="modal-field">
         <label class="modal-label">標籤（選填）</label>
@@ -1533,8 +1626,8 @@ const MODAL_CONFIGS = {
         <input class="modal-input" id="f-price-per-night" placeholder="例：1500" />
       </div>
       <div class="modal-field">
-        <label class="modal-label">Naver 地圖連結（選填）</label>
-        <input class="modal-input" id="f-naver" placeholder="nmap://place?lat=…" />
+        <label class="modal-label">Google Maps 連結（選填）</label>
+        <input class="modal-input" id="f-naver" placeholder="https://maps.google.com/?q=緯度,經度" />
       </div>
       <div class="modal-field">
         <label class="modal-label">備注（選填）</label>
@@ -1567,8 +1660,8 @@ const MODAL_CONFIGS = {
         <input class="modal-input" id="f-icon" placeholder="🧵" maxlength="2" />
       </div>
       <div class="modal-field">
-        <label class="modal-label">Naver 地圖連結（選填）</label>
-        <input class="modal-input" id="f-naver" placeholder="nmap://place?lat=…" />
+        <label class="modal-label">Google Maps 連結（選填）</label>
+        <input class="modal-input" id="f-naver" placeholder="https://maps.google.com/?q=緯度,經度" />
       </div>
       <div class="modal-field">
         <label class="modal-label">Thread 貼文連結（選填）</label>
@@ -1601,8 +1694,8 @@ const MODAL_CONFIGS = {
         <input class="modal-input" id="f-icon" placeholder="🎬" maxlength="2" />
       </div>
       <div class="modal-field">
-        <label class="modal-label">Naver 地圖連結（選填）</label>
-        <input class="modal-input" id="f-naver" placeholder="nmap://place?lat=…" />
+        <label class="modal-label">Google Maps 連結（選填）</label>
+        <input class="modal-input" id="f-naver" placeholder="https://maps.google.com/?q=緯度,經度" />
       </div>
       <div class="modal-field">
         <label class="modal-label">IG 貼文連結（選填）</label>
@@ -2325,6 +2418,239 @@ async function deleteFlightItem(id) {
   } catch { alert('刪除失敗，請稍後再試'); }
 }
 
+// ===== Day Map =====
+const GOOGLE_MY_MAPS_URL = 'https://www.google.com/maps/d/edit?mid=18SZpIrHVKRwi70MlBdRa43sUFzmaVvM&ll=35.1727218828398%2C128.94952523288802&z=18';
+let dayRouteMap = null;
+
+const DAY_ROUTE_POINTS = {
+  1: [
+    { name:'金海國際機場', lat:35.1796, lng:128.9382 },
+    { name:'ARTE MUSEUM Busan', lat:35.0789, lng:129.0815 },
+    { name:'P.ARK', lat:35.0786, lng:129.0803 },
+    { name:'白淺灘文化村', lat:35.0799, lng:129.0447 },
+    { name:'Hotel Aqua Palace（住宿 / 汗蒸幕）', lat:35.154076, lng:129.11882 },
+    { name:'廣安里海灘', lat:35.1525, lng:129.1190 },
+    { name:'seokhwayeon Korean BBQ', lat:35.1520998, lng:129.1170955 },
+    { name:'廣安里 M 無人機燈光秀', lat:35.1532, lng:129.1186 }
+  ],
+  2: [
+    { name:'working holiday', lat:35.1547583, lng:129.1197477 },
+    { name:'尾浦天空膠囊列車站', lat:35.1607, lng:129.1847 },
+    { name:'海雲台傳統市場', lat:35.1614537, lng:129.1622489 },
+    { name:'BUSAN X the Sky', lat:35.1637, lng:129.1584 },
+    { name:'Keveren House', lat:35.1645337, lng:129.1580765 },
+    { name:'DUPLIT', lat:35.1643054, lng:129.1576309 },
+    { name:'尾浦家 醬蟹', lat:35.160751, lng:129.1714544 },
+    { name:'The Bay 101', lat:35.1567, lng:129.1521 }
+  ],
+  3: [
+    { name:'EGG DROP 西面樂天後門店', lat:35.1557765, lng:129.0553859 },
+    { name:'Skyline Luge Busan', lat:35.1883, lng:129.2233 },
+    { name:'釜山樂天世界冒險樂園', lat:35.1908, lng:129.2139 },
+    { name:'西面 Shopping 區', lat:35.1569, lng:129.0561 },
+    { name:'味贊王 西面 鹽烤肉', lat:35.1554917, lng:129.0556616 },
+    { name:'lua&tigre', lat:35.162329, lng:129.1916555 },
+    { name:'西面住宿區', lat:35.1569, lng:129.0561 }
+  ],
+  4: [
+    { name:'浦項豬肉湯飯', lat:35.1557935, lng:129.0585494 },
+    { name:'扎嘎其市場＋南浦洞', lat:35.0967, lng:129.03 },
+    { name:'大光烤腸', lat:35.098409, lng:129.025761 },
+    { name:'金海國際機場', lat:35.1796, lng:128.9382 }
+  ]
+};
+
+function parseMapPointFromHref(href) {
+  try {
+    if (href.startsWith('nmap://place?')) {
+      const params = new URLSearchParams(href.replace('nmap://place?', ''));
+      const lat = parseFloat(params.get('lat'));
+      const lng = parseFloat(params.get('lng'));
+      return { lat, lng };
+    }
+
+    const url = new URL(href);
+    const q = url.searchParams.get('q') || '';
+    const match = q.match(/(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/);
+    if (match) return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
+  } catch {}
+  return null;
+}
+
+function getMapPointName(link) {
+  const linkText = link.textContent.trim();
+  if (linkText && linkText !== '📍') return linkText;
+
+  const body = link.closest('.tl-body');
+  if (!body) return linkText || '行程地點';
+  const title = body.querySelector('.tl-name');
+  if (!title) return linkText || '行程地點';
+  const clone = title.cloneNode(true);
+  clone.querySelectorAll('a, .price-tag, .tag').forEach(el => el.remove());
+  return clone.textContent.trim() || linkText || '行程地點';
+}
+
+function extractDayPoints(day) {
+  const links = document.querySelectorAll(`#card-d${day} a.naver-link`);
+  const seen = new Set();
+  return [...links].reduce((acc, a) => {
+    const point = parseMapPointFromHref(a.getAttribute('href') || '');
+    if (!point) return acc;
+    const { lat, lng } = point;
+    const name = getMapPointName(a);
+    const key = `${lat},${lng}`;
+    if (!isNaN(lat) && !isNaN(lng) && !seen.has(key)) {
+      seen.add(key);
+      acc.push({ lat, lng, name });
+    }
+    return acc;
+  }, []);
+}
+
+function getDayRoutePoints(day) {
+  const seen = new Set();
+  const addUnique = (acc, point) => {
+    if (!point || isNaN(point.lat) || isNaN(point.lng)) return acc;
+    const key = `${Number(point.lat).toFixed(5)},${Number(point.lng).toFixed(5)}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      acc.push(point);
+    }
+    return acc;
+  };
+
+  const base = DAY_ROUTE_POINTS[day] || [];
+  const dynamic = extractDayPoints(day);
+  return [...base, ...dynamic].reduce(addUnique, []);
+}
+
+function buildGoogleMapOpenUrl(points) {
+  if (!points.length) return '';
+  if (points.length === 1) {
+    const coord = `${points[0].lat},${points[0].lng}`;
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(coord)}`;
+  }
+
+  const origin = `${points[0].lat},${points[0].lng}`;
+  const destination = `${points[points.length - 1].lat},${points[points.length - 1].lng}`;
+  const waypoints = points.slice(1, -1).map(p => `${p.lat},${p.lng}`).join('|');
+  const params = new URLSearchParams({
+    api: '1',
+    origin,
+    destination,
+    travelmode: 'walking'
+  });
+  if (waypoints) params.set('waypoints', waypoints);
+
+  return `https://www.google.com/maps/dir/?${params.toString()}`;
+}
+
+function renderMapPlaceholder(day, points, openUrl) {
+  const placesHtml = points.map((p, i) => `
+    <div class="day-map-place">
+      <span class="day-map-num">${i + 1}</span>
+      <div>
+        <div class="day-map-place-name">${escHtml(p.name)}</div>
+        <div class="day-map-place-coord">${p.lat}, ${p.lng}</div>
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="day-map-empty">
+      <div class="day-map-empty-title">D${day} Google Maps 路線已整理好</div>
+      <div>Google 不允許一般路線網址直接嵌入頁面；若要頁內顯示地圖，需貼上 Google Maps / My Maps 產生的 iframe src。現在可先用下方按鈕開啟完整路線。</div>
+      <div class="day-map-places">${placesHtml}</div>
+    </div>
+  `;
+}
+
+function renderLeafletRouteMap(day, points) {
+  const mapEl = document.getElementById('day-map-canvas');
+  if (typeof L === 'undefined') {
+    mapEl.innerHTML = renderMapPlaceholder(day, points, buildGoogleMapOpenUrl(points));
+    return;
+  }
+
+  if (dayRouteMap) {
+    dayRouteMap.remove();
+    dayRouteMap = null;
+  }
+
+  const color = (DAY_COLORS[day] && DAY_COLORS[day].badge) || '#2d6a9f';
+  const mapId = `day-route-map-d${day}`;
+  mapEl.innerHTML = `<div class="day-route-map" id="${mapId}"></div>`;
+
+  dayRouteMap = L.map(mapId, { scrollWheelZoom:false });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(dayRouteMap);
+
+  const latLngs = points.map(p => [p.lat, p.lng]);
+  L.polyline(latLngs, { color, weight:4, opacity:.85 }).addTo(dayRouteMap);
+
+  points.forEach((p, i) => {
+    const marker = L.divIcon({
+      className: '',
+      html: `<div class="day-route-marker" style="background:${color};">${i + 1}</div>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12]
+    });
+    L.marker([p.lat, p.lng], { icon: marker })
+      .addTo(dayRouteMap)
+      .bindPopup(`<strong>D${day}-${i + 1}</strong><br>${escHtml(p.name)}`);
+  });
+
+  dayRouteMap.fitBounds(L.latLngBounds(latLngs), { padding:[28, 28] });
+  setTimeout(() => dayRouteMap && dayRouteMap.invalidateSize(), 80);
+}
+
+function initDayMap(day) {
+  const points = getDayRoutePoints(day);
+  const mapEl = document.getElementById('day-map-canvas');
+  const summaryEl = document.getElementById('day-map-summary');
+  const openEl = document.getElementById('day-map-open');
+  if (!mapEl || !summaryEl || !openEl) return;
+
+  if (!points.length) {
+    if (dayRouteMap) {
+      dayRouteMap.remove();
+      dayRouteMap = null;
+    }
+    mapEl.innerHTML = '<div class="day-map-empty">這一天目前沒有可解析的 Google Maps 座標</div>';
+    summaryEl.textContent = `D${day} 尚無地圖地點`;
+    openEl.removeAttribute('href');
+    openEl.style.visibility = 'hidden';
+    return;
+  }
+
+  const openUrl = buildGoogleMapOpenUrl(points);
+  renderLeafletRouteMap(day, points);
+  summaryEl.textContent = `D${day} 共 ${points.length} 個地點：${points.map(p => p.name).join(' → ')}`;
+  openEl.href = openUrl;
+  openEl.style.visibility = 'visible';
+  openEl.textContent = '在 Google Maps 開啟路線';
+}
+
+function refreshActiveDayMap() {
+  const active = document.querySelector('#map-tabs .map-tab.active');
+  if (active) initDayMap(parseInt(active.dataset.day));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const tabs = document.getElementById('map-tabs');
+  if (tabs) {
+    tabs.addEventListener('click', e => {
+      const btn = e.target.closest('.map-tab');
+      if (!btn) return;
+      tabs.querySelectorAll('.map-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      initDayMap(parseInt(btn.dataset.day));
+    });
+  }
+});
+
 async function loadFlightScreenshots() {
   const el = document.getElementById('flight-screenshots-body');
   if (!el) return;
@@ -2352,10 +2678,21 @@ function renderFlightScreenshots(items) {
         <button class="item-del-btn" style="visibility:visible;" onclick="deleteFlightScreenshot(${item.id})" title="刪除">✕</button>
       </div>
       <img class="flight-screenshot-img" src="${escHtml(item.img_url)}" alt="${escHtml(item.title)}"
+           onclick="openImgLightbox(this.src)"
            onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
       <div style="display:none;font-size:11px;color:#aaa;padding:8px;text-align:center;">圖片載入失敗，請確認 URL</div>
     </div>`).join('') + `</div>`;
 }
+
+function openImgLightbox(src) {
+  document.getElementById('img-lightbox-img').src = src;
+  document.getElementById('img-lightbox').classList.add('open');
+}
+function closeImgLightbox() {
+  document.getElementById('img-lightbox').classList.remove('open');
+  document.getElementById('img-lightbox-img').src = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeImgLightbox(); });
 
 async function deleteFlightScreenshot(id) {
   if (!confirm('確定刪除這張截圖？')) return;
@@ -2745,35 +3082,40 @@ function extractLeadingEmoji(str) {
 
 const DEFAULT_TIMELINE = {
   1: [
-    { id:'d1-1', time:'下午',  name:'🚇 金海機場 → 廣安里 check-in', desc:'機場輕軌到 Sasang 轉地鐵 2 號線，Geumnyeonsan/Gwangan 出站步行約 10 分。行李多時可改叫車', dotColor:'#378ADD', tags:[['tag-car','地鐵優先'],['tag-note','行李多可改計程車']], priceTag:'約 ₩3,000 / NT$75 / 人' },
-    { id:'d1-2', time:'傍晚',  name:'🌅 廣安里海灘散步', desc:'廣安大橋黃昏最美，沙灘邊走走放鬆', dotColor:'#378ADD', tags:[['tag-spot','廣安大橋夕陽']], priceTag:'免費', naverUrl:'nmap://place?lat=35.1525&lng=129.1190&name=광안리해수욕장' },
-    { id:'d1-3', time:'晚餐',  name:'🍖 seokhwayeon Korean BBQ', desc:'廣安里人氣韓式烤肉，第一頓飯豪邁開吃！', dotColor:'#D85A30', tags:[['tag-ig','IG 收藏'],['tag-food','韓式烤肉']], priceTag:'約 ₩25,000-45,000 / NT$625-1,125 / 人', naverUrl:'nmap://place?lat=35.1520998&lng=129.1170955&name=석화연' },
-    { id:'d1-4', time:'晚上',  name:'♨️ Hotel Aqua Palace 汗蒸幕', desc:'已從預估花費扣除；實際可用方案與營業規則出發前再核對 Pass 官網 / App', dotColor:'#1D9E75', tags:[['tag-spa','汗蒸幕'],['tag-spot','廣安大橋夜景'],['tag-note','釜山 Pass 包含']], priceTag:'Pass 含｜省 ₩12,000-20,000' },
-    { id:'d1-5', time:'宵夜',  name:'🍺 廣安里海灘布帳馬車', desc:'炸雞＋啤酒＋廣安大橋夜景，釜山最道地宵夜體驗', dotColor:'#7F77DD', tags:[['tag-night','炸雞啤酒海景']], priceTag:'約 ₩15,000-30,000 / NT$375-750 / 人' }
+    { id:'d1-1', time:'10:30-11:30', name:'🛬 金海機場入境＋行李緩衝', desc:'建議選 10:00-12:00 前抵達釜山的班機；若班機延誤或入境排隊，這段先吃掉緩衝，不急著壓縮美術館時間', dotColor:'#378ADD', tags:[['tag-note','早班機優先'],['tag-note','保守抓緩衝']], priceTag:'抓 60 分' },
+    { id:'d1-2', time:'11:30-12:25', name:'🚕 金海機場 → 影島 ARTE MUSEUM Busan', desc:'拖行李不建議轉地鐵公車；計程車實際車程約 40 分，保守抓 55 分，遇到塞車也比較不慌', dotColor:'#378ADD', tags:[['tag-car','計程車'],['tag-note','行李友善']], priceTag:'約 ₩30,000-45,000 / 台', naverUrl:'https://maps.google.com/?q=35.0789,129.0815' },
+    { id:'d1-3', time:'12:30-14:40', name:'🎨 ARTE MUSEUM Busan', desc:'影島沉浸式媒體藝術館，官方營業 10:00-20:00、最後入場 19:00；展場抓 90-120 分，再預留拍照、寄物與動線緩衝', dotColor:'#7F77DD', tags:[['tag-spot','美術館'],['tag-ig','沉浸式媒體藝術'],['tag-note','最後入場 19:00']], priceTag:'約 ₩19,000-22,000 / NT$475-550 / 人', naverUrl:'https://artemuseum.com/BUSAN' },
+    { id:'d1-4', time:'14:45-16:15', name:'☕ P.ARK 海景咖啡 / 輕食', desc:'ARTE 旁邊的影島複合文化空間，適合當第一餐＋海景休息點；抓 90 分鐘，讓剛下飛機的體力回穩', dotColor:'#D85A30', tags:[['tag-food','海景咖啡'],['tag-spot','P.ARK'],['tag-car','步行約 5 分']], priceTag:'約 ₩12,000-28,000 / NT$300-700 / 人', naverUrl:'https://maps.google.com/?q=35.0786,129.0803' },
+    { id:'d1-5', time:'16:15-17:20', name:'🌊 白淺灘文化村短走（有體力再加）', desc:'若班機順、天氣好再去；從 P.ARK 搭車約 15-20 分，現場只抓 30-40 分拍海景，不建議拖到太晚', dotColor:'#378ADD', tags:[['tag-spot','影島海景'],['tag-note','可跳過'],['tag-car','短程計程車']], priceTag:'免費 / 計程車另計', naverUrl:'https://maps.google.com/?q=35.0799,129.0447' },
+    { id:'d1-6', time:'17:20-18:20', name:'🚕 影島 → 廣安里 check-in', desc:'白淺灘或 P.ARK 出發到廣安里，車程約 35-45 分，保守抓 60 分；抵達先放行李、整理一下再出門', dotColor:'#1D9E75', tags:[['tag-car','計程車'],['tag-note','check-in 緩衝']], priceTag:'約 ₩22,000-35,000 / 台' },
+    { id:'d1-7', time:'18:30-19:00', name:'🌅 廣安里海灘散步', desc:'只保留短散步，不硬塞太多；如果前面延誤，這段可以直接併到晚餐後看夜景', dotColor:'#378ADD', tags:[['tag-spot','廣安大橋夕陽'],['tag-note','可壓縮']], priceTag:'免費', naverUrl:'https://maps.google.com/?q=35.1525,129.1190' },
+    { id:'d1-8', time:'19:10-20:40', name:'🍖 seokhwayeon Korean BBQ', desc:'廣安里人氣韓式烤肉，第一頓正式晚餐；抓 90 分鐘，避免美術館日後段太趕', dotColor:'#D85A30', tags:[['tag-ig','IG 收藏'],['tag-food','韓式烤肉']], priceTag:'約 ₩25,000-45,000 / NT$625-1,125 / 人', naverUrl:'https://maps.google.com/?q=35.1520998,129.1170955' },
+    { id:'d1-9', time:'21:00-22:10', name:'♨️ Hotel Aqua Palace 汗蒸幕', desc:'體力夠再去，已從預估花費扣除；若 D1 太累，這段改成飯店休息或移到其他晚上', dotColor:'#1D9E75', tags:[['tag-spa','汗蒸幕'],['tag-spot','廣安大橋夜景'],['tag-note','釜山 Pass 包含'],['tag-note','可延後']], priceTag:'Pass 含｜省 ₩12,000-20,000' },
+    { id:'d1-10', time:'22:00 / 22:10 後', name:'🎆 廣安里 M 無人機燈光秀', desc:'若 D1 剛好是週六，3-9 月可看 20:00 或 22:00 場；10-2 月為 19:00 或 21:00 場。演出約 12 分鐘，廣安里海灘沿線都能看，天候或技術問題可能取消 / 延後', dotColor:'#7F77DD', tags:[['tag-night','廣安大橋夜景'],['tag-spot','無人機燈光秀'],['tag-note','週六限定']], priceTag:'免費 / 週六限定', naverUrl:'https://maps.google.com/?q=35.1532,129.1186' }
   ],
   2: [
-    { id:'d2-1', time:'早餐',  name:'☕ working holiday（廣安里海景早午餐）', desc:'面向廣安大橋大片落地窗，09:00 起；從廣安里飯店步行約 8-10 分', dotColor:'#D85A30', tags:[['tag-food','早餐 09:00+'],['tag-spot','廣安大橋海景'],['tag-car','步行']], priceTag:'約 ₩15,000-25,000 / NT$375-625 / 人', naverUrl:'nmap://place?lat=35.1547583&lng=129.1197477&name=워킹홀리데이' },
-    { id:'d2-2', time:'上午',  name:'🚞 天空膠囊列車', desc:'從廣安里到尾浦：地鐵末段步行約 15 分，超過 10 分門檻，建議保留短程計程車。Pass 常見包含 Beach Train，不一定包含 Sky Capsule，因此此項先保留費用', dotColor:'#378ADD', tags:[['tag-spot','空中膠囊列車'],['tag-note','需提前預約'],['tag-note','Pass 待確認'],['tag-car','短程計程車']], priceTag:'約 ₩12,500-40,000 / NT$313-1,000 / 人', naverUrl:'nmap://place?lat=35.1607&lng=129.1847&name=해운대블루라인park' },
-    { id:'d2-3', time:'午餐',  name:'🦀 海雲台傳統市場', desc:'烤鰻魚、活章魚、海鮮湯飯，道地釜山味；尾浦到市場地鐵不順，保留短程計程車', dotColor:'#D85A30', tags:[['tag-food','海鮮市場小吃'],['tag-car','短程計程車']], priceTag:'約 ₩10,000-25,000 / NT$250-625 / 人', naverUrl:'nmap://place?lat=35.1614537&lng=129.1622489&name=해운대전통시장' },
-    { id:'d2-4', time:'下午',  name:'🏙 BUSAN X the Sky', desc:'100F 俯瞰整個海雲台，透明橋 Shocking Bridge，99F 世界最高星巴克；從海雲台市場步行約 10 分，門票已從預估花費扣除', dotColor:'#378ADD', tags:[['tag-spot','100F 全景'],['tag-note','釜山 Pass 包含'],['tag-car','步行']], priceTag:'Pass 含｜省 ₩23,000-29,000', naverUrl:'nmap://place?lat=35.1637&lng=129.1584&name=BUSAN+X+the+SKY' },
-    { id:'d2-5', time:'下午茶', nameHtml:'☕ <a class="naver-link" href="nmap://place?lat=35.1645337&lng=129.1580765&name=캐버린하우스" target="_blank">Keveren House</a> + <a class="naver-link" href="nmap://place?lat=35.1643054&lng=129.1576309&name=듀플릿" target="_blank">DUPLIT</a>（IG×2）', desc:'海理團路，奶油派必買＋affogato 必試，兩間緊鄰連著逛；BUSAN X the Sky 周邊步行可達', dotColor:'#7F77DD', tags:[['tag-ig','IG×2'],['tag-food','奶油派 / affogato'],['tag-car','步行']], priceTag:'約 ₩8,000-20,000 / NT$200-500 / 人' },
-    { id:'d2-6', time:'晚餐',  name:'🦀 尾浦家 醬蟹', desc:'40 年老店，醬汁拌飯必點；海理團路過去步行偏遠 / 地鐵不順，保留短程計程車', dotColor:'#D85A30', tags:[['tag-food','醬蟹'],['tag-note','建議訂位'],['tag-car','短程計程車']], priceTag:'約 ₩18,000-35,000 / NT$450-875 / 人', naverUrl:'nmap://place?lat=35.160751&lng=129.1714544&name=미포지브' },
-    { id:'d2-7', time:'夜晚',  name:'🌃 The Bay 101 海景夜生活', desc:'冬柏島入口夜景聖地，戶外酒吧看海上燈光倒影；晚間回海雲台飯店可搭 Dongbaek→Haeundae 1 站或短程計程車', dotColor:'#1D9E75', tags:[['tag-night','海景酒吧'],['tag-car','地鐵 / 短程計程車']], priceTag:'約 ₩10,000-25,000 / NT$250-625 / 人', naverUrl:'nmap://place?lat=35.1567&lng=129.1521&name=The+Bay+101' }
+    { id:'d2-1', time:'09:00-10:00',  name:'☕ working holiday（廣安里海景早午餐）', desc:'面向廣安大橋大片落地窗，09:00 起；從廣安里飯店步行約 8-10 分，早餐抓 60 分鐘，吃完預留叫車 / 上廁所緩衝', dotColor:'#D85A30', tags:[['tag-food','早餐 09:00+'],['tag-spot','廣安大橋海景'],['tag-car','步行']], priceTag:'約 ₩15,000-25,000 / NT$375-625 / 人', naverUrl:'https://maps.google.com/?q=35.1547583,129.1197477' },
+    { id:'d2-2', time:'10:00-12:10',  name:'🚞 天空膠囊列車', desc:'廣安里→尾浦建議短程計程車，車程約 25-35 分，保守抓 60 分含等車 / 報到；膠囊列車含排隊與拍照抓 60-70 分。Pass 常見包含 Beach Train，不一定包含 Sky Capsule，因此此項先保留費用', dotColor:'#378ADD', tags:[['tag-spot','空中膠囊列車'],['tag-note','需提前預約'],['tag-note','Pass 待確認'],['tag-car','短程計程車']], priceTag:'約 ₩12,500-40,000 / NT$313-1,000 / 人', naverUrl:'https://maps.google.com/?q=35.1607,129.1847' },
+    { id:'d2-3', time:'12:10-13:50',  name:'🦀 海雲台傳統市場', desc:'尾浦到市場地鐵不順，保留短程計程車，移動抓 25-35 分；市場午餐抓 60 分，若膠囊延誤這段可壓縮', dotColor:'#D85A30', tags:[['tag-food','海鮮市場小吃'],['tag-car','短程計程車']], priceTag:'約 ₩10,000-25,000 / NT$250-625 / 人', naverUrl:'https://maps.google.com/?q=35.1614537,129.1622489' },
+    { id:'d2-4', time:'14:00-15:20',  name:'🏙 BUSAN X the Sky', desc:'從海雲台市場步行約 10 分，保守抓 15 分；觀景台抓 60-70 分，門票已從預估花費扣除', dotColor:'#378ADD', tags:[['tag-spot','100F 全景'],['tag-note','釜山 Pass 包含'],['tag-car','步行']], priceTag:'Pass 含｜省 ₩23,000-29,000', naverUrl:'https://maps.google.com/?q=35.1637,129.1584' },
+    { id:'d2-5', time:'15:20-16:50', nameHtml:'☕ <a class="naver-link" href="https://maps.google.com/?q=35.1645337,129.1580765" target="_blank">Keveren House</a> + <a class="naver-link" href="https://maps.google.com/?q=35.1643054,129.1576309" target="_blank">DUPLIT</a>（IG×2）', desc:'BUSAN X the Sky 周邊步行 5-10 分可達；兩間緊鄰連著逛，抓 90 分鐘含排隊、拍照與休息', dotColor:'#7F77DD', tags:[['tag-ig','IG×2'],['tag-food','奶油派 / affogato'],['tag-car','步行']], priceTag:'約 ₩8,000-20,000 / NT$200-500 / 人' },
+    { id:'d2-6', time:'16:50-19:00',  name:'🦀 尾浦家 醬蟹', desc:'海理團路過去步行偏遠 / 地鐵不順，保留短程計程車，移動抓 25-35 分；建議 17:30 左右入座，晚餐抓 90 分鐘', dotColor:'#D85A30', tags:[['tag-food','醬蟹'],['tag-note','建議訂位'],['tag-car','短程計程車']], priceTag:'約 ₩18,000-35,000 / NT$450-875 / 人', naverUrl:'https://maps.google.com/?q=35.160751,129.1714544' },
+    { id:'d2-7', time:'19:00-21:20',  name:'🌃 The Bay 101 海景夜生活', desc:'尾浦家→The Bay 101 保留計程車，移動抓 25-35 分；夜景停留抓 60-80 分，回海雲台飯店可搭 Dongbaek→Haeundae 1 站或短程計程車', dotColor:'#1D9E75', tags:[['tag-night','海景酒吧'],['tag-car','地鐵 / 短程計程車']], priceTag:'約 ₩10,000-25,000 / NT$250-625 / 人', naverUrl:'https://maps.google.com/?q=35.1567,129.1521' }
   ],
   3: [
-    { id:'d3-1', time:'早餐',  name:'🥚 EGG DROP 西面樂天後門店', desc:'海雲台飯店 → 西面可搭地鐵 2 號線到 Seomyeon，兩端步行約 10 分內；到站後吃爆漿滑蛋吐司', dotColor:'#D85A30', tags:[['tag-food','早餐 08:00+'],['tag-car','地鐵 2 號線']], priceTag:'約 ₩6,000-14,000 / NT$150-350 / 人', naverUrl:'nmap://place?lat=35.1557765&lng=129.0553859&name=에그드롭' },
-    { id:'d3-2', time:'上午',  name:'🛷 Skyline Luge', desc:'西面到機張距離遠，Osiria 站到 Luge 步行約 15 分以上；這段保留包車或計程車。Pass 通常含 2 次斜坡滑車，已從預估花費扣除', dotColor:'#E24B4A', tags:[['tag-thrill','斜坡滑車'],['tag-car','包車/計程車'],['tag-note','釜山 Pass 包含']], priceTag:'Pass 含｜省 ₩31,000-42,000', naverUrl:'nmap://place?lat=35.1883&lng=129.2233&name=스카이라인루지부산' },
-    { id:'d3-3', time:'上午→', name:'🎢 釜山樂天世界冒險樂園', desc:'步行 5 分鐘進場！6 大區域 24 項設施；Magic Pass 快速通關另計。門票已從預估花費扣除', dotColor:'#378ADD', tags:[['tag-spot','主題樂園'],['tag-thrill','倒掛雲霄飛車'],['tag-note','釜山 Pass 包含']], priceTag:'Pass 含｜省 ₩23,000-47,000' },
-    { id:'d3-4', time:'午餐',  name:'🍟 樂天世界園內餐廳', desc:'BHC 炸雞、韓式拌飯、辣炒年糕', dotColor:'#D85A30', tags:[['tag-food','園內用餐']], priceTag:'約 ₩12,000-25,000 / NT$300-625 / 人' },
-    { id:'d3-5', time:'下午',  name:'🛍 包車/計程車回西面 Shopping', desc:'Osiria 站步行約 15 分，回西面這段仍保留包車或計程車；抵達後逛樂天百貨、Olive Young、西面地下街', dotColor:'#7F77DD', tags:[['tag-ig','IG 收藏'],['tag-shop','Olive Young'],['tag-car','包車/計程車']], priceTag:'購物另計' },
-    { id:'d3-6', time:'晚餐',  name:'🥩 味贊王 西面 鹽烤肉', desc:'厚達 3.5cm 豬五花，全程專人幫烤，17:00–23:00', dotColor:'#D85A30', tags:[['tag-food','厚切烤肉']], priceTag:'約 ₩25,000-45,000 / NT$625-1,125 / 人', naverUrl:'nmap://place?lat=35.1554917&lng=129.0556616&name=맛찬들왕' },
-    { id:'d3-7', time:'宵夜',  nameHtml:'🍹 <a class="naver-link" href="nmap://place?lat=35.162329&lng=129.1916555&name=루아&티그레" target="_blank">lua&amp;tigre</a>（IG）＋ 西面酒吧街', desc:'西面大型咖啡廳酒吧，調酒氛圍超好', dotColor:'#1D9E75', tags:[['tag-ig','IG 收藏'],['tag-night','調酒 / 酒吧']], priceTag:'約 ₩10,000-30,000 / NT$250-750 / 人' }
+    { id:'d3-1', time:'08:30-09:30',  name:'🥚 EGG DROP 西面樂天後門店', desc:'海雲台飯店 → 西面搭地鐵 2 號線，含步行與等車抓 45-55 分；到站後吃爆漿滑蛋吐司，早餐抓 30-40 分', dotColor:'#D85A30', tags:[['tag-food','早餐 08:00+'],['tag-car','地鐵 2 號線']], priceTag:'約 ₩6,000-14,000 / NT$150-350 / 人', naverUrl:'https://maps.google.com/?q=35.1557765,129.0553859' },
+    { id:'d3-2', time:'09:30-11:45',  name:'🛷 Skyline Luge', desc:'西面到機張距離遠，保留包車或計程車，移動抓 55-70 分；Luge 含報到、排隊、2 次滑車抓 70-80 分。Pass 通常含 2 次斜坡滑車，已從預估花費扣除', dotColor:'#E24B4A', tags:[['tag-thrill','斜坡滑車'],['tag-car','包車/計程車'],['tag-note','釜山 Pass 包含']], priceTag:'Pass 含｜省 ₩31,000-42,000', naverUrl:'https://maps.google.com/?q=35.1883,129.2233' },
+    { id:'d3-3', time:'11:45-15:40', name:'🎢 釜山樂天世界冒險樂園', desc:'Luge → 樂天世界步行約 5-10 分；園區主體抓 3.5-4 小時，熱門設施排隊會吃時間，Magic Pass 快速通關另計。門票已從預估花費扣除', dotColor:'#378ADD', tags:[['tag-spot','主題樂園'],['tag-thrill','倒掛雲霄飛車'],['tag-note','釜山 Pass 包含']], priceTag:'Pass 含｜省 ₩23,000-47,000' },
+    { id:'d3-4', time:'13:00-14:00',  name:'🍟 樂天世界園內餐廳', desc:'園內用餐穿插在樂天世界時段中；BHC 炸雞、韓式拌飯、辣炒年糕，排隊時抓 60 分鐘比較穩', dotColor:'#D85A30', tags:[['tag-food','園內用餐']], priceTag:'約 ₩12,000-25,000 / NT$300-625 / 人' },
+    { id:'d3-5', time:'15:40-18:30',  name:'🛍 包車/計程車回西面 Shopping', desc:'Osiria 站步行約 15 分，回西面仍保留包車或計程車，移動抓 60-70 分；抵達後逛樂天百貨、Olive Young、西面地下街，購物抓 90 分鐘', dotColor:'#7F77DD', tags:[['tag-ig','IG 收藏'],['tag-shop','Olive Young'],['tag-car','包車/計程車']], priceTag:'購物另計' },
+    { id:'d3-6', time:'18:40-20:10',  name:'🥩 味贊王 西面 鹽烤肉', desc:'西面 Shopping 區步行約 5-10 分；厚達 3.5cm 豬五花，全程專人幫烤，17:00–23:00，晚餐抓 90 分鐘', dotColor:'#D85A30', tags:[['tag-food','厚切烤肉']], priceTag:'約 ₩25,000-45,000 / NT$625-1,125 / 人', naverUrl:'https://maps.google.com/?q=35.1554917,129.0556616' },
+    { id:'d3-7', time:'20:10-22:30',  nameHtml:'🍹 <a class="naver-link" href="https://maps.google.com/?q=35.162329,129.1916555" target="_blank">lua&amp;tigre</a>（IG）＋ 西面酒吧街', desc:'目前座標偏海雲台側，從西面來回交通抓 40-60 分；若當天太累，改逛西面酒吧街，保留 90 分鐘放鬆', dotColor:'#1D9E75', tags:[['tag-ig','IG 收藏'],['tag-night','調酒 / 酒吧']], priceTag:'約 ₩10,000-30,000 / NT$250-750 / 人' }
   ],
   4: [
-    { id:'d4-1', time:'早餐', name:'🍲 浦項豬肉湯飯', desc:'70 年老店，24hr 營業；西面飯店出發步行約 5-8 分', dotColor:'#D85A30', tags:[['tag-food','釜山代表美食'],['tag-note','24hr'],['tag-car','步行']], priceTag:'約 ₩10,000-14,000 / NT$250-350 / 人', naverUrl:'nmap://place?lat=35.1557935&lng=129.0585494&name=포항돼지국밥' },
-    { id:'d4-2', time:'上午', name:'🐟 扎嘎其市場＋南浦洞', desc:'Seomyeon 搭 1 號線到 Jagalchi / Nampo，兩端步行約 10 分內；BIFF 廣場掃最後一輪伴手禮', dotColor:'#378ADD', tags:[['tag-food','扎嘎其海鮮'],['tag-shop','伴手禮掃貨'],['tag-car','地鐵 1 號線']], priceTag:'市場參觀免費 / 購物另計', naverUrl:'nmap://place?lat=35.0967&lng=129.0300&name=자갈치시장' },
-    { id:'d4-3', time:'午餐', nameHtml:'🦑 <a class="naver-link" href="nmap://place?lat=35.098409&lng=129.025761&name=대양烤腸" target="_blank">大光烤腸</a> / 扎嘎其市場 2F 海鮮', desc:'最後一頓飯，吃好吃滿！', dotColor:'#D85A30', tags:[['tag-food','烤腸 / 海鮮']], priceTag:'約 ₩20,000-50,000 / NT$500-1,250 / 人' },
-    { id:'d4-4', time:'下午', name:'🚇 地鐵＋機場輕軌前往金海機場', desc:'Jagalchi/Nampo → Seomyeon → Sasang → 金海機場；行李太多或時間緊再改計程車。記得預留退稅和安檢時間', dotColor:'#7F77DD', tags:[['tag-car','地鐵送機'],['tag-note','記得退稅']], priceTag:'約 ₩3,200 / NT$80 / 人' }
+    { id:'d4-1', time:'09:00-10:00', name:'🍲 浦項豬肉湯飯', desc:'70 年老店，24hr 營業；西面飯店出發步行約 5-8 分，早餐抓 45-60 分，吃完回飯店拿行李 / 退房', dotColor:'#D85A30', tags:[['tag-food','釜山代表美食'],['tag-note','24hr'],['tag-car','步行']], priceTag:'約 ₩10,000-14,000 / NT$250-350 / 人', naverUrl:'https://maps.google.com/?q=35.1557935,129.0585494' },
+    { id:'d4-2', time:'10:00-12:30', name:'🐟 扎嘎其市場＋南浦洞', desc:'Seomyeon → Jagalchi / Nampo 搭 1 號線，含步行、等車與寄物抓 40-50 分；BIFF 廣場、南浦洞、札嘎其周邊掃最後一輪伴手禮', dotColor:'#378ADD', tags:[['tag-food','扎嘎其海鮮'],['tag-shop','伴手禮掃貨'],['tag-car','地鐵 1 號線']], priceTag:'市場參觀免費 / 購物另計', naverUrl:'https://maps.google.com/?q=35.0967,129.0300' },
+    { id:'d4-3', time:'12:30-14:00', nameHtml:'🦑 <a class="naver-link" href="https://maps.google.com/?q=35.098409,129.025761" target="_blank">大光烤腸</a> / 扎嘎其市場 2F 海鮮', desc:'從札嘎其 / 南浦洞步行約 5-10 分；最後一頓飯抓 90 分鐘，若回程班機較早可改簡餐或外帶', dotColor:'#D85A30', tags:[['tag-food','烤腸 / 海鮮']], priceTag:'約 ₩20,000-50,000 / NT$500-1,250 / 人' },
+    { id:'d4-4', time:'14:00-16:00', name:'🚇 地鐵＋機場輕軌前往金海機場', desc:'Jagalchi/Nampo → Seomyeon → Sasang → 金海機場，地鐵＋輕軌抓 70-90 分；建議至少起飛前 2.5-3 小時到機場，行李太多或時間緊再改計程車', dotColor:'#7F77DD', tags:[['tag-car','地鐵送機'],['tag-note','記得退稅']], priceTag:'約 ₩3,200 / NT$80 / 人' }
   ]
 };
 
@@ -2785,7 +3127,7 @@ function mergeTimelineCostDefaults(day, items) {
     if (!def) return item;
     const next = { ...item };
     const stalePrice = typeof next.priceTag === 'string' && /^NT\$/i.test(next.priceTag.trim());
-    const transitUpdatedItems = ['d1-1','d2-1','d2-2','d2-3','d2-4','d2-5','d2-6','d2-7','d3-1','d3-2','d3-5','d4-1','d4-2','d4-4'];
+    const transitUpdatedItems = ['d1-1','d1-2','d1-3','d1-4','d1-5','d1-6','d1-7','d1-8','d1-9','d1-10','d2-1','d2-2','d2-3','d2-4','d2-5','d2-6','d2-7','d3-1','d3-2','d3-3','d3-4','d3-5','d3-6','d3-7','d4-1','d4-2','d4-3','d4-4'];
     const staleTransitPrice = transitUpdatedItems.includes(item.id) && next.priceTag !== def.priceTag;
     const stalePassPrice = ['d1-4','d2-4','d3-2','d3-3'].includes(item.id) && !/^Pass/.test(next.priceTag || '');
     if (def.priceTag && (!next.priceTag || stalePrice || stalePassPrice || staleTransitPrice)) {
@@ -2796,17 +3138,28 @@ function mergeTimelineCostDefaults(day, items) {
       next.name = def.name;
       changed = true;
     }
+    if (def.time && transitUpdatedItems.includes(item.id) && next.time !== def.time) {
+      next.time = def.time;
+      changed = true;
+    }
     if (def.desc && (transitUpdatedItems.includes(item.id) || /^廣安大橋海景|包車送到尾浦站|搭纜車上山|步行 5 分鐘進場|100F 俯瞰/.test(next.desc))) {
       next.desc = def.desc;
       changed = true;
     }
-    if (def.tags && (transitUpdatedItems.includes(item.id) || ['d1-4','d2-2','d2-4','d3-2','d3-3'].includes(item.id))) {
+    if (def.tags && transitUpdatedItems.includes(item.id) && JSON.stringify(next.tags || []) !== JSON.stringify(def.tags)) {
+      next.tags = def.tags;
+      changed = true;
+    } else if (def.tags && ['d1-4','d2-2','d2-4','d3-2','d3-3'].includes(item.id)) {
       const haveLabels = new Set((next.tags || []).map(([, label]) => label));
       const missingTags = def.tags.filter(([, label]) => !haveLabels.has(label));
       if (missingTags.length) {
         next.tags = [...(next.tags || []), ...missingTags];
         changed = true;
       }
+    }
+    if (def.naverUrl && transitUpdatedItems.includes(item.id) && next.naverUrl !== def.naverUrl) {
+      next.naverUrl = def.naverUrl;
+      changed = true;
     }
     return next;
   });
@@ -2871,6 +3224,7 @@ function deleteTlItem(id, day) {
   localStorage.setItem(`busanTimeline_${day}`, JSON.stringify(items));
   renderTimeline(day, items);
   renderIgCards(window._lastIgSpots || []);
+  refreshActiveDayMap();
 }
 
 function submitAddTimeline(day) {
@@ -2894,6 +3248,7 @@ function submitAddTimeline(day) {
   closeModal();
   renderTimeline(day, items);
   renderIgCards(window._lastIgSpots || []);
+  refreshActiveDayMap();
 }
 
 // ===== Init =====
@@ -2908,10 +3263,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadHeadcount();
   loadFlights();
   loadFlightScreenshots();
+  initDayMap(1);
   loadHotelsInfo();
   loadThreadSpots();
   loadVideoSpots();
 });
 </script>
+<div id="img-lightbox" onclick="closeImgLightbox()">
+  <img id="img-lightbox-img" src="" alt="">
+</div>
 </body>
 </html>
